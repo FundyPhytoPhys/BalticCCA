@@ -47,7 +47,7 @@ library(googlesheets4)
 ```
 
 ```{r set project variables}
-Project <- "Baltic_Photoperiod"
+Project <- "BalticCCA"
 DataOut <- file.path("..", "Data", "ProcessedData", "ProcessedGrowthCurveData")
 DataIn <- file.path("..", "Data", "ImportedData", "ImportedMCData", fsep = .Platform$file.sep)
 
@@ -67,10 +67,10 @@ list.files(path = DataIn, full.names = TRUE)
 
 # Import selected Rds and calculate mean OD from every hour based on ToD and time
 
-## Import Run39
+## Import Run56
 
 ```{r Import Run and calculate mean OD, echo = FALSE, warning = FALSE}
-MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20211214_PICO_MC247_RUN39_TargetDataMetaFilter.Rds"
+MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20220323_PICO_MCMIX004_RUN56_TargetDataMetaFilter.Rds"
 MultiCultiFileName <- str_split(string = MultiCultiFile, "/")[[1]][3] %>%
   str_remove(pattern = ".Rds") 
 MultiCultiData <- readRDS(MultiCultiFile)  
@@ -85,7 +85,7 @@ MultiCultiData <- MultiCultiData %>%
   rename(time_h=time) %>% 
   mutate(DeltaOD = OD680-OD720) 
   
-MultiCultiData39 <- MultiCultiData %>%   
+MultiCultiData56 <- MultiCultiData %>%   
   group_by(SampleID, Day, ToD, time_h) %>% 
   summarize(Run, SampleID, Strain, ExpDate, Filename, Tube, time_h, ToD, Day, ExpDate, Actinic_par, OD680, OD720, DeltaOD, Par_ue, Photoperiod, O2, WL, LightShape, ExpEndDate, meanActinic_par_h = mean(Actinic_par), meanOD680_h = mean(OD680), meanOD720_h = mean(OD720), meanDeltaOD_h = mean(DeltaOD)) %>%
   ungroup() %>% 
@@ -93,10 +93,10 @@ MultiCultiData39 <- MultiCultiData %>%
   unique()
 ```
 
-## Import Run40
+## Import Run59
 
 ```{r Import Run and calculate mean OD, echo = FALSE, warning = FALSE}
-MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20211223_PICO_MC257_RUN40_TargetDataMetaFilter.Rds"
+MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20220402_PICO_MCMIX004_RUN59_TargetDataMetaFilter.Rds"
 MultiCultiFileName <- str_split(string = MultiCultiFile, "/")[[1]][3] %>%
   str_remove(pattern = ".Rds") 
 MultiCultiData <- readRDS(MultiCultiFile)  
@@ -111,7 +111,7 @@ MultiCultiData <- MultiCultiData %>%
   rename(time_h=time) %>% 
   mutate(DeltaOD = OD680-OD720) 
   
-MultiCultiData40 <- MultiCultiData %>%   
+MultiCultiData59 <- MultiCultiData %>%   
   group_by(SampleID, Day, ToD, time_h) %>% 
   summarize(Run, SampleID, Strain, ExpDate, Filename, Tube, time_h, ToD, Day, ExpDate, Actinic_par, OD680, OD720, DeltaOD, Par_ue, Photoperiod, O2, WL, LightShape, ExpEndDate, meanActinic_par_h = mean(Actinic_par), meanOD680_h = mean(OD680), meanOD720_h = mean(OD720), meanDeltaOD_h = mean(DeltaOD)) %>%
   ungroup() %>% 
@@ -119,10 +119,10 @@ MultiCultiData40 <- MultiCultiData %>%
   unique()
 ```
 
-## Import Run43
+## Import Run63
 
 ```{r Import Run and calculate mean OD, echo = FALSE, warning = FALSE}
-MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20211229_PICO_MC247_RUN43_TargetDataMetaFilter.Rds"
+MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20220413_PICO_MCMIX004_RUN63_TargetDataMetaFilter.Rds"
 MultiCultiFileName <- str_split(string = MultiCultiFile, "/")[[1]][3] %>%
   str_remove(pattern = ".Rds") 
 MultiCultiData <- readRDS(MultiCultiFile)  
@@ -137,7 +137,7 @@ MultiCultiData <- MultiCultiData %>%
   rename(time_h=time) %>% 
   mutate(DeltaOD = OD680-OD720) 
   
-MultiCultiData43 <- MultiCultiData %>%   
+MultiCultiData63 <- MultiCultiData %>%   
   group_by(SampleID, Day, ToD, time_h) %>% 
   summarize(Run, SampleID, Strain, ExpDate, Filename, Tube, time_h, ToD, Day, ExpDate, Actinic_par, OD680, OD720, DeltaOD, Par_ue, Photoperiod, O2, WL, LightShape, ExpEndDate, meanActinic_par_h = mean(Actinic_par), meanOD680_h = mean(OD680), meanOD720_h = mean(OD720), meanDeltaOD_h = mean(DeltaOD)) %>%
   ungroup() %>% 
@@ -145,10 +145,10 @@ MultiCultiData43 <- MultiCultiData %>%
   unique()
 ```
 
-## Import Run44
+## Import Run68
 
 ```{r Import Run and calculate mean OD, echo = FALSE, warning = FALSE}
-MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20220107_PICO_MC257_RUN44_TargetDataMetaFilter.Rds"
+MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20220429_PICO_MCMIX004_RUN68_TargetDataMetaFilter.Rds"
 MultiCultiFileName <- str_split(string = MultiCultiFile, "/")[[1]][3] %>%
   str_remove(pattern = ".Rds") 
 MultiCultiData <- readRDS(MultiCultiFile)  
@@ -163,7 +163,7 @@ MultiCultiData <- MultiCultiData %>%
   rename(time_h=time) %>% 
   mutate(DeltaOD = OD680-OD720) 
   
-MultiCultiData44 <- MultiCultiData %>%   
+MultiCultiData68 <- MultiCultiData %>%   
   group_by(SampleID, Day, ToD, time_h) %>% 
   summarize(Run, SampleID, Strain, ExpDate, Filename, Tube, time_h, ToD, Day, ExpDate, Actinic_par, OD680, OD720, DeltaOD, Par_ue, Photoperiod, O2, WL, LightShape, ExpEndDate, meanActinic_par_h = mean(Actinic_par), meanOD680_h = mean(OD680), meanOD720_h = mean(OD720), meanDeltaOD_h = mean(DeltaOD)) %>%
   ungroup() %>% 
@@ -171,10 +171,10 @@ MultiCultiData44 <- MultiCultiData %>%
   unique()
 ```
 
-## Import Run45
+## Import Run70
 
 ```{r Import Run and calculate mean OD, echo = FALSE, warning = FALSE}
-MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20220113_PICO_MC247_RUN45_TargetDataMetaFilter.Rds"
+MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20220507_PICO_MCMIX004_RUN70_TargetDataMetaFilter.Rds"
 MultiCultiFileName <- str_split(string = MultiCultiFile, "/")[[1]][3] %>%
   str_remove(pattern = ".Rds") 
 MultiCultiData <- readRDS(MultiCultiFile)  
@@ -189,7 +189,7 @@ MultiCultiData <- MultiCultiData %>%
   rename(time_h=time) %>% 
   mutate(DeltaOD = OD680-OD720) 
   
-MultiCultiData45 <- MultiCultiData %>%   
+MultiCultiData70 <- MultiCultiData %>%   
   group_by(SampleID, Day, ToD, time_h) %>% 
   summarize(Run, SampleID, Strain, ExpDate, Filename, Tube, time_h, ToD, Day, ExpDate, Actinic_par, OD680, OD720, DeltaOD, Par_ue, Photoperiod, O2, WL, LightShape, ExpEndDate, meanActinic_par_h = mean(Actinic_par), meanOD680_h = mean(OD680), meanOD720_h = mean(OD720), meanDeltaOD_h = mean(DeltaOD)) %>%
   ungroup() %>% 
@@ -197,194 +197,13 @@ MultiCultiData45 <- MultiCultiData %>%
   unique()
 ```
 
-## Import Run46
-
-```{r Import Run and calculate mean OD, echo = FALSE, warning = FALSE}
-MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20220122_PICO_MC257_RUN46_TargetDataMetaFilter.Rds"
-MultiCultiFileName <- str_split(string = MultiCultiFile, "/")[[1]][3] %>%
-  str_remove(pattern = ".Rds") 
-MultiCultiData <- readRDS(MultiCultiFile)  
-
-MultiCultiData$ToD = sub("\\..*", "", MultiCultiData$ToD)
-MultiCultiData$time = sub("\\..*", "", MultiCultiData$time)
-
-MultiCultiData <- MultiCultiData %>% 
-  mutate(ToD=as.numeric(ToD)) %>% 
-  mutate(time=as.numeric(time)) %>% 
-  mutate(Actinic_par = Actinic_par/1000) %>% 
-  rename(time_h=time) %>% 
-  mutate(DeltaOD = OD680-OD720) 
-  
-MultiCultiData46 <- MultiCultiData %>%   
-  group_by(SampleID, Day, ToD, time_h) %>% 
-  summarize(Run, SampleID, Strain, ExpDate, Filename, Tube, time_h, ToD, Day, ExpDate, Actinic_par, OD680, OD720, DeltaOD, Par_ue, Photoperiod, O2, WL, LightShape, ExpEndDate, meanActinic_par_h = mean(Actinic_par), meanOD680_h = mean(OD680), meanOD720_h = mean(OD720), meanDeltaOD_h = mean(DeltaOD)) %>%
-  ungroup() %>% 
-  select(-c(Actinic_par, OD680, OD720, DeltaOD)) %>% 
-  unique()
-```
-
-## Import Run60
-
-```{r Import Run and calculate mean OD, echo = FALSE, warning = FALSE}
-MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20220405_PICO_MC247_RUN60_TargetDataMetaFilter.Rds"
-MultiCultiFileName <- str_split(string = MultiCultiFile, "/")[[1]][3] %>%
-  str_remove(pattern = ".Rds") 
-MultiCultiData <- readRDS(MultiCultiFile)  
-
-MultiCultiData$ToD = sub("\\..*", "", MultiCultiData$ToD)
-MultiCultiData$time = sub("\\..*", "", MultiCultiData$time)
-
-MultiCultiData <- MultiCultiData %>% 
-  mutate(ToD=as.numeric(ToD)) %>% 
-  mutate(time=as.numeric(time)) %>% 
-  mutate(Actinic_par = Actinic_par/1000) %>% 
-  rename(time_h=time) %>% 
-  mutate(DeltaOD = OD680-OD720) 
-  
-MultiCultiData60 <- MultiCultiData %>%   
-  group_by(SampleID, Day, ToD, time_h) %>% 
-  summarize(Run, SampleID, Strain, ExpDate, Filename, Tube, time_h, ToD, Day, ExpDate, Actinic_par, OD680, OD720, DeltaOD, Par_ue, Photoperiod, O2, WL, LightShape, ExpEndDate, meanActinic_par_h = mean(Actinic_par), meanOD680_h = mean(OD680), meanOD720_h = mean(OD720), meanDeltaOD_h = mean(DeltaOD)) %>%
-  ungroup() %>% 
-  select(-c(Actinic_par, OD680, OD720, DeltaOD)) %>% 
-  unique()
-```
-
-## Import Run62
-
-```{r Import Run and calculate mean OD, echo = FALSE, warning = FALSE}
-MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20220410_PICO_MC257_RUN62_TargetDataMetaFilter.Rds"
-MultiCultiFileName <- str_split(string = MultiCultiFile, "/")[[1]][3] %>%
-  str_remove(pattern = ".Rds") 
-MultiCultiData <- readRDS(MultiCultiFile)  
-
-MultiCultiData$ToD = sub("\\..*", "", MultiCultiData$ToD)
-MultiCultiData$time = sub("\\..*", "", MultiCultiData$time)
-
-MultiCultiData <- MultiCultiData %>% 
-  mutate(ToD=as.numeric(ToD)) %>% 
-  mutate(time=as.numeric(time)) %>% 
-  mutate(Actinic_par = Actinic_par/1000) %>% 
-  rename(time_h=time) %>% 
-  mutate(DeltaOD = OD680-OD720) 
-  
-MultiCultiData62 <- MultiCultiData %>%   
-  group_by(SampleID, Day, ToD, time_h) %>% 
-  summarize(Run, SampleID, Strain, ExpDate, Filename, Tube, time_h, ToD, Day, ExpDate, Actinic_par, OD680, OD720, DeltaOD, Par_ue, Photoperiod, O2, WL, LightShape, ExpEndDate, meanActinic_par_h = mean(Actinic_par), meanOD680_h = mean(OD680), meanOD720_h = mean(OD720), meanDeltaOD_h = mean(DeltaOD)) %>%
-  ungroup() %>% 
-  select(-c(Actinic_par, OD680, OD720, DeltaOD)) %>% 
-  unique()
-```
-
-## Import Run65
-
-```{r Import Run and calculate mean OD, echo = FALSE, warning = FALSE}
-MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20220420_PICO_MC257_RUN65_TargetDataMetaFilter.Rds"
-MultiCultiFileName <- str_split(string = MultiCultiFile, "/")[[1]][3] %>%
-  str_remove(pattern = ".Rds") 
-MultiCultiData <- readRDS(MultiCultiFile)  
-
-MultiCultiData$ToD = sub("\\..*", "", MultiCultiData$ToD)
-MultiCultiData$time = sub("\\..*", "", MultiCultiData$time)
-
-MultiCultiData <- MultiCultiData %>% 
-  mutate(ToD=as.numeric(ToD)) %>% 
-  mutate(time=as.numeric(time)) %>% 
-  mutate(Actinic_par = Actinic_par/1000) %>% 
-  rename(time_h=time) %>% 
-  mutate(DeltaOD = OD680-OD720) 
-  
-MultiCultiData65 <- MultiCultiData %>%   
-  group_by(SampleID, Day, ToD, time_h) %>% 
-  summarize(Run, SampleID, Strain, ExpDate, Filename, Tube, time_h, ToD, Day, ExpDate, Actinic_par, OD680, OD720, DeltaOD, Par_ue, Photoperiod, O2, WL, LightShape, ExpEndDate, meanActinic_par_h = mean(Actinic_par), meanOD680_h = mean(OD680), meanOD720_h = mean(OD720), meanDeltaOD_h = mean(DeltaOD)) %>%
-  ungroup() %>% 
-  select(-c(Actinic_par, OD680, OD720, DeltaOD)) %>% 
-  unique()
-```
-
-## Import Run71
-
-```{r Import Run and calculate mean OD, echo = FALSE, warning = FALSE}
-MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20220507_PICO_MC257_RUN71_TargetDataMetaFilter.Rds"
-MultiCultiFileName <- str_split(string = MultiCultiFile, "/")[[1]][3] %>%
-  str_remove(pattern = ".Rds") 
-MultiCultiData <- readRDS(MultiCultiFile)  
-
-MultiCultiData$ToD = sub("\\..*", "", MultiCultiData$ToD)
-MultiCultiData$time = sub("\\..*", "", MultiCultiData$time)
-
-MultiCultiData <- MultiCultiData %>% 
-  mutate(ToD=as.numeric(ToD)) %>% 
-  mutate(time=as.numeric(time)) %>% 
-  mutate(Actinic_par = Actinic_par/1000) %>% 
-  rename(time_h=time) %>% 
-  mutate(DeltaOD = OD680-OD720) 
-  
-MultiCultiData71 <- MultiCultiData %>%   
-  group_by(SampleID, Day, ToD, time_h) %>% 
-  summarize(Run, SampleID, Strain, ExpDate, Filename, Tube, time_h, ToD, Day, ExpDate, Actinic_par, OD680, OD720, DeltaOD, Par_ue, Photoperiod, O2, WL, LightShape, ExpEndDate, meanActinic_par_h = mean(Actinic_par), meanOD680_h = mean(OD680), meanOD720_h = mean(OD720), meanDeltaOD_h = mean(DeltaOD)) %>%
-  ungroup() %>% 
-  select(-c(Actinic_par, OD680, OD720, DeltaOD)) %>% 
-  unique()
-```
-
-## Import Run74
-
-```{r Import Run and calculate mean OD, echo = FALSE, warning = FALSE}
-MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20220607_PICO_MC257_RUN74_TargetDataMetaFilter.Rds"
-MultiCultiFileName <- str_split(string = MultiCultiFile, "/")[[1]][3] %>%
-  str_remove(pattern = ".Rds") 
-MultiCultiData <- readRDS(MultiCultiFile)  
-
-MultiCultiData$ToD = sub("\\..*", "", MultiCultiData$ToD)
-MultiCultiData$time = sub("\\..*", "", MultiCultiData$time)
-
-MultiCultiData <- MultiCultiData %>% 
-  mutate(ToD=as.numeric(ToD)) %>% 
-  mutate(time=as.numeric(time)) %>% 
-  mutate(Actinic_par = Actinic_par/1000) %>% 
-  rename(time_h=time) %>% 
-  mutate(DeltaOD = OD680-OD720) 
-  
-MultiCultiData74 <- MultiCultiData %>%   
-  group_by(SampleID, Day, ToD, time_h) %>% 
-  summarize(Run, SampleID, Strain, ExpDate, Filename, Tube, time_h, ToD, Day, ExpDate, Actinic_par, OD680, OD720, DeltaOD, Par_ue, Photoperiod, O2, WL, LightShape, ExpEndDate, meanActinic_par_h = mean(Actinic_par), meanOD680_h = mean(OD680), meanOD720_h = mean(OD720), meanDeltaOD_h = mean(DeltaOD)) %>%
-  ungroup() %>% 
-  select(-c(Actinic_par, OD680, OD720, DeltaOD)) %>% 
-  unique()
-```
-
-## Import Run121
-
-```{r Import Run and calculate mean OD, echo = FALSE, warning = FALSE}
-MultiCultiFile <- "../Data/ImportedData/ImportedMCData/20230816_PICO_MC257_RUN121_TargetDataMetaFilter.Rds"
-MultiCultiFileName <- str_split(string = MultiCultiFile, "/")[[1]][3] %>%
-  str_remove(pattern = ".Rds") 
-MultiCultiData <- readRDS(MultiCultiFile)  
-
-MultiCultiData$ToD = sub("\\..*", "", MultiCultiData$ToD)
-MultiCultiData$time = sub("\\..*", "", MultiCultiData$time)
-
-MultiCultiData <- MultiCultiData %>% 
-  mutate(ToD=as.numeric(ToD)) %>% 
-  mutate(time=as.numeric(time)) %>% 
-  mutate(Actinic_par = Actinic_par/1000) %>% 
-  rename(time_h=time) %>% 
-  mutate(DeltaOD = OD680-OD720) 
-  
-MultiCultiData121 <- MultiCultiData %>%   
-  group_by(SampleID, Day, ToD, time_h) %>% 
-  summarize(Run, SampleID, Strain, ExpDate, Filename, Tube, time_h, ToD, Day, ExpDate, Actinic_par, OD680, OD720, DeltaOD, Par_ue, Photoperiod, O2, WL, LightShape, ExpEndDate, meanActinic_par_h = mean(Actinic_par), meanOD680_h = mean(OD680), meanOD720_h = mean(OD720), meanDeltaOD_h = mean(DeltaOD)) %>%
-  ungroup() %>% 
-  select(-c(Actinic_par, OD680, OD720, DeltaOD)) %>% 
-  unique()
-```
 
 # Merge selected Runs
 
 ```{r Mere selected Runs}
-MultiCultiDataAll<-rbind(MultiCultiData39, MultiCultiData40, MultiCultiData43, MultiCultiData44, MultiCultiData45, MultiCultiData46, MultiCultiData60, MultiCultiData62, MultiCultiData65, MultiCultiData71, MultiCultiData74, MultiCultiData121)
+MultiCultiDataAll<-rbind(MultiCultiData56, MultiCultiData59, MultiCultiData63, MultiCultiData68, MultiCultiData70)
 
-rm(MultiCultiData39, MultiCultiData40, MultiCultiData43, MultiCultiData44, MultiCultiData45, MultiCultiData46, MultiCultiData60, MultiCultiData62, MultiCultiData65, MultiCultiData71, MultiCultiData74, MultiCultiData121, MultiCultiData)
+rm(MultiCultiData56, MultiCultiData59, MultiCultiData63, MultiCultiData68, MultiCultiData70)
 ```
 
 # Rename column names for consistency
@@ -404,66 +223,21 @@ MultiCultiDataAll$facetsPhotoperiod = factor(MultiCultiDataAll$WL, labels = c("P
 
 MultiCultiDataAll <- MultiCultiDataAll %>% 
     mutate(Strain=case_when(Strain=="BA127R"~"PE-rich_127",
-         Strain=="BA48R"~"PE-rich_048",
-        Strain=="BA56G"~"PC-rich_056",
          Strain=="BA77G"~"PC-rich_077")) 
-```
-
-# Load tmaxAG catalog and create 4 df for vertical lines (coloured as Strain) contained tMaxAG values
-
-```{r}
-gs4_deauth()
-tmaxAG<- read_sheet("https://docs.google.com/spreadsheets/d/1ksY7xlg9wOsICOBRmZkHPKdd9KOislNwPDzyuJ3UIUI/edit#gid=0")
-as.data.frame(tmaxAG)
-tmaxAG <- tmaxAG
-
-tmaxAG<-tmaxAG %>% 
-  mutate(Par_ue = as.numeric(Par_ue)) %>%
-  mutate(Photoperiod = as.numeric(Photoperiod)) %>%
-  mutate(tMaxAG = as.numeric(tMaxAG)) %>%
-  mutate(Strain=case_when(Strain=="BA127R"~"PE-rich_127",
-         Strain=="BA48R"~"PE-rich_048",
-        Strain=="BA56G"~"PC-rich_056",
-         Strain=="BA77G"~"PC-rich_077"))
-
-tmaxAG$facetsPar_ue = factor(tmaxAG$O2, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
-tmaxAG$facetsPhotoperiod = factor(tmaxAG$WL, labels = c("Photoperiod~(h)"))
-tmaxAG$facetsStrain = factor(tmaxAG$O2, labels = c("Strain"))
-```
-
-```{r select revelant columns}
-tMaxAGLines_056<-tmaxAG %>% 
-  filter(Strain == "PC-rich_056") %>% 
-  select(c(Par_ue, Photoperiod, facetsPar_ue, facetsPhotoperiod, tMaxAG)) %>% 
-  unique()
-tMaxAGLines_077<-tmaxAG %>% 
-  filter(Strain == "PC-rich_077") %>% 
-  select(c(Par_ue, Photoperiod, facetsPar_ue, facetsPhotoperiod, tMaxAG)) %>% 
-  unique()
-tMaxAGLines_048<-tmaxAG %>% 
-  filter(Strain == "PE-rich_048") %>% 
-  select(c(Par_ue, Photoperiod, facetsPar_ue, facetsPhotoperiod, tMaxAG)) %>% 
-  unique()
-tMaxAGLines_127<-tmaxAG %>% 
-  filter(Strain == "PE-rich_127") %>% 
-  select(c(Par_ue, Photoperiod, facetsPar_ue, facetsPhotoperiod, tMaxAG)) %>% 
-  unique()
 ```
 
 # Create GrowthCurve plot
 
 ```{r create GrowthCurve plot, fig.height = 8, fig.width = 8, warning = FALSE}
 MultiCultiDataAll %>%
+  #Run== 56, 59, 63, 68, 70
+  filter(Run==70) %>% 
   ggplot() +
   geom_area(aes(x = Time_h, y = meanActinic_par_h), size = 0.1, fill = "tan1", alpha = 0.6) +
-  geom_line(aes(x = Time_h, y = meanOD680_h, colour = as.factor(Strain)), size = 0.5, show.legend = T) +
-  geom_vline(data = tMaxAGLines_056, aes(xintercept = tMaxAG), linetype="dotdash", colour = "seagreen4", size=0.4) +
-  geom_vline(data = tMaxAGLines_077, aes(xintercept = tMaxAG), linetype="dotdash", colour = "palegreen3", size=0.4) +
-  geom_vline(data = tMaxAGLines_048, aes(xintercept = tMaxAG), linetype="dotdash", colour = "brown4", size=0.4) +
-  geom_vline(data = tMaxAGLines_127, aes(xintercept = tMaxAG), linetype="dotdash", colour = "brown1", size=0.4) +
-  scale_colour_discrete(type=c("seagreen4", "palegreen3", "brown1", "brown4"), name="") +
+  geom_line(aes(x = Time_h, y = meanOD680_h, colour = as.factor(Strain)), size = 0.5, show.legend = F) +
+  scale_colour_discrete(type=c("palegreen3", "brown4"), name="") +
   labs(y = "Optical density ("~OD[680]~")", x = "Elapsed time (h)") +
-  ggh4x::facet_nested(cols = vars(facetsPhotoperiod, Photoperiod), rows = vars(facetsPar_ue, Par_ue), labeller = label_parsed) +
+  ggh4x::facet_nested(cols = vars(WL, Par_ue), rows = vars(Strain), labeller = label_parsed) +
   theme_bw() +
   theme(panel.grid.minor = element_blank(),
         panel.grid.major = element_blank(),
@@ -490,25 +264,35 @@ ggsave(file = file.path(PlotsPath, paste("GrowthCurve_SupPlot",".png",sep = ""))
 
 ```{r create preliminary plot, warning = FALSE}
 MultiCultiDataAll %>%
+  filter(Run == 70) %>% 
   ggplot() +
   geom_line(aes(x = meanOD720_h, y = meanDeltaOD_h, colour = as.factor(Strain)), size = 0.7, show.legend = T) +
-  scale_colour_discrete(type=c("seagreen4", "palegreen3", "brown1", "brown4"), name="") +
-  ggh4x::facet_nested(cols = vars(facetsPhotoperiod, Photoperiod), rows = vars(facetsPar_ue, Par_ue), labeller = label_parsed) +
+  scale_colour_discrete(type=c("palegreen3", "brown4"), name="") +
+  ggh4x::facet_nested(cols = vars(WL, Par_ue), rows = vars(Strain), labeller = label_parsed) +
   theme_bw() 
+```
+# Save plot 
+
+```{r save plot}
+ggsave(file = file.path(PlotsPath, paste("GrowthCurve_SupPlot",".png",sep = "")), height=10, width= 8,  dpi = 300, limitsize = TRUE)
 ```
 
 # Cleaning df before saving as rds and removed unnecessary files from the environment
 
 ```{r cleanifng d}
-rm(tMaxAGLines_056, tMaxAGLines_077, tMaxAGLines_048, tMaxAGLines_127, tmaxAG)
+rm(MultiCultiData)
 ```
 
-# Save rds for further analysis
+# Save Rds that create plots, stats and tables
+
+```{r save rds}
+saveRDS(MultiCultiDataAll, file.path(RDSPlotPath, paste(Project, "Plot_GrowthCurve.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
+```
+
+# Save Rds for further analysis
 
 ```{r save rds}
 saveRDS(MultiCultiDataAll, file.path(DataOut, paste(Project, "Processed_GrowthCurve.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
-
-saveRDS(MultiCultiDataAll, file.path(RDSPlotPath, paste(Project, "Plot_GrowthCurve.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
 ```
 
 # Variable names used in Data Dictionary

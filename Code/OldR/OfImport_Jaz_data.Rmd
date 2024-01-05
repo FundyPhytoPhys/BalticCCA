@@ -1,0 +1,120 @@
+---
+title: "Import Jaz data"
+output: html_notebook
+---
+
+
+```{r libraries}
+library(dplyr) 
+library(tidyverse)
+library(lubridate)
+library(googledrive)
+library(googlesheets4)
+```
+
+```{r import the data}
+Project <- "NPQDiatom2022"
+ExpDate <- "20220517"
+DataOut<- file.path("..", "JazData", "ImportData", fsep = .Platform$file.sep)
+CatalogGoogle <- "https://docs.google.com/spreadsheets/d/1rsxnH_qCyXP0j_7bhCv9r5GiejhNzXvZ1xeU3nJA83E/edit?usp=sharing"
+
+#set variables for file import & processing of fluorescence files Jaz
+DataPathCS <- file.path("..", "JazData", "20220517_Jaz", fsep = .Platform$file.sep)
+FileIDSingle <- "NPQDiatom2022_20220518"
+
+Jazfile <- list.files(path = DataPathCS, pattern = FileIDSingle, full.names = TRUE)
+unique(duplicated(Jazfile))
+SkipCS <- 14
+FileEncodeCS <- "UTF-8"
+DelimCS <- "\t"
+```
+
+```{r load local catalog}
+drive_deauth()
+gs4_deauth()
+MetaData <- read_sheet(CatalogGoogle) %>%
+  mutate(Plate = as.numeric(Plate))
+```
+
+```{r read Jaz data using map_df}
+fread_plus <- function(Flnm, Skip, FileEncode, Delim){data.table::fread(file = Flnm, skip = Skip, encoding = FileEncode, sep = Delim, header = FALSE) %>%
+    mutate(Filename = Flnm, CDateTime = ymd_hms(file.info(Flnm)$ctime))
+}
+
+JazSpec <- Jazfile %>%
+  map_df(~fread_plus(Flnm = ., Skip = SkipCS, FileEncode = FileEncodeCS, Delim = DelimCS))
+
+# JazSpec <- JazSpec %>%
+#   filter(!str_detect(V2, pattern = "Content"))
+
+colnames(JazSpec)[1] <- "Wavelength"
+colnames(JazSpec)[2] <- "Counts"
+```
+
+```{r filename separation}
+JazSpecTrim <- JazSpec %>% 
+  separate(col = Filename, into = c("fp1","fp2", "fp3", "device2", "date_experiment", "Device", "Project", "Date","ID","Protocol", "Duration_s", "AquisitionTime_ms", "Subt", "Hour", "Minute", "Second", "subseconde", "txt"), sep = "([\\/\\_\\.\\:\\-])", remove = FALSE)
+
+JazSpecTrim <- JazSpecTrim %>% 
+select(-fp1, -fp2, -fp3, -txt, -date_experiment, -device2, -Project, -CDateTime, -Subt, -subseconde)
+
+JazSpecTrim$Date <- ymd_hm(JazSpecTrim$Date)
+```
+
+```{r remove the wl < 250 and > 800}
+JazSpecTrim <- JazSpecTrim %>% 
+  subset(JazSpecTrim$Wavelength>=250 & JazSpecTrim$Wavelength<=800)
+```
+
+```{r combining metadata and JazData using inner_join, by id}
+JazSpecTrim <- JazSpecTrim %>%
+  inner_join(MetaData, by = c("ID" = "ID")) %>%
+  distinct()#vector is important to correctly bind both, plate and well-col
+```
+
+Create a datetime column with the date of experiment, and the saving time of the file
+```{r}
+JazSpecTrim <- JazSpecTrim %>%
+  unite("DateTime", c(ExpDate, Hour, Minute, Second),  remove = FALSE ) %>%
+  mutate(DateTime = ymd_hms(DateTime))
+```
+
+Remove all NA columns & empty rows, fix column types
+```{r remove missing columns}
+
+#https://community.rstudio.com/t/drop-all-na-columns-from-a-dataframe/5844/2
+not_all_na <- function(x) {!all(is.na(x))}
+
+JazSpecTrim <- JazSpecTrim %>%
+  select_if(not_all_na)  
+  
+# JazData2 <- JazData %>%
+#   filter(!is.na(Wavelength))
+
+JazSpecTrim <- JazSpecTrim %>%
+  mutate(Duration_s = as.numeric(Duration_s)) %>% 
+  mutate(AquisitionTime_ms = as.numeric(AquisitionTime_ms))
+  
+```
+
+Remove useless column
+```{r remove Date, Hour, Minute, Second, exp_cul, MediaID, Source, SourceSalinity, Source_pH, PlateTreatment, culture_inocul_L, media_inocul_L}
+
+JazSpecTrim <- JazSpecTrim %>%
+  select(-Date, -Hour, -Minute, -Second, -exp_cul, -MediaID, -Source, -SourceSalinity, -Source_pH, -PlateTreatment, -culture_inocul_L, -media_inocul_L)
+```
+
+```{r}
+# JazSpecTrim17 <- JazSpecTrim
+
+JazSpec0517 <- rbind(JazSpecTrim11, JazSpecTrim12, JazSpecTrim13, JazSpecTrim11p, JazSpecTrim12p, JazSpecTrim13p, JazSpecTrim14, JazSpecTrim15, JazSpecTrim16)
+```
+
+
+
+```{r save JazSpecTrim, echo=FALSE}
+file <- "JazSpec0517"
+
+saveRDS(JazSpec0517, file.path(DataOut, 
+paste(Project, ExpDate, "JazSpec_All.Rds", sep = "_"), fsep = .Platform$file.sep))
+```
