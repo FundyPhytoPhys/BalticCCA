@@ -44,7 +44,7 @@ library(googlesheets4)
 ```{r set project variables, warning = FALSE, echo=FALSE}
 #"..", takes up a level in the directory path
 Project <- "BalticCCA"
-DataOut <- file.path("..","Data")
+DataOut <- file.path("..","Data", "ImportedData", "ImportedMetaData")
 ProjectRows <- c("SySl")
 
 ProjectCols <- c("PrimaryOperator", "SampleID", "Run", "Strain", "ExpCul", "ExpDate", "ExpStartTime", "Par_ue", "Photoperiod", "Temp_c", "MC", "Tube","O2", "O2_Category", "WL","LightShape", "Optode", "OptodeCh", "OptodeMeasure", "ExpEndDate")
