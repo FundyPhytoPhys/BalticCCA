@@ -95,7 +95,7 @@ rm(CultureCatalog1, CultureCatalog2)
 # Save rds for further analysis
 
 ```{r save rds}
-saveRDS(object = CultureCatalog, file = file.path("..", "Data", "CultureCatalog.Rds"), compress = "xz")
+saveRDS(object = CultureCatalog, file = file.path("..", "Data", "ImportedData", "ImportedMetaData", "CultureCatalog.Rds"), compress = "xz")
 ```
 
 # Variable names used in Data Dictionary
