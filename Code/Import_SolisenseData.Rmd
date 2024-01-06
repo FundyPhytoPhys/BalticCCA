@@ -482,6 +482,10 @@ SolFitsTrimNS_lightsteps <- SolFitsTrimNS %>%
 # Merge Solisense data with MetaData
 
 ```{r Combine Solisense and MetaData catalog, warning = FALSE, echo=FALSE}
+# 
+# SolFitsTrimMetaNS<-CultureCatalog %>% 
+#   left_join(., SolisenseAll, by = c("SampleID" = "SampleID")) 
+
 SolFitsTrimMetaNS <- CultureCatalog %>%
   left_join(., SolFitsTrimNS_lightsteps, by = c("SampleID" = "SampleID")) 
 ```
@@ -681,7 +685,7 @@ SolFitsMetaDarkafterLight <-SolFitsMetaDarkafterLight %>%
 SolFitsMeta %>%
   ggplot() +
   geom_point(aes(x = Par_ue, y = Sig, colour = as.factor(Strain)), size = 3.5, show.legend = T) +
-  facet_grid(rows = vars(Ex_WL), cols = vars(Photoperiod)) +
+  facet_grid(rows = vars(Ex_WL), cols = vars(WL)) +
   theme_bw()
 # 
 # SolFitsMetaDarkafterLight %>%
@@ -716,3 +720,13 @@ colnames(SolFitsMeta)
 ```{r}
 colnames(SolFitsMetaDarkafterLight)
 ```
+
+# Read MetaData
+
+```{r read locally stored metadata from rds}
+SolisenseAll <- readRDS(file = file.path("..", "Data","ImportedData", "ImportedSolisenseData", "BalticO2_Imported_SolFitsTrimOS_lightstepsAll.Rds"))
+
+SolisenseAll<-SolisenseAll %>% 
+  select(-c(PrimaryOperator, Temp_c, ExpCul, ExpStartTime, O2_Category, Optode, OptodeCh, OptodeMeasure))
+```
+
