@@ -367,6 +367,9 @@ DataOut <- file.path("..", "Data", "ImportedData", "ImportedSolisenseData")
 
 zip_file <- file.path("..", "Data", "RawData", "SolisenseNSData.zip")
 
+PlotsPath <- file.path("..", "Output", "Plots")
+RDSPlotPath <- file.path("..", "Output", "PlotsRDS")
+
 SolisenseFilesNS <- unzip(zip_file, list = TRUE)
 SolisenseFilesNS <- SolisenseFilesNS[grepl(".csv$", SolisenseFilesNS$Name), "Name"]
 print(SolisenseFilesNS)
@@ -686,6 +689,12 @@ SolFitsMeta %>%
 #   geom_point(aes(x = Par_ue, y = Sig_nm2psii, colour = as.factor(Strain)), size = 3.5, show.legend = T) +
 #   facet_grid(rows = vars(Ex_WL), cols = vars(Photoperiod)) +
 #   theme_bw()
+```
+
+# Save plot 
+
+```{r save plot}
+# ggsave(file = file.path(PlotsPath, paste("Solisense_SupPlot",".png",sep = "")), height=10, width= 8,  dpi = 300, limitsize = TRUE)
 ```
 
 # Save rds for further analysis
