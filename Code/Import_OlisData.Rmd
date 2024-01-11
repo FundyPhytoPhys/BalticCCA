@@ -51,6 +51,7 @@ DataOut <- file.path("..", "Data", "ImportedData", "ImportedOlisData")
 
 # Set the path to the zip folder and the destination folder
 zip_file <- file.path("..", "Data", "RawData", "OlisData.zip")
+# zip_file <- file.path("..", "Data", "RawData", "OlisDataChoosen.zip")
 
 #List files in the extracted folder with a ".asc" extension
 OlisFiles <- unzip(zip_file, list = TRUE)
@@ -131,7 +132,7 @@ TargetSpectraLong <- TargetSpectraLong %>%
 # Read MetaData
 
 ```{r read locally stored metadata from rds}
-CultureCatalog <- readRDS(file = file.path("..", "Data","CultureCatalog.Rds"))
+CultureCatalog <- readRDS(file = file.path("..", "Data","ImportedData", "ImportedMetaData", "CultureCatalog.Rds"))
 
 CultureCatalog<-CultureCatalog %>% 
   select(-c(PrimaryOperator, Temp_c, ExpCul, ExpStartTime, O2_Category, Optode, OptodeCh, OptodeMeasure))
@@ -186,6 +187,8 @@ rm(Absorbance440, CultureCatalog, TargetSpectra, OLISSpectraMeta, TargetSpectraL
 
 ```{r save rds}
 saveRDS(OLISSpectraMeta440, file.path(DataOut, paste(Project, "Imported_OlisData.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
+
+# saveRDS(OLISSpectraMeta440, file.path(DataOut, paste(Project, "Imported_OlisDataChoosen.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
 ```
 
 # Variable names used in Data Dictionary
