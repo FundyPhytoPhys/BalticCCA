@@ -235,18 +235,18 @@ OLISSpectraMetaPUR %>%
   geom_area(aes(x = nm, y = EmNormJaz647, fill = "gray84"), alpha = 0.6, show.legend = F) +
   geom_area(aes(x = nm, y = EmNormJaz521, fill = "gray84"), alpha = 0.6, show.legend = F) +
 
-  geom_area(aes(x = nm, y = PURNorm, fill = "gray20"), alpha = 0.5, show.legend = F) +
+  #geom_area(aes(x = nm, y = PURNorm, fill = "gray20"), alpha = 0.5, show.legend = F) +
   # geom_area(aes(x = nm, y = PURNormBA77G, fill = "palegreen3"), alpha = 0.5, show.legend = F) +
-  geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(Strain)), show.legend = T, size = 0.4) +
+  geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(WL)), show.legend = T, size = 0.4) +
 
-  scale_color_manual(values = c("PC-rich_077" ="palegreen3", "PE-rich_127" ="brown4")) +
+  # scale_color_manual(values = c("PC-rich_077" ="palegreen3", "PE-rich_127" ="brown4")) +
   # scale_linetype_manual(values = c("PC-rich_077" ="solid", "PE-rich_127" ="longdash")) +
   stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -0.025, alpha = 0.5) +
   scale_fill_identity() +
   labs(y = "Normalized absorbance", x = "Wavelength (nm)") +
   scale_y_continuous(breaks=seq(0, 1.2, by = 0.4)) +
   coord_cartesian(ylim = c (-0.01, 1.6)) +
-  ggh4x::facet_nested(cols = vars(WL), rows = vars(Strain),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  ggh4x::facet_nested(cols = vars(Par_ue), rows = vars(Strain),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank(),
         panel.grid.major = element_blank(),
@@ -272,6 +272,8 @@ OLISSpectraMetaPUR %>%
 
 ```{r save plot}
 ggsave(file = file.path(PlotsPath, paste("OlisSpectra_Plot",".png",sep = "")), height=10, width= 8,  dpi = 300, limitsize = TRUE)
+
+# ggsave(file = file.path(PlotsPath, paste("OlisSpectraChoosen_Plot",".png",sep = "")), height=10, width= 8,  dpi = 300, limitsize = TRUE)
 ```
 
 # Cleaning df before saving as rds and removed unnecessary files from the environment
@@ -313,7 +315,7 @@ OLISAllPURTidy %>%
   scale_colour_discrete(type=c("palegreen3", "brown4"), name="", labels = lab1) +
   scale_y_continuous(breaks=seq(0, 1.2, by = 0.4)) +
   coord_cartesian(ylim = c(0, 1.7)) +
-  ggh4x::facet_nested(cols = vars(WL), rows = vars(O2, Strain), labeller = label_parsed) +
+  ggh4x::facet_nested(cols = vars(WL, Par_ue), rows = vars(Strain), labeller = label_parsed) +
   theme_bw()
 ```
 # Save plot 
