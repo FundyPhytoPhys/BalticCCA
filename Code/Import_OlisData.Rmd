@@ -28,8 +28,7 @@ knitr::opts_chunk$set(fig.path='Figs/')
 
 # Introduction
 
-Import_OlisData.Rmd imports OLIS CLARiTY spectrophotometer files from Data/RawData/OlisData.zip folder and stored in Data/ImportedData/ImportedOlisData folder as: 
-Baltic_Photoperiod_Imported_OlisData.Rds
+Import_OlisData.Rmd imports OLIS CLARiTY spectrophotometer files from Data/RawData/OlisData.zip folder and stored in Data/ImportedData/ImportedOlisData folder as: BalticPhotoperiod_Imported_OlisData.Rds
 
 # Load Libraries and set Project Variables
 
@@ -46,12 +45,11 @@ library(readxl)
 ```
 
 ```{r set project variables, read zipped files, list available files, warning = FALSE, echo=FALSE}
-Project <- "BalticCCA"
+Project <- "BalticO2"
 DataOut <- file.path("..", "Data", "ImportedData", "ImportedOlisData")
 
 # Set the path to the zip folder and the destination folder
 zip_file <- file.path("..", "Data", "RawData", "OlisData.zip")
-# zip_file <- file.path("..", "Data", "RawData", "OlisDataChoosen.zip")
 
 #List files in the extracted folder with a ".asc" extension
 OlisFiles <- unzip(zip_file, list = TRUE)
@@ -132,7 +130,7 @@ TargetSpectraLong <- TargetSpectraLong %>%
 # Read MetaData
 
 ```{r read locally stored metadata from rds}
-CultureCatalog <- readRDS(file = file.path("..", "Data","ImportedData", "ImportedMetaData", "CultureCatalog.Rds"))
+CultureCatalog <- readRDS(file = file.path("..", "Data", "ImportedData", "ImportedMetaData", "CultureCatalog.Rds"))
 
 CultureCatalog<-CultureCatalog %>% 
   select(-c(PrimaryOperator, Temp_c, ExpCul, ExpStartTime, O2_Category, Optode, OptodeCh, OptodeMeasure))
@@ -151,8 +149,8 @@ group_by(SampleID) %>%
   mutate(SumAb = sum(Absorbance)) %>% 
 ungroup()
 
-OLISSpectraMeta <- OLISSpectraMeta %>%
-  filter(nm >= 400 & nm <= 700)
+# OLISSpectraMeta <- OLISSpectraMeta %>%
+#   filter(nm >= 400 & nm <= 700)
 ```
 
 # Normalize spectra to 440 nm
@@ -172,12 +170,15 @@ group_by(SampleID, E_days, Par_ue, Photoperiod) %>%
   mutate(SumAbNorm = sum(AbsNorm440)) %>% 
 ungroup()
 ```
-# Cleaning df before saving as rds and removed unnecessary files from the environment
+
+# Cleaning df before saving as Rds
 
 ```{r cleaning and ordering OLISSpectraMeta440 before creating rds}
 OLISSpectraMeta440<-OLISSpectraMeta440 %>% 
   select(-c(CDateTime, Range)) 
 ```
+
+# Removed unnecessary files from the environment
 
 ```{r removed unnecessary df from the environment}
 rm(Absorbance440, CultureCatalog, TargetSpectra, OLISSpectraMeta, TargetSpectraLong)
@@ -187,8 +188,6 @@ rm(Absorbance440, CultureCatalog, TargetSpectra, OLISSpectraMeta, TargetSpectraL
 
 ```{r save rds}
 saveRDS(OLISSpectraMeta440, file.path(DataOut, paste(Project, "Imported_OlisData.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
-
-# saveRDS(OLISSpectraMeta440, file.path(DataOut, paste(Project, "Imported_OlisDataChoosen.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
 ```
 
 # Variable names used in Data Dictionary
