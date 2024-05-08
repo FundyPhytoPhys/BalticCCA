@@ -73,7 +73,7 @@ CultureCatalog$ExpStartTime<-gsub("1899-12-30 ","",as.character(CultureCatalog$E
 
 ```{r filter MetaData}
 CultureCatalog<-CultureCatalog %>% 
-  filter(Run == 57 | Run== 61 | Run == 76 | Run == 124) 
+  filter(Run == 56 | Run== 59 | Run == 63 | Run == 68 | Run == 70) 
 
 # also, unused - run 118, 119, 122
 ```
@@ -85,13 +85,6 @@ CultureCatalog <- CultureCatalog %>%
   filter(Photoperiod != "24") %>% 
   mutate(PARPhotonDose_day =(Par_ue/2)*Photoperiod*3600)
   
-```
-
-# Filter unused data
-
-```{r}
-CultureCatalog<-CultureCatalog %>% 
-  filter(Par_ue!= 30)
 ```
 
 
