@@ -144,6 +144,24 @@ MultiCultiGrowth<-MultiCultiGrowth %>%
   filter(WL != "WW") 
 ```
 
+----------------------- Filter "bad" runs-----------------------------------
+
+```{r}
+MultiCultiDataAll1<-MultiCultiGrowth %>% 
+  filter(Strain == "PE-rich") 
+
+
+MultiCultiDataAll2<-MultiCultiGrowth %>% 
+  filter(Strain == "PC-rich") %>% 
+  filter(Run != 56)
+
+MultiCultiGrowth<-rbind(MultiCultiDataAll1, MultiCultiDataAll2)
+
+rm(MultiCultiDataAll1, MultiCultiDataAll2)
+```
+
+
+
 ```{r}
 MultiCultiGrowth %>%
   filter(deltaOD_Lmu_corr > 0) %>% 

@@ -118,6 +118,52 @@ MultiCultiDataAll <- MultiCultiDataAll %>%
     #filter(Time_h <= 192) 
 ```
 
+----------------------- Filter "bad" runs-----------------------------------
+
+```{r}
+MultiCultiDataAll1<-MultiCultiDataAll %>% 
+  filter(Strain == "PE-rich") 
+
+
+MultiCultiDataAll2<-MultiCultiDataAll %>% 
+  filter(Strain == "PC-rich") %>% 
+  filter(Run != 56)
+
+MultiCultiDataAll<-rbind(MultiCultiDataAll1, MultiCultiDataAll2)
+
+rm(MultiCultiDataAll1, MultiCultiDataAll2)
+```
+
+```{r}
+
+# MultiCultiDataAll1<-MultiCultiDataAll %>% 
+#   filter(Strain == "PE-rich") 
+# 
+# MultiCultiDataAll2<-MultiCultiDataAll %>% 
+#   filter(Strain == "PC-rich") %>% 
+#   filter(WL == 600) %>% 
+#   filter(Par_ue == 300) %>% 
+#   filter(Run != 59)
+# 
+# MultiCultiDataAll3<-MultiCultiDataAll %>% 
+#   filter(Strain == "PC-rich") %>% 
+#   filter(WL != 600) %>% 
+#   filter(Par_ue != 300)
+# 
+# MultiCultiDataAll4<-MultiCultiDataAll %>% 
+#   filter(Strain == "PC-rich") %>% 
+#   filter(WL == 600) %>% 
+#   filter(Par_ue == 300) %>% 
+#   filter(Run == 59)
+# 
+# MultiCultiDataAll<-rbind(MultiCultiDataAll1, MultiCultiDataAll2, MultiCultiDataAll3, MultiCultiDataAll4)
+# 
+# rm(MultiCultiDataAll1, MultiCultiDataAll2, MultiCultiDataAll3, MultiCultiDataAll4)
+
+```
+
+
+
 
 # Create GrowthCurve plot
 fig.height = 8, fig.width = 8, warning = FALSE
@@ -174,8 +220,8 @@ OD720<-MultiCultiDataAll %>%
   #geom_area(aes(x = Time_h/24, y = meanActinic_par_h), size = 0.1, fill = "tan1", alpha = 0.3) +
   geom_line(aes(x = Time_h/24, y = meanOD720_h, colour = as.factor(Run)), size = 0.4, show.legend = F) +
   #geom_text(data=data_textb, aes(x=7, y=0.5, label=label), size=6, parse = TRUE) +
-  scale_colour_discrete(type=c("black", "deepskyblue2"), name="", labels = lab2) +
-  scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
+  scale_colour_discrete(type=c("black", "deepskyblue2"), name="", labels = lab1) +
+  scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab1) +
   labs(y = "Optical density ("~OD[720]~")", x = "Elapsed time (d)") +
     ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
   theme_bw() +
@@ -212,8 +258,8 @@ ODDelta<-MultiCultiDataAll %>%
   #geom_line(aes(x = time_h/24, y = meanfittedDeltaOD_h, colour = as.factor(Run)), size = 0.8, alpha = 0.9, show.legend = F, MCGrowthRateFitData) +
   
   #geom_text(data=data_textc, aes(x=7, y=0.15, label=label), size=6, parse = TRUE) +
-  scale_colour_discrete(type=c("black", "deepskyblue2"), name="", labels = lab2) +
-  scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
+  scale_colour_discrete(type=c("black", "deepskyblue2"), name="", labels = lab1) +
+  scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab1) +
   labs(y = "Optical density (ΔOD)", x = "Elapsed time (d)") +
     ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
   
@@ -360,6 +406,22 @@ MCGrowthRateFitData <-MCGrowthRateFitData %>%
   filter(WL!= "WW")  
   #filter(time_h<=192) 
 ```
+
+
+----------------------- Filter "bad" runs-----------------------------------
+
+```{r}
+MultiCultiDataAll1<-MCGrowthRateFitData %>% 
+  filter(Strain == "PE-rich") 
+
+
+MultiCultiDataAll2<-MCGrowthRateFitData %>% 
+  filter(Strain == "PC-rich") %>% 
+  filter(Run != 56)
+
+MCGrowthRateFitData<-rbind(MultiCultiDataAll1, MultiCultiDataAll2)
+```
+
 
 
 # Create GrowthCurve plot with fits
