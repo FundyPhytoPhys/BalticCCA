@@ -175,19 +175,33 @@ lab1=c(expression("PC-rich"), expression("PE-rich"))
 
 
 SolFitsMetaLRC %>%
-  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
-  #filter(Strain == "PC-rich") %>% 
-  #filter(O2 == 0) %>% 
   filter(WL == 450 | WL == 530 |  WL == 660) %>%
   filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
   ggplot() +
   geom_point(aes(x = ActPARCorr, y = Sig), size = 2, show.legend = T) +
   scale_fill_identity() +
-  #ggh4x::facet_nested(cols = vars(Ex_WL, O2), rows = vars(Strain, WL), labeller = label_parsed) +
-      ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue),labeller = label_parsed) +
-  
+  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue),labeller = label_parsed) +
   theme_bw()
 
+
+SolFitsMetaLRC %>%
+  filter(WL == 450 | WL == 530 |  WL == 660) %>%
+  filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = TauAv), size = 2, show.legend = T) +
+  scale_fill_identity() +
+  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue),labeller = label_parsed) +
+  theme_bw()
+
+
+SolFitsMetaLRC %>%
+  filter(WL == 450 | WL == 530 |  WL == 660) %>%
+  filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = qpOxbo), size = 2, show.legend = T) +
+  scale_fill_identity() +
+  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue),labeller = label_parsed) +
+  theme_bw()
 ```
 
 
