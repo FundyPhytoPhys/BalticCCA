@@ -96,7 +96,7 @@ CultureCatalog<-CultureCatalog %>%
 # Set Project Variables from old software (OS)
 
 ```{r set project variables, read zipped files, list available files, warning = FALSE, echo=FALSE}
-Project <- "BalticCCA"
+Project <- "BalticO2"
 DataOut <- file.path("..", "Data", "ImportedData", "ImportedSolisenseData")
 
 FigPath <- file.path("..", "Output", "Figures")
@@ -170,17 +170,95 @@ SolFitsTrimOS <- SolFitsTrimOS %>%
 ```
 
 
+----------------------------------------- New Software -----------------------------------------------
+
+# Set Project Variables from new software (NS)
+
+```{r set project variables, read zipped files, list available files, warning = FALSE, echo=FALSE}
+Project <- "BalticO2"
+DataOut <- file.path("..", "Data", "ImportedData", "ImportedSolisenseData")
+
+zip_file <- file.path("..", "Data", "RawData", "SolisenseNSData.zip")
+
+SolisenseFilesNS <- unzip(zip_file, list = TRUE)
+SolisenseFilesNS <- SolisenseFilesNS[grepl(".csv$", SolisenseFilesNS$Name), "Name"]
+print(SolisenseFilesNS)
+
+FileID <- "fit"
+FileEncode <- "UTF-8"
+Delimiter <- ","
+HeaderRows <- 0
+```
+
+# Set up read_delim_plus function
+
+```{r set up read_delim_plus, warning = FALSE, echo=FALSE}
+read_delim_plus <- function(flnm, delimiter, headerrows, fileencode) {
+  fread(flnm, skip = headerrows, sep = delimiter, header = TRUE, encoding = fileencode) %>%
+    mutate(Filename = flnm)
+}
+
+SolFitsNS <- SolisenseFilesNS %>%
+  map_df(~read_delim_plus(flnm = unzip(zip_file, exdir = tempdir())[which(unzip(zip_file, list = TRUE)$Name == .)], delimiter = Delimiter, headerrows = HeaderRows, fileencode = FileEncode))
+```
+
+# Import and prepare files
+Issue with read_delim_plus reading in files in .zip; filename different on PC and MacOS
+
+```{r tidy SolFitsTrim}
+SolFitsTrimNS <- SolFitsNS %>%
+  filter(!grepl("----", DATE)) %>%
+  select(-c("RFID_User_Data", "Barcode_Data", "PIF",  "Lon", "Lat", "GPS_stat", "LEDSel")) %>% # remove superfluous columns for unfit data
+  mutate(Filename = str_remove(string = Filename, pattern = "/RawData/SolisenseNSData.zip/"),
+         Filename = str_remove(string = Filename, pattern = "_fit.csv")
+         ) %>%
+  separate(Filename, into = c("fp1", "fp2", "fp3", "fp4", "fp5", "fp6", "fp7", "RunDateTime", "Project", "SampleID", "Ex_WL"), sep = "([\\/\\_])", remove = FALSE) %>%
+  mutate(RunDateTime = ymd_hm(RunDateTime),
+         TIME = as.character(TIME)) %>%  #time-column may be read in as factor, and as.character changes it to numeric; using lubdridate::hms would only change the format to 13H 4M 2S but does not work later to merge into one DateTime-column
+  mutate(SourceDataFile = `Source DataFile`,
+         ObsDate = DATE,
+         ObsTime = TIME) %>%
+  mutate(Ex_WL = as.factor(as.numeric(Ex_WL))) %>%
+  mutate(across(.cols = c(Light_1:Fv), .fns = as.numeric)) %>%
+  mutate(StartDateTimeSol = RunDateTime) %>%
+  mutate(nm445 = Light_1,
+         nm470 = Light_2,
+         nm505 = Light_3,
+         nm535 = Light_4,
+         nm590 = Light_5,
+         IR = Light_6) %>%
+drop_na(StartDateTimeSol) %>%
+  mutate(ObsTime = hms(ObsTime),
+         ObsDate = ymd(ObsDate)) %>%
+  mutate(ObsDateTime = ymd_hms(paste(ObsDate, ObsTime))) %>%
+  relocate(ObsDateTime, .after = ObsTime) %>%
+  relocate(SampleID, .before = ObsDate) %>%
+  #mutate(FvFm=as.numeric(FvFm)) %>%
+  select(-c(Light_1,Light_2,Light_3,Light_4,Light_5,Light_6,`Source DataFile`,DATE,TIME,RunDateTime, fp1, fp2, fp3, fp4, fp5, fp6, fp7, Project))
+
+#for consistency add TempCont column
+SolFitsTrimNS <- SolFitsTrimNS %>%
+  mutate(TempCont = "TC") %>%
+  mutate(FvFm = Fv/Fm*1) %>%
+  select(-c("Fv/Fm"))
+```
+
 
 # Choose the same variables to merge df taken from old and new Solisense software
 
 ```{r}
-SolFitsOSNS<-SolFitsTrimOS %>%
+SolFitsTrimOS<-SolFitsTrimOS %>%
   select(c(SampleID, Time__mSec, Fo, Fm, Fv, FvFm, Tau1QA, Tau2QA, Tau3QA, Alp1QA, Alp2QA, Alp3QA, Alpha, Ek, Pmax, SourceDataFile, Filename, ObsDate, ObsTime, ObsDateTime, Ex_WL, StartDateTimeSol, nm445, nm470, nm505, nm535, nm590, IR, TempCont, Sig))
 
-
+SolFitsTrimNS<-SolFitsTrimNS %>%
+  select(c(SampleID, Time__mSec, Fo, Fm, Fv, FvFm, Tau1QA, Tau2QA, Tau3QA, Alp1QA, Alp2QA, Alp3QA, Alpha, Ek, Pmax, SourceDataFile, Filename, ObsDate, ObsTime, ObsDateTime, Ex_WL, StartDateTimeSol, nm445, nm470, nm505, nm535, nm590, IR, TempCont, Sig))
 ```
 
+# Merge df from old and new Software 
 
+```{r combine data from old and new Software}
+SolFitsOSNS <-rbind(SolFitsTrimOS, SolFitsTrimNS)
+```
 
 # Add ActPARcorr with proper correction factors for TC and no TC
 
@@ -233,7 +311,7 @@ SolFitsMeta <- CultureCatalog %>%
 ```{r estimate parameters, warning = FALSE, echo=FALSE}
 
 SolFitsMeta <- SolFitsMeta %>%
-  group_by(SourceDataFile, Filename, SampleID, ObsDate, Ex_WL, TempCont, WL) %>%
+  group_by(SourceDataFile, Filename, SampleID, ObsDate, Ex_WL, TempCont) %>%
   mutate(Sig_m2psii = Sig/A2_m2,
          Fodark = Fo[1],
          Fmdark = Fm[1],
@@ -288,21 +366,16 @@ SolFitsMeta<- SolFitsMeta %>%
 # Remove outliers
 
 ```{r}
-# SolFitsMeta445<- SolFitsMeta %>%
-#   filter(Ex_WL == 445) %>%
-#   filter(Sig<250)
-# 
-# SolFitsMetaAll<- SolFitsMeta %>%
-#   filter(Ex_WL != 445)
-# 
-# SolFitsMeta<-rbind(SolFitsMeta445, SolFitsMetaAll)
-# 
-# rm(SolFitsMeta445, SolFitsMetaAll)
-```
+SolFitsMeta445<- SolFitsMeta %>%
+  filter(Ex_WL == 445) %>%
+  filter(Sig<250)
 
-```{r}
-SolFitsMeta<-SolFitsMeta %>% 
-  filter(Sig>0)
+SolFitsMetaAll<- SolFitsMeta %>%
+  filter(Ex_WL != 445)
+
+SolFitsMeta<-rbind(SolFitsMeta445, SolFitsMetaAll)
+
+rm(SolFitsMeta445, SolFitsMetaAll)
 ```
 
 
@@ -313,17 +386,15 @@ lab1=c(expression("PC-rich_077"), expression("PE-rich_127"))
 
 
 SolFitsMeta %>%
-    filter(Run == 56 | Run== 59 | Run == 63 | Run == 68 | Run == 70) %>% 
-    # filter(WL != "WW") %>%
-    # filter(E_days>=4) %>% # choosing exp phase
-    # filter(ActPAR== 80) %>% #corresponding light
+    filter(WL != "WW") %>%
+    filter(E_days>=4) %>% # choosing exp phase
+    filter(ActPAR== 80) %>% #corresponding light
   ggplot() +
   geom_point(aes(x = Ex_WL, y = Sig, colour = as.factor(Strain)), size = 3.5, show.legend = T) +
   scale_colour_discrete(type=c("palegreen3", "brown4"), name="", labels = lab1) +
   #facet_grid(cols = vars(WL), rows = vars(O2)) +
-      ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
   
-  #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
+  ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
   
   theme_bw() +
   theme(panel.grid.minor = element_blank(),
@@ -354,15 +425,21 @@ lab1=c(expression("PC-rich_077"), expression("PE-rich_127"))
 
 
 SolFitsMeta %>%
-    filter(Run == 56 | Run== 59 | Run == 63 | Run == 68 | Run == 70) %>% 
+  
+  filter(Run!=118 & Run!= 119) %>% 
+  filter(Par_ue!=30) %>% 
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+  filter(WL != "WW") %>%
+  filter(ActPAR== 80) %>%
+  filter(E_days>=4) %>% 
   
   ggplot() +
-  geom_point(aes(x = Par_ue, y = Sig, colour = as.factor(Strain)), size = 3.5, show.legend = T) +
+  geom_point(aes(x = WLNum, y = Sig, colour = as.factor(Strain)), size = 3.5, show.legend = T) +
   scale_colour_discrete(type=c("palegreen3", "brown4"), name="", labels = lab1) +
 
-
+  stat_wl_strip(aes(x = WLNum), ymin = -Inf, ymax = -0.025, alpha = 0.5) +
   scale_fill_identity() +
-      ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
   
   theme_bw() +
   theme(panel.grid.minor = element_blank(),
@@ -385,7 +462,7 @@ SolFitsMeta %>%
 # Save plot 
 
 ```{r save plot}
-#ggsave(file = file.path(FigPath, paste("Fig_Sig2",".png",sep = "")), height=5, width= 8,  dpi = 300, limitsize = TRUE)
+ggsave(file = file.path(FigPath, paste("Fig_Sig2",".png",sep = "")), height=5, width= 8,  dpi = 300, limitsize = TRUE)
 ```
 
 ```{r preliminary plot}
@@ -393,15 +470,21 @@ lab1=c(expression("PC-rich_077"), expression("PE-rich_127"))
 
 
 SolFitsMeta %>%
-    filter(Run == 56 | Run== 59 | Run == 63 | Run == 68 | Run == 70) %>%
+  
+  filter(Run!=118 & Run!= 119) %>% 
+  filter(Par_ue!=30) %>% 
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+  filter(WL != "WW") %>%
+  filter(ActPAR== 80) %>% 
+  filter(E_days>=4) %>% 
   
   ggplot() +
-  geom_point(aes(x = Par_ue, y = JVPSII_ETRqpOxbo_FoSig, colour = as.factor(Strain)), size = 3.5, show.legend = T) +
+  geom_point(aes(x = WLNum, y = JVPSII_ETRqpOxbo_FoSig, colour = as.factor(Strain)), size = 3.5, show.legend = T) +
   scale_colour_discrete(type=c("palegreen3", "brown4"), name="", labels = lab1) +
 
-
+  stat_wl_strip(aes(x = WLNum), ymin = -Inf, ymax = -0.025, alpha = 0.5) +
   scale_fill_identity() +
-      ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
   
   theme_bw() +
   theme(panel.grid.minor = element_blank(),
@@ -423,7 +506,7 @@ SolFitsMeta %>%
 # Save plot 
 
 ```{r save plot}
-# ggsave(file = file.path(FigPath, paste("Fig_UncalibJVPSII",".png",sep = "")), height=5, width= 8,  dpi = 300, limitsize = TRUE)
+ggsave(file = file.path(FigPath, paste("Fig_UncalibJVPSII",".png",sep = "")), height=5, width= 8,  dpi = 300, limitsize = TRUE)
 ```
 
 

@@ -45,7 +45,7 @@ library(readxl)
 ```
 
 ```{r set project variables, read zipped files, list available files, warning = FALSE, echo=FALSE}
-Project <- "BalticO2"
+Project <- "BalticCCA"
 DataOut <- file.path("..", "Data", "ImportedData", "ImportedOlisData")
 
 # Set the path to the zip folder and the destination folder
