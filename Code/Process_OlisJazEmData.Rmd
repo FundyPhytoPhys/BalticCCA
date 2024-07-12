@@ -424,7 +424,23 @@ OLISSpectraMetaPUR %>%
 
 
 
+OLISSpectraMetaPUR %>%
+  filter(Run == 70) %>% 
+  ggplot() +
+
+  geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(Strain)), show.legend = T, size = 0.4) +
+  #scale_color_manual(values = c("PC-rich" ="palegreen3", "PE-rich" ="brown4")) +
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL, Par_ue, E_days),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  # ggh4x::facet_nested(cols = vars(WL),   rows = vars(factor(O2, levels=c("21","0"))),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
 ```
+
+
+
+
+
+
 # Mean from the absorbance - issue - filter only exp data!!!!
 # more issue - think about mean!! Maybe filter data where no difference at the early exp phase
 
