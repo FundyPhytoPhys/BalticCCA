@@ -110,12 +110,12 @@ MultiCultiDataAll<-MCDataAll %>%
 
 ```{r add facets labels and change strain names}
 MultiCultiDataAll$facetsPar_ue = factor(MultiCultiDataAll$O2, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
-MultiCultiDataAll$facetsPhotoperiod = factor(MultiCultiDataAll$WL, labels = c("Photoperiod~(h)"))
+#MultiCultiDataAll$facetsPhotoperiod = factor(MultiCultiDataAll$WL, labels = c("Photoperiod~(h)"))
 
 MultiCultiDataAll <- MultiCultiDataAll %>% 
     mutate(Strain=case_when(Strain=="BA127R"~"PE-rich",
          Strain=="BA77G"~"PC-rich"))  
-    #filter(Time_h <= 192) 
+
 ```
 
 ----------------------- Filter "bad" runs-----------------------------------
@@ -206,6 +206,194 @@ OD680<-MultiCultiDataAll %>%
         legend.text = element_text(size=10))
 OD680
 ```
+
+# Create df with phases of growth
+
+```{r}
+MultiCultiDataAll70ExpResup<-MultiCultiDataAll %>% 
+  filter(E_days >= 14)  
+MultiCultiDataAll70ExpResup$Phase<-"ExpResuply"
+
+All70PCExp1<-MultiCultiDataAll %>% 
+  filter(WL == 530) %>% 
+  filter(Par_ue == 60) %>% 
+  filter(Strain == "PC-rich") %>% 
+  filter(E_days < 14)  
+All70PCExp1$Phase<-"Exp"
+
+All70PCExp2<-MultiCultiDataAll %>% 
+  filter(WL == 530) %>% 
+  filter(Par_ue == 300) %>% 
+  filter(Strain == "PC-rich") %>% 
+  filter(E_days <= 8)  
+All70PCExp2$Phase<-"Exp"
+
+All70PCExp3<-MultiCultiDataAll %>% 
+  filter(WL == 660) %>% 
+  filter(Par_ue == 60) %>% 
+  filter(Strain == "PC-rich") %>% 
+  filter(E_days <= 7)  
+All70PCExp3$Phase<-"Exp"
+
+All70PCExp4<-MultiCultiDataAll %>% 
+  filter(WL == 660) %>% 
+  filter(Par_ue == 300) %>% 
+  filter(Strain == "PC-rich") %>% 
+  filter(E_days <= 7)  
+All70PCExp4$Phase<-"Exp"
+
+All70PCSt1<-MultiCultiDataAll %>% 
+  filter(WL == 530) %>% 
+  filter(Par_ue == 300) %>% 
+  filter(Strain == "PC-rich") %>% 
+  filter(E_days >= 9 & E_days <=13)  
+All70PCSt1$Phase<-"St"
+
+All70PCSt2<-MultiCultiDataAll %>% 
+  filter(WL == 660) %>% 
+  filter(Par_ue == 60) %>% 
+  filter(Strain == "PC-rich") %>% 
+  filter(E_days >= 8 & E_days <=13)  
+All70PCSt2$Phase<-"St"
+
+All70PCSt3<-MultiCultiDataAll %>% 
+  filter(WL == 660) %>% 
+  filter(Par_ue == 300) %>% 
+  filter(Strain == "PC-rich") %>% 
+  filter(E_days >= 8 & E_days <=13)  
+All70PCSt3$Phase<-"St"
+
+
+
+
+All70PEExp1<-MultiCultiDataAll %>% 
+  filter(WL == 530) %>% 
+  filter(Par_ue == 60) %>% 
+  filter(Strain == "PE-rich") %>% 
+  filter(E_days <= 7)  
+All70PEExp1$Phase<-"Exp"
+
+All70PEExp2<-MultiCultiDataAll %>% 
+  filter(WL == 530) %>% 
+  filter(Par_ue == 300) %>% 
+  filter(Strain == "PE-rich") %>% 
+  filter(E_days <= 7)  
+All70PEExp2$Phase<-"Exp"
+
+All70PEExp3<-MultiCultiDataAll %>% 
+  filter(WL == 660) %>% 
+  filter(Par_ue == 60) %>% 
+  filter(Strain == "PE-rich") %>% 
+  filter(E_days < 14)  
+All70PEExp3$Phase<-"Exp"
+
+All70PEExp4<-MultiCultiDataAll %>% 
+  filter(WL == 660) %>% 
+  filter(Par_ue == 300) %>% 
+  filter(Strain == "PE-rich") %>% 
+  filter(E_days <= 7)  
+All70PEExp4$Phase<-"Exp"
+
+
+All70PESt1<-MultiCultiDataAll %>% 
+  filter(WL == 530) %>% 
+  filter(Par_ue == 60) %>% 
+  filter(Strain == "PE-rich") %>% 
+  filter(E_days >= 8 & E_days <=13)  
+All70PESt1$Phase<-"St"
+
+All70PESt2<-MultiCultiDataAll %>% 
+  filter(WL == 530) %>% 
+  filter(Par_ue == 300) %>% 
+  filter(Strain == "PE-rich") %>% 
+  filter(E_days >= 8 & E_days <=13)  
+All70PESt2$Phase<-"St"
+
+All70PESt3<-MultiCultiDataAll %>% 
+  filter(WL == 660) %>% 
+  filter(Par_ue == 300) %>% 
+  filter(Strain == "PE-rich") %>% 
+  filter(E_days >= 8 & E_days <=13)  
+All70PESt3$Phase<-"St"
+
+
+MultiCultiDataAllPhase<-rbind(MultiCultiDataAll70ExpResup, All70PCExp1, All70PCExp2, All70PCExp3, All70PCExp4, All70PCSt1, All70PCSt2, All70PCSt3, All70PEExp1, All70PEExp2, All70PEExp3, All70PEExp4, All70PESt1, All70PESt2, All70PESt3)
+
+rm(MultiCultiDataAll70ExpResup, All70PCExp1, All70PCExp2, All70PCExp3, All70PCExp4, All70PCSt1, All70PCSt2, All70PCSt3, All70PEExp1, All70PEExp2, All70PEExp3, All70PEExp4, All70PESt1, All70PESt2, All70PESt3)
+```
+
+
+```{r create GrowthCurve plot}
+MultiCultiDataAll %>%
+  filter(WL!= "WW") %>% 
+  #filter(Time_h <= 192) %>% 
+  ggplot() +
+  geom_line(aes(x = Time_h/24, y = meanOD680_h, colour = as.factor(Run)), size = 0.4, show.legend = T) +
+  #scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab1) +
+  #labs(y = "Optical density ("~OD[680]~")", x = "Elapsed time (d)") +
+    ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
+MultiCultiDataAllPhase %>%
+  filter(WL!= "WW") %>% 
+  #filter(Time_h <= 192) %>% 
+  ggplot() +
+  geom_line(aes(x = Time_h/24, y = meanOD680_h, colour = as.factor(Run)), size = 0.4, show.legend = T) +
+  #scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab1) +
+  #labs(y = "Optical density ("~OD[680]~")", x = "Elapsed time (d)") +
+    ggh4x::facet_nested(rows = vars(Strain, Phase), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+```
+
+
+
+
+
+--------------------------------------------------------------------------
+
+
+# Create GrowthCurve plot
+fig.height = 8, fig.width = 8, warning = FALSE
+```{r create GrowthCurve plot}
+data_texta <- data.frame(WL = c("730"), Strain  = c("PC-rich"), label = c('italic(a)'))
+
+lab1=c(expression("PC-rich"), expression("PE-rich"))
+
+OD680<-MultiCultiDataAll %>%
+  filter(WL!= "WW") %>% 
+  #filter(Time_h <= 192) %>% 
+  ggplot() +
+  
+  #geom_area(aes(x = Time_h, y = meanActinic_par_h), size = 0.1, fill = "tan1", alpha = 0.6) +
+  geom_line(aes(x = Time_h/24, y = meanOD680_h, colour = as.factor(Run)), size = 0.4, show.legend = T) +
+  #geom_text(data=data_texta, aes(x=7, y=0.7, label=label), size=6, parse = TRUE) +
+  #scale_colour_discrete(type=c("palegreen3", "brown4")) +
+  #scale_colour_discrete(type=c("black", "deepskyblue2"), name="", labels = lab1) +
+  scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab1) +
+  #scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab1) +
+  labs(y = "Optical density ("~OD[680]~")", x = "Elapsed time (d)") +
+
+  #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
+  #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(Oxygen, levels=c("250~µM","2.5~µM"))), labeller = label_parsed) +
+    ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.title = element_blank(),
+        legend.position = c(0.07,0.90),
+        legend.text = element_text(size=10))
+OD680
+```
+
 
 # Create GrowthCurve plot
 fig.height = 8, fig.width = 8, warning = FALSE
@@ -411,15 +599,15 @@ MCGrowthRateFitData <-MCGrowthRateFitData %>%
 ----------------------- Filter "bad" runs-----------------------------------
 
 ```{r}
-MultiCultiDataAll1<-MCGrowthRateFitData %>% 
-  filter(Strain == "PE-rich") 
-
-
-MultiCultiDataAll2<-MCGrowthRateFitData %>% 
-  filter(Strain == "PC-rich") %>% 
-  filter(Run != 56)
-
-MCGrowthRateFitData<-rbind(MultiCultiDataAll1, MultiCultiDataAll2)
+# MultiCultiDataAll1<-MCGrowthRateFitData %>% 
+#   filter(Strain == "PE-rich") 
+# 
+# 
+# MultiCultiDataAll2<-MCGrowthRateFitData %>% 
+#   filter(Strain == "PC-rich") %>% 
+#   filter(Run != 56)
+# 
+# MCGrowthRateFitData<-rbind(MultiCultiDataAll1, MultiCultiDataAll2)
 ```
 
 
@@ -464,7 +652,7 @@ MCGrowthRateFitData %>%
 # Save Rds for further analysis
 
 ```{r save rds}
-saveRDS(MultiCultiDataAll, file.path(DataOut, paste(Project, "Processed_GrowthCurve.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
+saveRDS(MultiCultiDataAllPhase, file.path(DataOut, paste(Project, "Processed_GrowthCurve.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
 ```
 
 # Variable names used in Data Dictionary
