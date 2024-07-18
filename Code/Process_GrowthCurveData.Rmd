@@ -207,7 +207,7 @@ OD680<-MultiCultiDataAll %>%
 OD680
 ```
 
-# Create df with phases of growth
+-------------------------------# Create df with phases of growth---------------------------------
 
 ```{r}
 MultiCultiDataAll70ExpResup<-MultiCultiDataAll %>% 
