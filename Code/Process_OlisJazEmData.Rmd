@@ -403,7 +403,66 @@ OLISSpectraMetaPUR %>%
   theme_bw() 
 
 ```
+# Filter 8 spectra that do not match to growth curve - day 7
 
+```{r}
+OLISSpectraMetaPURTrim1<-OLISSpectraMetaPUR %>% 
+  filter(Run != 56) 
+  
+OLISSpectraMetaPURTrim2<-OLISSpectraMetaPUR %>% 
+  filter(Run == 56) %>% 
+  filter(E_days != 7)
+
+OLISSpectraMetaPURTrim3<-OLISSpectraMetaPUR %>% 
+  filter(Run == 56) %>% 
+  filter(E_days != 7)
+
+OLISSpectraMetaPUR<-rbind(OLISSpectraMetaPURTrim1, OLISSpectraMetaPURTrim2, OLISSpectraMetaPURTrim3)
+```
+
+
+
+
+
+# Create plot
+
+```{r Create plot}
+
+OLISSpectraMetaPUR %>%
+  filter(Run == 56) %>% 
+  ggplot() +
+  geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(Strain)), show.legend = T) +
+  ggh4x::facet_nested(rows = vars(Run, Strain, E_days), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
+OLISSpectraMetaPUR %>%
+  filter(Run == 59) %>% 
+  ggplot() +
+  geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(Strain)), show.legend = T) +
+  ggh4x::facet_nested(rows = vars(Run, Strain, E_days), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
+OLISSpectraMetaPUR %>%
+  filter(Run == 63) %>% 
+  ggplot() +
+  geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(Strain)), show.legend = T) +
+  ggh4x::facet_nested(rows = vars(Run, Strain, E_days), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
+OLISSpectraMetaPUR %>%
+  filter(Run == 68) %>% 
+  ggplot() +
+  geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(Strain)), show.legend = T) +
+  ggh4x::facet_nested(rows = vars(Run, Strain, E_days), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
+OLISSpectraMetaPUR %>%
+  filter(Run == 70) %>% 
+  ggplot() +
+  geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(Strain)), show.legend = T) +
+  ggh4x::facet_nested(rows = vars(Run, Strain, E_days), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+```
 
 
 -------------------------------# Create df with phases of growth---------------------------------
@@ -615,44 +674,70 @@ lab1=c(expression("PC-rich"), expression("PE-rich"))
 #data_textA <- data.frame(Strain  = c("PE-rich"), WL  = c("405"), label = c('italic(a)'))
 
 Spectra<-OLISSpectraMetaPhasemean %>%
+  filter(Phase == "Exp") %>% 
   #filter(E_days == 7 | E_days == 8) %>% 
   # filter(E_days == 4 | E_days == 7 | E_days == 6) %>% 
   ggplot() +
   # geom_area(aes(x = nm, y = EmNormJaz722, fill = "gray84"), alpha = 0.6, show.legend = F) +
 
-  geom_area(aes(x = nm, y = meanPURNorm), alpha = 0.2, show.legend = F) +
+  #geom_area(aes(x = nm, y = meanPURNorm), alpha = 0.2, show.legend = F) +
   #geom_area(aes(x = nm, y = meanPURNorm, fill = "brown4"), alpha = 0.2, show.legend = F, OLISSpectraMetaPUR127) +
   #geom_area(aes(x = nm, y = PURNorm, fill = "brown4"), alpha = 0.2, show.legend = F, OLISSpectraMetaPUR127405) +
 
-  geom_line(aes(x = nm, y = meanPURNorm, colour=as.factor(Strain)), size = 0.5, show.legend = F) +
+  #geom_line(aes(x = nm, y = meanPURNorm, colour=as.factor(Strain)), size = 0.5, show.legend = F) +
   #geom_line(aes(x = nm, y = meanPURNorm), colour = "brown4", size = 0.5, show.legend = F, OLISSpectraMetaPUR127) +
   #geom_text(data=data_textA, aes(x=720, y=1.0, label=label), size=6, parse = TRUE) +
-  geom_line(aes(x = nm, y = meanAbsNorm440, colour = as.factor(Strain)), show.legend = F, size = 0.4) +
+  geom_line(aes(x = nm, y = meanAbsNorm440, colour=as.factor(WL), linetype = as.factor(WL)), show.legend = T, size = 0.4) +
   #geom_line(aes(x = nm, y = AbsNorm440, linetype = as.factor(O2)), show.legend = F, size = 0.4, OLISSpectraMetaPUR127405) +
-  scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab1) +
-  scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab1) +
-  scale_fill_identity() +
+  # scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab1) +
+  # scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab1) +
+  # scale_fill_identity() +
   labs(y = "Normalized absorbance and PUR", x = "Wavelength (nm)") +
   scale_y_continuous(breaks=seq(0, 1.0, by = 1)) +
   scale_x_continuous(breaks=seq(400, 710, by = 100)) +
   coord_cartesian(ylim = c (-0.01, 1.6)) +
-  ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL, Par_ue, Phase),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
-  theme_bw() +
-  theme(panel.grid.minor = element_blank(),
-        panel.grid.major = element_blank(),
-        axis.text = element_text(size=12),
-        axis.text.x = element_text(size=12),
-        axis.title = element_text(size=16),
-        strip.background = element_rect(fill="white"),
-        strip.text = element_text(size=12),
-        axis.title.y = element_text(margin=margin(r=10)),
-        axis.title.x = element_text(margin=margin(t=10)),
-        legend.background = element_rect(fill="transparent"),
-        legend.key = element_blank(),
-        legend.title = element_blank(),
-        legend.position = c(0.08,0.90),
-        legend.text = element_text(size=10))
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue, Phase),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
 Spectra
+```
+
+
+```{r Create plot}
+lab1=c(expression("PC-rich"), expression("PE-rich"))
+
+OLISSpectraMetaPhasemean %>%
+  filter(Phase == "Exp") %>% 
+  ggplot() +
+  geom_line(aes(x = nm, y = meanAbsNorm440, colour=as.factor(WL), linetype = as.factor(WL)), show.legend = T, size = 0.4) +
+  labs(y = "Normalized absorbance and PUR", x = "Wavelength (nm)") +
+  scale_y_continuous(breaks=seq(0, 1.0, by = 1)) +
+  scale_x_continuous(breaks=seq(400, 710, by = 100)) +
+  coord_cartesian(ylim = c (-0.01, 1.6)) +
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue, Phase),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
+
+OLISSpectraMetaPhasemean %>%
+  filter(Phase == "ExpResuply") %>% 
+  ggplot() +
+  geom_line(aes(x = nm, y = meanAbsNorm440, colour=as.factor(WL), linetype = as.factor(WL)), show.legend = T, size = 0.4) +
+  labs(y = "Normalized absorbance and PUR", x = "Wavelength (nm)") +
+  scale_y_continuous(breaks=seq(0, 1.0, by = 1)) +
+  scale_x_continuous(breaks=seq(400, 710, by = 100)) +
+  coord_cartesian(ylim = c (-0.01, 1.6)) +
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue, Phase),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
+OLISSpectraMetaPhasemean %>%
+  filter(Phase == "St") %>% 
+  ggplot() +
+  geom_line(aes(x = nm, y = meanAbsNorm440, colour=as.factor(WL), linetype = as.factor(WL)), show.legend = T, size = 0.4) +
+  labs(y = "Normalized absorbance and PUR", x = "Wavelength (nm)") +
+  scale_y_continuous(breaks=seq(0, 1.0, by = 1)) +
+  scale_x_continuous(breaks=seq(400, 710, by = 100)) +
+  coord_cartesian(ylim = c (-0.01, 1.6)) +
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue, Phase),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
 ```
 
 # Save plot 
@@ -733,6 +818,51 @@ OLISAllPURTidy %>%
   # ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
   theme_bw()
 ```
+
+```{r}
+
+OLISAllPURTidy %>%
+  filter(Phase == "Exp") %>% 
+  ggplot() +
+  geom_point(aes(x = WL, y = meanPURPARRatio, colour = as.factor(Strain)), alpha = 0.9, size = 3, show.legend = F) +
+    geom_errorbar(aes(x = WL, ymin = meanPURPARRatio - sdPURPARRatio, ymax = meanPURPARRatio + sdPURPARRatio, colour = as.factor(Strain)), width=0, size=0.3, show.legend = F) +
+  scale_colour_discrete(type=c("palegreen3", "brown4")) +
+  #labs(y = "PUR/PAR ratio", x = "Elapsed time (d)") +
+  scale_y_continuous(breaks=seq(0, 1.2, by = 0.4)) +
+  coord_cartesian(ylim = c(0, 1.5)) +
+    ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue, Phase),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw()
+
+OLISAllPURTidy %>%
+  filter(Phase == "ExpResuply") %>% 
+  ggplot() +
+  geom_point(aes(x = WL, y = meanPURPARRatio, colour = as.factor(Strain)), alpha = 0.9, size = 3, show.legend = F) +
+    geom_errorbar(aes(x = WL, ymin = meanPURPARRatio - sdPURPARRatio, ymax = meanPURPARRatio + sdPURPARRatio, colour = as.factor(Strain)), width=0, size=0.3, show.legend = F) +
+  scale_colour_discrete(type=c("palegreen3", "brown4")) +
+  #labs(y = "PUR/PAR ratio", x = "Elapsed time (d)") +
+  scale_y_continuous(breaks=seq(0, 1.2, by = 0.4)) +
+  coord_cartesian(ylim = c(0, 1.5)) +
+    ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue, Phase),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw()
+
+OLISAllPURTidy %>%
+  filter(Phase == "St") %>% 
+  ggplot() +
+  geom_point(aes(x = WL, y = meanPURPARRatio, colour = as.factor(Strain)), alpha = 0.9, size = 3, show.legend = F) +
+    geom_errorbar(aes(x = WL, ymin = meanPURPARRatio - sdPURPARRatio, ymax = meanPURPARRatio + sdPURPARRatio, colour = as.factor(Strain)), width=0, size=0.3, show.legend = F) +
+  scale_colour_discrete(type=c("palegreen3", "brown4")) +
+  #labs(y = "PUR/PAR ratio", x = "Elapsed time (d)") +
+  scale_y_continuous(breaks=seq(0, 1.2, by = 0.4)) +
+  coord_cartesian(ylim = c(0, 1.5)) +
+    ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue, Phase),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw()
+
+```
+
+
+
+
+
 # Save plot 
 
 ```{r save plot}

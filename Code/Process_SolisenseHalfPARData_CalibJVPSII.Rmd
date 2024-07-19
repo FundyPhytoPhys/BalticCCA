@@ -415,42 +415,85 @@ lab1=c(expression("PC-rich"), expression("PE-rich"))
 
 
 SolFitsMetaLRC %>%
-  filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
+  filter(Ex_WL == 535 | Ex_WL == 590) %>%
   ggplot() +
-  geom_point(aes(x = ActPARCorr, y = AllmeanSig_nm2psii, colour = as.factor(Strain)), size = 3, show.legend = F) +
-  geom_line(aes(x = ActPARCorr, y = AllmeanSig_nm2psii), size = 0.3, show.legend = F) +
+  geom_point(aes(x = ActPARCorr, y = AllmeanSig_nm2psii, colour = as.factor(WL)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = AllmeanSig_nm2psii, linetype=as.factor(WL)), size = 0.3, show.legend = T) +
   #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
   scale_fill_identity() +
   #ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
-  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue, Phase),labeller = label_parsed) +
+  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(Par_ue, Phase),labeller = label_parsed) +
   theme_bw() 
 
 
 SolFitsMetaLRC %>%
-  filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
+  filter(Ex_WL == 535 | Ex_WL == 590) %>%
   ggplot() +
-  geom_point(aes(x = ActPARCorr, y = AllmeanTauAv, colour = as.factor(Strain)), size = 3, show.legend = F) +
-  geom_line(aes(x = ActPARCorr, y = AllmeanTauAv), size = 0.3, show.legend = F) +
+  geom_point(aes(x = ActPARCorr, y = AllmeanTauAv, colour = as.factor(WL)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = AllmeanTauAv, linetype=as.factor(WL)), size = 0.3, show.legend = T) +
   #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
   scale_fill_identity() +
   #ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
-  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue, Phase),labeller = label_parsed) +
+  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(Par_ue, Phase),labeller = label_parsed) +
   theme_bw() 
 
 
 SolFitsMetaLRC %>%
-  filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
+  filter(Ex_WL == 535 | Ex_WL == 590) %>%
   ggplot() +
-  geom_point(aes(x = ActPARCorr, y = AllmeanqpOxbo, colour = as.factor(Strain)), size = 3, show.legend = F) +
-  geom_line(aes(x = ActPARCorr, y = AllmeanqpOxbo), size = 0.3, show.legend = F) +
+  geom_point(aes(x = ActPARCorr, y = AllmeanqpOxbo, colour = as.factor(WL)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = AllmeanqpOxbo, linetype=as.factor(WL)), size = 0.3, show.legend = T) +
   #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
   scale_fill_identity() +
   #ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
-  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue, Phase),labeller = label_parsed) +
+  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(Par_ue, Phase),labeller = label_parsed) +
   theme_bw() 
 
 
 ```
+
+# Create plot
+
+```{r Create plot}
+
+SolFitsMetaLRC %>%
+  filter(Run == 56) %>% 
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = meanSig_nm2psii, colour = as.factor(WL)), size = 3, show.legend = T) +
+    geom_line(aes(x = ActPARCorr, y = meanSig_nm2psii, colour = as.factor(WL)), show.legend = T) +
+  ggh4x::facet_nested(rows = vars(Run, Strain, E_days, Ex_WL), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
+SolFitsMetaLRC %>%
+  filter(Run == 59) %>% 
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = meanSig_nm2psii, colour = as.factor(WL)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = meanSig_nm2psii, colour = as.factor(WL)), show.legend = T) +
+  ggh4x::facet_nested(rows = vars(Run, Strain, E_days, Ex_WL), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+# 
+# SolFitsMetaLRC %>%
+#   filter(Run == 63) %>% 
+#   ggplot() +
+#   geom_point(aes(x = ActPARCorr, y = AllmeanSig_nm2psii, colour = as.factor(WL)), size = 3, show.legend = T) +
+#   ggh4x::facet_nested(rows = vars(Run, Strain, E_days), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+#   theme_bw() 
+# 
+# SolFitsMetaLRC %>%
+#   filter(Run == 68) %>% 
+#   ggplot() +
+#   geom_point(aes(x = ActPARCorr, y = AllmeanSig_nm2psii, colour = as.factor(WL)), size = 3, show.legend = T) +
+#   ggh4x::facet_nested(rows = vars(Run, Strain, E_days), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+#   theme_bw() 
+# 
+# SolFitsMetaLRC %>%
+#   filter(Run == 70) %>% 
+#   ggplot() +
+#   geom_point(aes(x = ActPARCorr, y = AllmeanSig_nm2psii, colour = as.factor(WL)), size = 3, show.legend = T) +
+#   ggh4x::facet_nested(rows = vars(Run, Strain, E_days), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+#   theme_bw() 
+```
+
 
 
 ```{r}
