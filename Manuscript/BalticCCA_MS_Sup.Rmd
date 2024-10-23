@@ -1,5 +1,5 @@
 ---
-title: "Coastal picocyanobacteria can exploit low oxygen habitats"
+title: "Complementary Chromatic Acclimation in Picocyanobacteria; Quantitation of Benefits"
 
 author:
 - Sylwia Śliwińska-Wilczewska:
