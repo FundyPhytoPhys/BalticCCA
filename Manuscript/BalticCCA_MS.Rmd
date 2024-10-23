@@ -216,7 +216,7 @@ Additionally, using whole-cell absorbance spectra of *Synechococcus* cultures, w
 
 <br>
 
-## Optode {.unnumbered}
+## Oxygen {.unnumbered}
 
 [O~2~] *in situ* was verified using oxygen optodes (PyroScience, Germany) inserted into tubes for real-time measurements (data not presented), with software correction to account for the salinity of the media (8 PSU). 
 
