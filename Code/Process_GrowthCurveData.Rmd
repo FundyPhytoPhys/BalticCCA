@@ -121,17 +121,17 @@ MultiCultiDataAll <- MultiCultiDataAll %>%
 ----------------------- Filter "bad" runs-----------------------------------
 
 ```{r}
-MultiCultiDataAll1<-MultiCultiDataAll %>% 
-  filter(Strain == "PE-rich") 
-
-
-MultiCultiDataAll2<-MultiCultiDataAll %>% 
-  filter(Strain == "PC-rich") %>% 
-  filter(Run != 56)
-
-MultiCultiDataAll<-rbind(MultiCultiDataAll1, MultiCultiDataAll2)
-
-rm(MultiCultiDataAll1, MultiCultiDataAll2)
+# MultiCultiDataAll1<-MultiCultiDataAll %>% 
+#   filter(Strain == "PE-rich") 
+# 
+# 
+# MultiCultiDataAll2<-MultiCultiDataAll %>% 
+#   filter(Strain == "PC-rich") %>% 
+#   filter(Run != 56)
+# 
+# MultiCultiDataAll<-rbind(MultiCultiDataAll1, MultiCultiDataAll2)
+# 
+# rm(MultiCultiDataAll1, MultiCultiDataAll2)
 ```
 
 ```{r}
