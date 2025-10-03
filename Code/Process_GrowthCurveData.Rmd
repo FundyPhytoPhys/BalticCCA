@@ -721,10 +721,17 @@ colnames(MultiCultiDataAll)
 
 
 
--------------------------------------------------# Whole Logistic fits --------------------------------------------------------
+
+
+
+
+
+
+
+-------------------------------------------------# Whole Logistic fits - wrong, no such folder exist. --------------------------------------------------------
 
 ```{r set project variables}
-Project <- "BalticO2"
+Project <- "BalticCCA"
 # DataOut <- file.path("..", "Data", "ProcessedData", "ProcessedMCDielLightData")
 
 FigPath <- file.path("..", "Output", "Figures")
