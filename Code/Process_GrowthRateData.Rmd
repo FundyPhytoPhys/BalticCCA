@@ -166,7 +166,7 @@ rm(MultiCultiDataAll1, MultiCultiDataAll2)
 MultiCultiGrowth %>%
   filter(deltaOD_Lmu_corr > 0) %>% 
   ggplot() +
-  geom_point(aes(x = WL, y = deltaOD_Lmu_corr,colour=as.factor(Strain)), size = 3.5, alpha = 0.9, show.legend = T) +
+  geom_point(aes(x = WL, y = deltaOD_Lmu_corr,colour=as.factor(Run)), size = 3.5, alpha = 0.9, show.legend = T) +
   #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
   # geom_errorbar(aes(x = Par_ue, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
     ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
@@ -186,13 +186,28 @@ MultiCultiGrowth %>%
 
 
 MultiCultiGrowth %>%
-  #filter(WL != "WW") %>% 
+  filter(deltaOD_Lmu_corr > 0) %>% 
+  filter(Run == 70) %>% 
   ggplot() +
-  geom_point(aes(x = OD720_Lmu_corr, y = deltaOD_Lmu_corr,colour=as.factor(Strain)), size = 3.5, alpha = 0.9, show.legend = T) +
-  geom_smooth(aes(x = OD720_Lmu_corr, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.2, show.legend = T, method = "lm") +
-  # geom_errorbar(aes(x = WLNum, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
-    ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  geom_point(aes(x = WL, y = deltaOD_Lmu_corr,colour=as.factor(Run)), size = 3.5, alpha = 0.9, show.legend = T) +
+  #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
+  # geom_errorbar(aes(x = Par_ue, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+    ggh4x::facet_nested(rows = vars(Strain),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+    ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
   theme_bw()
+
+
+MultiCultiGrowth %>%
+  filter(deltaOD_Lmu_corr > 0) %>% 
+  filter(Run == 70) %>% 
+  ggplot() +
+  geom_point(aes(x = Par_ue, y = deltaOD_Lmu_corr,colour=as.factor(WL)), size = 3.5, alpha = 0.9, show.legend = T) +
+    geom_smooth(aes(x = Par_ue, y = deltaOD_Lmu_corr, linetype=as.factor(WL)), size = 1, alpha = 0.2, show.legend = T, method = "lm") +
+  #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
+  # geom_errorbar(aes(x = Par_ue, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+    ggh4x::facet_nested(rows = vars(Strain), cols = vars(Run), labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw()
+
 ```
 
 
