@@ -138,6 +138,15 @@ MultiCultiGrowth<-MultiCultiGrowth %>%
   
 ```
 
+# Separate to phases
+```{r}
+MultiCultiGrowth<-MultiCultiGrowth %>% 
+  mutate(Phase=case_when(Run==0~"ExpResup",
+         Run==56~"Exp", Run==59~"Exp", Run==63~"Exp", Run==68~"Exp", Run==70~"Exp"))
+```
+
+
+
 ```{r}
 MultiCultiGrowth<-MultiCultiGrowth %>% 
   #mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
@@ -187,52 +196,58 @@ MultiCultiGrowth %>%
 
 MultiCultiGrowth %>%
   filter(deltaOD_Lmu_corr > 0) %>% 
-  filter(Run == 70) %>% 
+  filter(Run == 70 | Run == 0) %>% 
   ggplot() +
-  geom_point(aes(x = WL, y = deltaOD_Lmu_corr,colour=as.factor(Run)), size = 3.5, alpha = 0.9, show.legend = T) +
+  geom_point(aes(x = WL, y = deltaOD_Lmu_corr,colour=as.factor(Phase)), size = 3.5, alpha = 0.9, show.legend = T) +
   #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
-  # geom_errorbar(aes(x = Par_ue, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+  geom_errorbar(aes(x = WL, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
     ggh4x::facet_nested(rows = vars(Strain),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
     ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
   theme_bw()
 
 
+
+lab1=c(expression("530"), expression("660"))
+
 MultiCultiGrowth %>%
   filter(deltaOD_Lmu_corr > 0) %>% 
-  filter(Run == 70) %>% 
+  filter(Run == 70 | Run == 0) %>% 
   ggplot() +
   geom_point(aes(x = Par_ue, y = deltaOD_Lmu_corr,colour=as.factor(WL)), size = 3.5, alpha = 0.9, show.legend = T) +
     geom_smooth(aes(x = Par_ue, y = deltaOD_Lmu_corr, linetype=as.factor(WL)), size = 1, alpha = 0.2, show.legend = T, method = "lm") +
   #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
-  # geom_errorbar(aes(x = Par_ue, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
-    ggh4x::facet_nested(rows = vars(Strain), cols = vars(Run), labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  geom_errorbar(aes(x = Par_ue, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+   
+  scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab1) +
+    scale_linetype_manual(values = c("dotted", "solid"), name="", labels = lab1) +
+  
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Phase), labeller = labeller(Ex_WL = label_value, WL = label_value)) +
   theme_bw()
+
+
+
+
+
+MultiCultiGrowth %>%
+  filter(deltaOD_Lmu_corr > 0) %>% 
+  filter(Run == 70 | Run == 0) %>% 
+  ggplot() +
+  geom_point(aes(x = Par_ue, y = deltaOD_Lmu_corr,colour=as.factor(Phase)), size = 3.5, alpha = 0.9, show.legend = T) +
+    geom_smooth(aes(x = Par_ue, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), size = 1, alpha = 0.2, show.legend = T, method = "lm") +
+  #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
+  geom_errorbar(aes(x = Par_ue, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+
+  
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL), labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw()
+
 
 ```
 
 
-# CCA stop here for now
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
------------------------------------------------------------------------------------------------------------
-
-
-# Calculated Anova and Tukey test
+# Calculated Anova and Tukey test - Compare Par_ue, WL, Phase, Strain
 
 ```{r calculated statistics}
 MultiCultiGrowth2<-MultiCultiGrowth %>% 
@@ -240,16 +255,16 @@ MultiCultiGrowth2<-MultiCultiGrowth %>%
 
 MCGrowthRateStats<-rbind(MultiCultiGrowth2, MultiCultiGrowth2) #I created double data here
 
-MCGrowthRateStats$O2 <- factor(MCGrowthRateStats$O2)
+MCGrowthRateStats$Par_ue <- factor(MCGrowthRateStats$Par_ue)
 MCGrowthRateStats$WL <- factor(MCGrowthRateStats$WL)
 MCGrowthRateStats$Strain <- factor(MCGrowthRateStats$Strain)
+MCGrowthRateStats$Phase <- factor(MCGrowthRateStats$Phase)
 
 # Two way Anova with interactions
-model<-aov(deltaOD_Lmu_corr~O2*WL*Strain, data=MCGrowthRateStats)
+model<-aov(deltaOD_Lmu_corr~Par_ue*WL*Strain*Phase, data=MCGrowthRateStats)
 AnovaTest_GrowthRate<-data.frame(unclass(summary(model)), check.names = FALSE, stringsAsFactors = FALSE)
-TukeyHSDTest_GrowthRate<-TukeyHSD(model, which = c("O2", "WL", "Strain"))
+TukeyHSDTest_GrowthRate<-TukeyHSD(model, which = c("Par_ue", "WL", "Strain", "Phase"))
 ```
-
 
 
 # Save RDS that create stats and tables
@@ -266,6 +281,14 @@ saveRDS(TukeyHSDTest_GrowthRate, file.path(TableRdsPath, paste(Project, "HSD_Gro
 rm(MCGrowthRateStats, model, MultiCultiGrowth2)
 ```
 
+
+# Save Rds for further analysis
+
+```{r save rds}
+# saveRDS(MultiCultiGrowth, file.path(DataOut, paste(Project, "Processed_MultiCultiGrowth.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
+
+```
+
 # Save Rds for further analysis
 
 ```{r save rds}
@@ -274,8 +297,28 @@ saveRDS(MultiCultiGrowth, file.path(DataOut, paste(Project, "Processed_GrowthRat
 ```
 
 
+
+# CCA stop here for now
+
+
+-----------------------------------------------------------------------------------------------------
+
 ------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
