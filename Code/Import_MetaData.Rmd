@@ -73,7 +73,7 @@ CultureCatalog$ExpStartTime<-gsub("1899-12-30 ","",as.character(CultureCatalog$E
 
 ```{r filter MetaData}
 CultureCatalog<-CultureCatalog %>% 
-  filter(Run == 56 | Run== 59 | Run == 63 | Run == 68 | Run == 70) 
+  filter(Run == 56 | Run== 59 | Run == 63 | Run == 68 | Run == 70 | Run == 700) 
 
 # also, unused - run 118, 119, 122
 ```

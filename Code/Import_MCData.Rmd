@@ -129,7 +129,7 @@ print(MCFiles)
 # Set Target File and read in csv
 ```{r set TargetFile and read csv}
 
-TargetFile <- "20220507_PICO_MCMIX004_RUN70.csv"
+TargetFile <- "20220507_PICO_MCMIX004_RUN700.csv"
 
 
 # This opens a compressed file without decompressing.
@@ -143,6 +143,20 @@ TargetFileName <- str_remove(string = TargetFile, pattern = ".csv")
 TargetFileName
 
 ```
+
+
+
+
+### Only for Run 700 to extract growth rate after medium resuply
+
+```{r}
+# TargetData <- TargetData %>% 
+#   filter(time>360)
+```
+
+
+
+
 
 
 # Filter superfluous rows, Add ToD column, extract ExpDate, extract MC, 
