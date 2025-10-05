@@ -150,7 +150,7 @@ TargetFileName
 ### Only for Run 700 to extract growth rate after medium resuply
 
 ```{r}
-# TargetData <- TargetData %>% 
+# TargetData <- TargetData %>%
 #   filter(time>360)
 ```
 
