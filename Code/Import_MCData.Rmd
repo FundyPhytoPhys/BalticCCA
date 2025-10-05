@@ -129,7 +129,7 @@ print(MCFiles)
 # Set Target File and read in csv
 ```{r set TargetFile and read csv}
 
-TargetFile <- "20220507_PICO_MCMIX004_RUN700.csv"
+TargetFile <- "20220520_PICO_MCMIX004_RUN0.csv"
 
 
 # This opens a compressed file without decompressing.
@@ -147,7 +147,7 @@ TargetFileName
 
 
 
-### Only for Run 700 to extract growth rate after medium resuply
+### Only for Run 0 to extract growth rate after medium resuply
 
 ```{r}
 # TargetData <- TargetData %>%
