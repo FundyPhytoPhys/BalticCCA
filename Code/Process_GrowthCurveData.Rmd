@@ -207,6 +207,76 @@ OD680<-MultiCultiDataAll %>%
 OD680
 ```
 
+------------------------------------------------------------------
+# Only run 70 - exp and resuply
+
+
+# Create GrowthCurve plot
+fig.height = 8, fig.width = 8, warning = FALSE
+```{r create GrowthCurve plot}
+
+data_textExp <- data.frame(Strain  = c("PC-rich"), Par_ue  = c(60, 300), label = c('Primary growth curve'))
+data_textResup <- data.frame(Strain  = c("PC-rich"), Par_ue  = c(60, 300), label = c('Resupply'))
+
+
+
+data_texta <- data.frame(WL = c("730"), Strain  = c("PC-rich"), label = c('italic(a)'))
+
+lab1=c(expression("PC-rich"), expression("PE-rich"))
+lab2=c(expression("530"), expression("660"))
+
+OD680<-MultiCultiDataAll %>%
+  filter(WL!= "WW") %>% 
+  filter(Run == 70) %>% 
+  #filter(Time_h <= 192) %>% 
+  ggplot() +
+  
+  #geom_area(aes(x = Time_h, y = meanActinic_par_h), size = 0.1, fill = "tan1", alpha = 0.6) +
+  geom_line(aes(x = Time_h/24, y = meanOD680_h, colour = as.factor(WL)), size = 0.4, show.legend = T) +
+  geom_vline(aes(xintercept = 13.5), linetype = "dashed") +
+  
+  geom_text(data=data_textExp, aes(x=6, y=1.2, label=label), size=4) +
+  geom_text(data=data_textResup, aes(x=17, y=1.2, label=label), size=4) +
+  
+  
+  # 
+  #   scale_x_continuous(breaks=seq(0,360,24)) + 
+  # coord_cartesian(ylim = c(-0.2, 1.0)) +
+  
+  #geom_text(data=data_texta, aes(x=7, y=0.7, label=label), size=6, parse = TRUE) +
+  #scale_colour_discrete(type=c("palegreen3", "brown4")) +
+  #scale_colour_discrete(type=c("black", "deepskyblue2"), name="", labels = lab1) +
+  scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
+  scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab1) +
+  #scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab1) +
+  labs(y = "Optical density ("~OD[680]~")", x = "Elapsed time (d)") +
+
+  #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
+  #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(Oxygen, levels=c("250~µM","2.5~µM"))), labeller = label_parsed) +
+    ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.title = element_blank(),
+        legend.position = c(0.07,0.80),
+        legend.text = element_text(size=10))
+OD680
+```
+
+
+
+
+
+
 
 # Create GrowthCurve plot
 fig.height = 8, fig.width = 8, warning = FALSE
