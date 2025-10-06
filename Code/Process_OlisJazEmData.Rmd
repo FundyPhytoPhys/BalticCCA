@@ -403,6 +403,117 @@ OLISSpectraMetaPUR %>%
   theme_bw() 
 
 ```
+
+-----------------------------------------------------
+
+# Only run 70 - exp and resuply
+# Run 56 after day 7 also sowed change in pigments without resupply!
+ 
+```{r}
+# OLISSpectraMetaPUR_Resup<-OLISSpectraMetaPUR %>%
+#   filter(WL!= "WW") %>% 
+#   filter(Run == 70 | Run == 68 | Run == 59) %>% 
+#  filter(E_days == 7 | E_days == 16)
+# 
+# 
+# OLISSpectraMetaPUR_Resup<-OLISSpectraMetaPUR_Resup %>% 
+#   mutate(Phase=case_when(E_days<16~"Exp",
+#          E_days>=16~"ExpResup"))
+
+
+
+
+OLISSpectraMetaPUR_Resup2<-OLISSpectraMetaPUR %>%
+  filter(WL!= "WW") %>% 
+  filter(Run == 70 | Run == 68 | Run == 63) %>% 
+ filter(E_days == 2 | E_days == 16)
+
+
+OLISSpectraMetaPUR_Resup2<-OLISSpectraMetaPUR_Resup2 %>% 
+  mutate(Phase=case_when(E_days<16~"Exp",
+         E_days>=16~"ExpResup"))
+
+```
+
+
+# Create GrowthCurve plot
+fig.height = 8, fig.width = 8, warning = FALSE
+```{r create GrowthCurve plot}
+
+data_textExp <- data.frame(Strain  = c("PC-rich"), Par_ue  = c(60, 300), label = c('Primary growth curve'))
+data_textResup <- data.frame(Strain  = c("PC-rich"), Par_ue  = c(60, 300), label = c('Resupply'))
+
+
+
+data_texta <- data.frame(WL = c("730"), Strain  = c("PC-rich"), label = c('italic(a)'))
+
+lab1=c(expression("PC-rich"), expression("PE-rich"))
+lab2=c(expression("530"), expression("660"))
+
+OLISSpectraMetaPUR_Resup2 %>%
+  # filter(WL!= "WW") %>% 
+  # filter(Run == 70 | Run == 68) %>% 
+  #filter(Time_h <= 192) %>% 
+  ggplot() +
+  
+  #geom_area(aes(x = Time_h, y = meanActinic_par_h), size = 0.1, fill = "tan1", alpha = 0.6) +
+    geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(WL)), show.legend = T, size = 0.4) +
+  # geom_vline(aes(xintercept = 13.5), linetype = "dashed") +
+  
+  # geom_text(data=data_textExp, aes(x=6, y=1.2, label=label), size=4) +
+  # geom_text(data=data_textResup, aes(x=17, y=1.2, label=label), size=4) +
+  
+  
+  # 
+  #   scale_x_continuous(breaks=seq(0,360,24)) + 
+  # coord_cartesian(ylim = c(-0.2, 1.0)) +
+  
+  #geom_text(data=data_texta, aes(x=7, y=0.7, label=label), size=6, parse = TRUE) +
+  #scale_colour_discrete(type=c("palegreen3", "brown4")) +
+  #scale_colour_discrete(type=c("black", "deepskyblue2"), name="", labels = lab1) +
+  scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
+  scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab1) +
+  #scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab1) +
+  #labs(y = "Optical density ("~OD[680]~")", x = "Elapsed time (d)") +
+
+  #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
+  #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(Oxygen, levels=c("250~µM","2.5~µM"))), labeller = label_parsed) +
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Phase, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+
+  
+  
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.title = element_blank(),
+        legend.position = c(0.07,0.93),
+        legend.text = element_text(size=10))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Filter 8 spectra that do not match to growth curve - day 7
 
 ```{r}
