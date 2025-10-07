@@ -141,7 +141,7 @@ MultiCultiGrowth<-MultiCultiGrowth %>%
 # Separate to phases
 ```{r}
 MultiCultiGrowth<-MultiCultiGrowth %>% 
-  mutate(Phase=case_when(Run==0~"ExpResup",
+  mutate(Phase=case_when(Run==0~"ExpResupply",
          Run==56~"Exp", Run==59~"Exp", Run==63~"Exp", Run==68~"Exp", Run==70~"Exp"))
 ```
 
@@ -541,7 +541,7 @@ MultiCultiGrowthPlot <- MultiCultiGrowthPlot %>%
 
 ```{r Create plot, warning=FALSE}
 lab1=c(expression("PC-rich"), expression("PE-rich"))
-lab2=c(expression("Exp"), expression("ExpResup"))
+lab2=c(expression("Exp"), expression("ExpResupply"))
 
 
 JazDataRoundMeta %>%
@@ -590,6 +590,7 @@ JazDataRoundMeta %>%
 ```
 
 
+
 # CCA - I finished here for now
 
 -------------------------------------------------------------------------------------------------------------------
@@ -597,15 +598,32 @@ JazDataRoundMeta %>%
 
 
 
+#### Problem to fix - growth rate - Exp and ExpResupply - Run 70 and Run 0
+PUR - Exp and ExpResupply - Run 70 
 
 
+#### Problem with Phase!!!!!! Growth rate - only Exp and ExpResupply!!! Change the name of columns so they do not match?
 
 
+- co zrobic: wywalic run 0, zmienic na 70. Wyrzucic lub zmienic SampleID. Zrobic filtr i wyrzucuc na razie reszte run.
 
 
+# For prelim plot for now
+```{r}
+MultiCultiGrowthSelect <-MultiCultiGrowth %>% 
+  filter(Run == 70 | Run == 0) 
 
+MultiCultiGrowthSelect <-MultiCultiGrowthSelect %>% 
+    mutate(Run=case_when(Run==70~70,
+         Run==0~70))
 
-
+MultiCultiGrowthSelect <-MultiCultiGrowthSelect %>% 
+    mutate(SampleID=case_when(SampleID=="SySl1242"~"SySl1242", SampleID=="SySl1243"~"SySl1243", SampleID=="SySl1244"~"SySl1244", SampleID=="SySl1245"~"SySl1245", SampleID=="SySl1246"~"SySl1246", SampleID=="SySl1247"~"SySl1247", SampleID=="SySl1248"~"SySl1248", SampleID=="SySl1249"~"SySl1249", 
+                              
+                                 SampleID=="SySl1348"~"SySl1242", SampleID=="SySl1349"~"SySl1243", SampleID=="SySl1350"~"SySl1244", SampleID=="SySl1351"~"SySl1245", SampleID=="SySl1352"~"SySl1246", SampleID=="SySl1353"~"SySl1247", SampleID=="SySl1354"~"SySl1248", SampleID=="SySl1355"~"SySl1249" 
+                         
+                              ))
+```
 
 
 
@@ -614,7 +632,7 @@ JazDataRoundMeta %>%
 -------------------------------------------------------------------------------------------
 
 ```{r set project variables}
-Project <- "BalticO2"
+Project <- "BalticCCA"
 DataIn <- file.path("..", "Data", "ProcessedData", "ProcessedOlisJazData", fsep = .Platform$file.sep)
 ```
 
@@ -625,7 +643,7 @@ list.files(path = DataIn, pattern = Project, full.names = TRUE)
 ```
 
 ```{r read imported pigments Exp file}
-OlisFile <- "../Data/ProcessedData/ProcessedOlisJazData/BalticO2_Processed_OlisSpectraTidy.Rds"
+OlisFile <- "../Data/ProcessedData/ProcessedOlisJazData/BalticCCA_Processed_OlisSpectraTidy.Rds"
 OlisFileName <- str_split(string = OlisFile, "/")[[1]][3] %>%
   str_remove(pattern = ".Rds")
 Olis <- readRDS(OlisFile)  %>%
@@ -633,18 +651,55 @@ Olis <- readRDS(OlisFile)  %>%
 
 ```
 
+# For prelim plot for now
+```{r}
+OlisSelect <-Olis %>%
+  filter(Phase != "St")
+```
 
-# Combine growth rate and Exp pigments to get PUR
+
+
+
+# Combine growth rate and PUR
 
 ```{r}
 # Olis<-Olis %>% 
 #     mutate(Strain=case_when(Strain=="PE-rich_127"~"PE-rich",
 #          Strain=="PC-rich_077"~"PC-rich"))
 
-MCGrowthRate <- MultiCultiGrowth %>% 
-  left_join(., Olis, by = c("Run" = "Run", "SampleID" = "SampleID","Strain" = "Strain", "Par_ue" = "Par_ue", "Photoperiod" = "Photoperiod",  "O2" = "O2", "WL" = "WL", "ExpDate" = "ExpDate", "PARPhotonDose_day" = "PARPhotonDose_day", "Oxygen"="Oxygen")) 
+MCGrowthRateSelect <- OlisSelect %>% 
+  left_join(., MultiCultiGrowthSelect, by = c("Run" = "Run", "SampleID" = "SampleID","Strain" = "Strain", "Par_ue" = "Par_ue", "Photoperiod" = "Photoperiod",  "O2" = "O2", "WL" = "WL", "ExpDate" = "ExpDate", "PARPhotonDose_day" = "PARPhotonDose_day", "Phase" = "Phase")) 
   
+
 ```
+
+
+#Prelim plot u vs PUR
+```{r}
+MCGrowthRateSelect %>%
+filter(Phase != "St") %>% 
+  ggplot() +
+  geom_point(aes(x = PUR, y = deltaOD_Lmu_corr,colour=as.factor(Phase)), size = 3.5, alpha = 0.9, show.legend = T) +
+    # geom_smooth(aes(x = PUR, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), size = 1, alpha = 0.2, show.legend = T, method = "lm") +
+  #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
+  # geom_errorbar(aes(x = PUR, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+
+  
+  ggh4x::facet_nested(rows = vars(Strain),  cols = vars(WL, Par_ue),  labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw()
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ------------------------------ Trim no growt data ------------------------------
