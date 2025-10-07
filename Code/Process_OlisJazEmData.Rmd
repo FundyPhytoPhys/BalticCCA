@@ -502,19 +502,7 @@ OLISSpectraMetaPUR_Resup2 %>%
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-# Filter 8 spectra that do not match to growth curve - day 7
+# Filter 8 spectra that do not match to growth curve - day 7 because Run 56 after day 7 also sowed change in pigments without resupply!
 
 ```{r}
 OLISSpectraMetaPURTrim1<-OLISSpectraMetaPUR %>% 
@@ -535,7 +523,7 @@ OLISSpectraMetaPUR<-rbind(OLISSpectraMetaPURTrim1, OLISSpectraMetaPURTrim2, OLIS
 
 
 
-# Create plot
+# Create plot - all spectra I made for each run
 
 ```{r Create plot}
 
@@ -703,6 +691,38 @@ OLISSpectraMetaPhase %>%
 
 
 ```
+
+# Create a better plot 
+
+```{r}
+
+OLISSpectraMetaPhase %>%
+  filter(Phase!= "St") %>% 
+    filter(WL!= "WW") %>% 
+  filter(Run == 70 | Run == 68 | Run == 63) %>% 
+ filter(E_days == 2 | E_days == 16) %>% 
+  ggplot() +
+  geom_point(aes(x = WL, y = PUR, colour = as.factor(Phase)), size = 4, show.legend = T) +
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
+
+OLISSpectraMetaPhase %>%
+  filter(Phase!= "St") %>% 
+    filter(WL!= "WW") %>% 
+  filter(Run == 70 | Run == 68 | Run == 63) %>% 
+ filter(E_days == 2 | E_days == 16) %>% 
+  ggplot() +
+  geom_point(aes(x = Par_ue, y = PUR, colour = as.factor(Phase)), size = 4, show.legend = T) +
+    geom_smooth(aes(x = Par_ue, y = PUR, linetype=as.factor(Phase)), size = 1, alpha = 0.2, show.legend = T, method = "lm") +
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
+```
+
+
+
+
 
 
 
