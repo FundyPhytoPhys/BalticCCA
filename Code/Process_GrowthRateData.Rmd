@@ -199,7 +199,8 @@ MultiCultiGrowth %>%
   filter(Run == 70 | Run == 0) %>% 
   ggplot() +
   geom_point(aes(x = WL, y = deltaOD_Lmu_corr,colour=as.factor(Phase)), size = 3.5, alpha = 0.9, show.legend = T) +
-  #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
+  #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), size = 1, alpha = 0.9, show.legend = T) +
+  # geom_smooth(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), size = 1, alpha = 0.2, show.legend = T, method = "lm") +
   geom_errorbar(aes(x = WL, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
     ggh4x::facet_nested(rows = vars(Strain),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
     ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
@@ -207,22 +208,22 @@ MultiCultiGrowth %>%
 
 
 
-lab1=c(expression("530"), expression("660"))
-
-MultiCultiGrowth %>%
-  filter(deltaOD_Lmu_corr > 0) %>% 
-  filter(Run == 70 | Run == 0) %>% 
-  ggplot() +
-  geom_point(aes(x = Par_ue, y = deltaOD_Lmu_corr,colour=as.factor(WL)), size = 3.5, alpha = 0.9, show.legend = T) +
-    geom_smooth(aes(x = Par_ue, y = deltaOD_Lmu_corr, linetype=as.factor(WL)), size = 1, alpha = 0.2, show.legend = T, method = "lm") +
-  #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
-  geom_errorbar(aes(x = Par_ue, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
-   
-  scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab1) +
-    scale_linetype_manual(values = c("dotted", "solid"), name="", labels = lab1) +
-  
-  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Phase), labeller = labeller(Ex_WL = label_value, WL = label_value)) +
-  theme_bw()
+# lab1=c(expression("530"), expression("660"))
+# 
+# MultiCultiGrowth %>%
+#   filter(deltaOD_Lmu_corr > 0) %>% 
+#   filter(Run == 70 | Run == 0) %>% 
+#   ggplot() +
+#   geom_point(aes(x = Par_ue, y = deltaOD_Lmu_corr,colour=as.factor(WL)), size = 3.5, alpha = 0.9, show.legend = T) +
+#     geom_smooth(aes(x = Par_ue, y = deltaOD_Lmu_corr, linetype=as.factor(WL)), size = 1, alpha = 0.2, show.legend = T, method = "lm") +
+#   #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
+#   geom_errorbar(aes(x = Par_ue, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+#    
+#   scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab1) +
+#     scale_linetype_manual(values = c("dotted", "solid"), name="", labels = lab1) +
+#   
+#   ggh4x::facet_nested(rows = vars(Strain), cols = vars(Phase), labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+#   theme_bw()
 
 
 
@@ -298,32 +299,15 @@ saveRDS(MultiCultiGrowth, file.path(DataOut, paste(Project, "Processed_GrowthRat
 
 
 
-# CCA stop here for now
-
-
------------------------------------------------------------------------------------------------------
-
-------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Create a nice growth rate plot with the emission spectra
 
 ```{r set project variables}
-Project <- "BalticO2"
+Project <- "BalticCCA"
 DataIn <- file.path("..", "Data", "ImportedData", "ImportedJazEmData", fsep = .Platform$file.sep)
 ```
 
@@ -334,7 +318,7 @@ list.files(path = DataIn, pattern = Project, full.names = TRUE)
 ```
 
 ```{r read imported pigments Exp file}
-JazDataFile <- "../Data/ImportedData/ImportedJazEmData/BalticO2_Imported_JazEmData.Rds"
+JazDataFile <- "../Data/ImportedData/ImportedJazEmData/BalticCCA_Imported_JazEmData.Rds"
 JazDataFileName <- str_split(string = JazDataFile, "/")[[1]][3] %>%
   str_remove(pattern = ".Rds")
 JazData <- readRDS(JazDataFile)  %>%
@@ -491,6 +475,7 @@ JazDataRoundMetaWW <- JazData %>%
 
 rm(EmissionJazWW)
 ```
+
 # Merge df to have all WL
 
 ```{r}
@@ -527,46 +512,61 @@ JazDataRoundMeta<-JazDataRoundMeta %>%
 
 
 ```{r}
-JazDataRoundMeta21<-JazDataRoundMeta 
-  JazDataRoundMeta21$Oxygen<-"250~µM"
-  
-JazDataRoundMeta0<-JazDataRoundMeta 
-  JazDataRoundMeta0$Oxygen<-"2.5~µM"
-
-JazDataRoundMeta2<-rbind(JazDataRoundMeta21, JazDataRoundMeta0)
-rm(JazDataRoundMeta21, JazDataRoundMeta0)
+# JazDataRoundMeta21<-JazDataRoundMeta 
+#   JazDataRoundMeta21$Oxygen<-"250~µM"
+#   
+# JazDataRoundMeta0<-JazDataRoundMeta 
+#   JazDataRoundMeta0$Oxygen<-"2.5~µM"
+# 
+# JazDataRoundMeta2<-rbind(JazDataRoundMeta21, JazDataRoundMeta0)
+# rm(JazDataRoundMeta21, JazDataRoundMeta0)
 ```
 
+# Create a numeric WL
+
+```{r}
+MultiCultiGrowthPlot<-MultiCultiGrowth %>% 
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+  filter(WL != "WW") 
+```
+
+# For plot only - choosen only run 70 where Exp and ExpResupl was measured
+
+```{r}
+MultiCultiGrowthPlot <- MultiCultiGrowthPlot %>%
+  filter(deltaOD_Lmu_corr > 0) %>% 
+  filter(Run == 70 | Run == 0) 
+```
 
 
 ```{r Create plot, warning=FALSE}
 lab1=c(expression("PC-rich"), expression("PE-rich"))
-lab2=c(expression("2.5 µM"), expression("250 µM"))
+lab2=c(expression("Exp"), expression("ExpResup"))
 
 
-JazDataRoundMeta2 %>%
+JazDataRoundMeta %>%
   ggplot() +
-  geom_area(aes(x = nm, y = EmNormJaz722, fill = "indianred4"), alpha = 0.1, show.legend = F) +
+  #geom_area(aes(x = nm, y = EmNormJaz722, fill = "indianred4"), alpha = 0.1, show.legend = F) +
   geom_area(aes(x = nm, y = EmNormJaz647, fill = "brown1"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz612, fill = "coral"), alpha = 0.1, show.legend = F) +
+  #geom_area(aes(x = nm, y = EmNormJaz612, fill = "coral"), alpha = 0.1, show.legend = F) +
   geom_area(aes(x = nm, y = EmNormJaz521, fill = "limegreen"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz469, fill = "lightseagreen"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz441, fill = "steelblue3"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz393, fill = "royalblue4"), alpha = 0.1, show.legend = F) +
+  #geom_area(aes(x = nm, y = EmNormJaz469, fill = "lightseagreen"), alpha = 0.1, show.legend = F) +
+  #geom_area(aes(x = nm, y = EmNormJaz441, fill = "steelblue3"), alpha = 0.1, show.legend = F) +
+  #geom_area(aes(x = nm, y = EmNormJaz393, fill = "royalblue4"), alpha = 0.1, show.legend = F) +
   
-  geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr, colour = as.factor(Strain)), size = 4, show.legend = F, MultiCultiGrowth) +
-  geom_line(aes(x = WLNum, y = deltaOD_Lmu_corr, linetype = as.factor(O2)), show.legend = T, MultiCultiGrowth) +
+  geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr, colour = as.factor(Phase)), size = 4, show.legend = T, MultiCultiGrowthPlot) +
+  geom_line(aes(x = WLNum, y = deltaOD_Lmu_corr, linetype = as.factor(Phase)), show.legend = T, MultiCultiGrowthPlot) +
 
-  geom_errorbar(aes(x = WLNum, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F, MultiCultiGrowth) +
+  geom_errorbar(aes(x = WLNum, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F, MultiCultiGrowthPlot) +
   
-  scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
-  scale_shape_manual(values = c(16, 18), name="", labels = lab2) +
-  scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
+  # scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
+  # scale_shape_manual(values = c(16, 18), name="", labels = lab2) +
+  # scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
   
-  stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -0.080, alpha = 0.5) +
+  stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -0.030, alpha = 0.5) +
   scale_fill_identity() +
   labs(y = "µ " ~ "("~d^-1~") and normalized emission spectra", x = "Growth waveband (nm)") +
-  ggh4x::facet_nested(rows = vars(Strain), labeller = label_parsed) +
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue), labeller = label_parsed) +
   theme_bw() 
 
 
@@ -588,6 +588,27 @@ JazDataRoundMeta2 %>%
 ```{r save plot}
 #ggsave(file = file.path(FigPath, paste("Fig_GrowthRate",".png",sep = "")), height=5.5, width= 6,  dpi = 300, limitsize = TRUE)
 ```
+
+
+# CCA - I finished here for now
+
+-------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -------------------------------------------------------------------------------------------

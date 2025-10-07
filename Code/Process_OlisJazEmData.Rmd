@@ -55,6 +55,8 @@ library(readxl)
 library(tidyverse)
 library(lubridate)
 library("patchwork") # merging plots
+
+
 ```
 
 ```{r set project variables}
@@ -240,6 +242,7 @@ JazDataRoundMetaWW <- JazData %>%
 
 rm(EmissionJazWW)
 ```
+
 # Merge df to have all WL
 
 ```{r}
@@ -478,9 +481,11 @@ OLISSpectraMetaPUR_Resup2 %>%
 
   #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
   #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(Oxygen, levels=c("250~µM","2.5~µM"))), labeller = label_parsed) +
+  stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = 0, alpha = 0.5) +
+  scale_fill_identity() +
+  
   ggh4x::facet_nested(rows = vars(Strain), cols = vars(Phase, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
 
-  
   
   theme_bw() +
   theme(panel.grid.minor = element_blank(),
@@ -502,7 +507,7 @@ OLISSpectraMetaPUR_Resup2 %>%
 
 
 
-# Filter 8 spectra that do not match to growth curve - day 7 because Run 56 after day 7 also sowed change in pigments without resupply!
+# Filter 8 spectra that do not match to growth curve - day 7 because Run 56 after day 7 also sowed change in pigments without resupply! I will deal with it later.
 
 ```{r}
 OLISSpectraMetaPURTrim1<-OLISSpectraMetaPUR %>% 
@@ -692,7 +697,7 @@ OLISSpectraMetaPhase %>%
 
 ```
 
-# Create a better plot 
+# Create a better plot - exp i ExpResup - spectra taken at E_day = 2
 
 ```{r}
 
@@ -719,6 +724,70 @@ OLISSpectraMetaPhase %>%
   theme_bw() 
 
 ```
+
+# Create a numeric WL
+
+```{r}
+OLISSpectraMetaPhasePlot<-OLISSpectraMetaPhase %>% 
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+  filter(WL != "WW") 
+```
+
+# For plot only - choosen only run 70 where Exp and ExpResupl was measured
+
+```{r}
+OLISSpectraMetaPhasePlot <- OLISSpectraMetaPhasePlot %>%
+  filter(Phase!= "St") %>% 
+  filter(WL!= "WW") %>% 
+  filter(Run == 70 | Run == 68 | Run == 63) %>% 
+ filter(E_days == 2 | E_days == 16) 
+```
+
+
+```{r}
+
+lab1=c(expression("PC-rich"), expression("PE-rich"))
+lab2=c(expression("Exp"), expression("ExpResup"))
+
+
+OLISSpectraMetaPhasePlot %>%
+  ggplot() +
+  #geom_area(aes(x = nm, y = EmNormJaz722, fill = "indianred4"), alpha = 0.1, show.legend = F) +
+  geom_area(aes(x = nm, y = EmNormJaz647*100, fill = "brown1"), alpha = 0.1, show.legend = F) +
+  #geom_area(aes(x = nm, y = EmNormJaz612, fill = "coral"), alpha = 0.1, show.legend = F) +
+  geom_area(aes(x = nm, y = EmNormJaz521*100, fill = "limegreen"), alpha = 0.1, show.legend = F) +
+  #geom_area(aes(x = nm, y = EmNormJaz469, fill = "lightseagreen"), alpha = 0.1, show.legend = F) +
+  #geom_area(aes(x = nm, y = EmNormJaz441, fill = "steelblue3"), alpha = 0.1, show.legend = F) +
+  #geom_area(aes(x = nm, y = EmNormJaz393, fill = "royalblue4"), alpha = 0.1, show.legend = F) +
+  
+  geom_point(aes(x = WLNum, y = PUR, colour = as.factor(Phase)), size = 4, show.legend = T) +
+  geom_line(aes(x = WLNum, y = PUR, linetype = as.factor(Phase)), show.legend = T) +
+
+  # geom_errorbar(aes(x = WLNum, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F, OLISSpectraMetaPhasePlot) +
+  
+  # scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
+  # scale_shape_manual(values = c(16, 18), name="", labels = lab2) +
+  # scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
+  
+  stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -5, alpha = 0.5) +
+  scale_fill_identity() +
+  labs(y = "PUR and normalized emission spectra", x = "Growth waveband (nm)") +
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue), labeller = label_parsed) +
+  theme_bw() 
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
