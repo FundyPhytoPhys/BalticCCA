@@ -114,7 +114,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 <br>
+# Notes {.unnumbered}
+Culture inoculated from WL fluorescent exponential phase to Green or Red chromatic light do not show CCA, only a slow decline in PC/Chl or PE/Chl depending upon strain.
 
+Culture then 'reinoculated' through 'resupply from stationary phase to chromatic light do show CCA with increase in PC under red and increase in PE under green, for both PC rich and PE rich strains.
+
+Cultures which have depleted phycobilisome content will relaunch into CCA?
+
+<br>
 # Abstract {.unnumbered}
 
 XXXXX
