@@ -590,32 +590,7 @@ JazDataRoundMeta %>%
 ```
 
 
-
-# CCA - I finished here for now
-
--------------------------------------------------------------------------------------------------------------------
--------------------------------------------------------------------------------------------------------------------
-
-
-
-#### Problem to fix - growth rate - Exp and ExpResupply - Run 70 and Run 0
-PUR - Exp and ExpResupply - Run 70 
-
-
-#### Problem with Phase!!!!!! Growth rate - only Exp and ExpResupply!!! Change the name of columns so they do not match?
-
-
-- co zrobic: wywalic run 0, zmienic na 70. Wyrzucic lub zmienic SampleID. Zrobic filtr i wyrzucuc na razie reszte run.
-
-
-
-
-
-
-
-
-
-# For prelim plot for now
+# Changing Run0 to Run 70. ExpDate need to be fix as well here!
 ```{r}
 # MultiCultiGrowthSelect <-MultiCultiGrowth %>% 
 #   filter(Run == 70 | Run == 0) 
@@ -633,16 +608,17 @@ PUR - Exp and ExpResupply - Run 70
 ```
 
 
+# Create a dataset to match PUR
 ```{r}
-#colnames(MultiCultiGrowth)
 MultiCultiGrowthSelect <- MultiCultiGrowth %>%
   filter(deltaOD_Lmu_corr > 0) %>% 
   filter(Run == 70 | Run == 0) %>% 
   select(c(Strain, Par_ue, Photoperiod, WL, O2, PARPhotonDose_day, OD720_Lmu_se, OD720_Lmu_corr, deltaOD_Lmu_se, deltaOD_Lmu_corr, Phase))
+```
 
-#ExpDate
-  # select(c(Tube, ExpDate, MC, Strain, Par_ue, Photoperiod, WL, O2, LightShape, PARPhotonDose_day, OD720_Lmu_se, OD720_Lmu_corr, deltaOD_Lmu_se, deltaOD_Lmu_corr, Phase))
 
+# Create a prelim plot
+```{r}
 
 MultiCultiGrowthSelect %>%
   ggplot() +
@@ -678,15 +654,17 @@ Olis <- readRDS(OlisFile)  %>%
 
 ```
 
-
+# Create a dataset to match growth rate
 ```{r}
-
 OlisSelect <- Olis %>%
   filter(Phase!= "St") %>% 
   filter(WL!= "WW") %>% 
   filter(Run == 70 | Run == 68 | Run == 63) %>% 
   filter(E_days == 2 | E_days == 16) 
+```
 
+# Create a prelim plot
+```{r}
 
 OlisSelect %>%
   ggplot() +
@@ -694,17 +672,6 @@ OlisSelect %>%
   ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
   theme_bw() 
 ```
-
-
-
-
-
-# For prelim plot for now
-```{r}
-# OlisSelect <-Olis %>%
-#   filter(Phase != "St")
-```
-
 
 
 
@@ -748,121 +715,77 @@ MCGrowthRateSelect %>%
 ```
 
 
-
-CCA - finished here for now
-----------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
------------------------------- Trim no growt data ------------------------------
-
-# Filter condition where no growt
-
 ```{r}
-SolFitsMetaLightCorr445590Trim1<-MCGrowthRate %>% 
-  filter(Strain == "PC-rich") %>% 
-  filter(O2 == 21) %>% 
-  filter(WL != 405) 
-
-SolFitsMetaLightCorr445590Trim3<-MCGrowthRate %>% 
-  filter(Strain == "PC-rich") %>% 
-  filter(O2 == 0) 
-
-SolFitsMetaLightCorr445590Trim4<-MCGrowthRate %>% 
-  filter(Strain == "PE-rich") %>% 
-  filter(O2 == 21) %>% 
-  filter(WL != 405) %>% 
-  filter(WL != 450) %>% 
-  filter(WL != 730) 
-  
-SolFitsMetaLightCorr445590Trim5<-MCGrowthRate %>% 
-  filter(Strain == "PE-rich") %>% 
-  filter(O2 == 0) 
-
-
-MCGrowthRateTrim<-rbind(SolFitsMetaLightCorr445590Trim1, SolFitsMetaLightCorr445590Trim3, SolFitsMetaLightCorr445590Trim4, SolFitsMetaLightCorr445590Trim5)
-
-rm(SolFitsMetaLightCorr445590Trim1, SolFitsMetaLightCorr445590Trim3, SolFitsMetaLightCorr445590Trim4, SolFitsMetaLightCorr445590Trim5)
-```
-
-
-```{r}
-lab1=c(expression("PC-rich"), expression("PE-rich"))
-lab2=c(expression("2.5 µM"), expression("250 µM"))
+# lab1=c(expression("PC-rich"), expression("PE-rich"))
+# lab2=c(expression("2.5 µM"), expression("250 µM"))
 # lab3=c(expression("405"), expression("450"), expression("470"), expression("530"), expression("620"), expression("660"), expression("730"))
 
 
-data_textD <- data.frame(Strain  = c("PC-rich"), label = c('italic(b)'))
-
-MultiCultiGrowthPC21<-MCGrowthRateTrim %>% 
-  filter(Strain == "PC-rich") %>% 
-  filter(O2 == 21)
-MultiCultiGrowthPE21<-MCGrowthRateTrim %>% 
-  filter(Strain == "PE-rich") %>% 
-    filter(O2 == 21)
-  
-MultiCultiGrowthPC0<-MCGrowthRateTrim %>% 
-  filter(Strain == "PC-rich") %>% 
-  filter(O2 == 0)
-MultiCultiGrowthPE0<-MCGrowthRateTrim %>% 
-  filter(Strain == "PE-rich") %>% 
-    filter(O2 == 0)
-
-
-GrowthPURPlot<-MCGrowthRateTrim %>%
-  filter(deltaOD_Lmu_se<0.2) %>% 
-  filter(deltaOD_Lmu_corr>0) %>% 
-  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
-  filter(WL != "WW") %>%
-  ggplot() +
-  geom_point(aes(x = meanPUR, y = deltaOD_Lmu_corr, shape = as.factor(O2)), size = 4, show.legend = F) +
-  geom_smooth(aes(x = meanPUR, y = deltaOD_Lmu_corr, linetype = as.factor(O2)), alpha = 0, size = 0.3, method = "lm", show.legend = F) +
-  
-    geom_point(aes(x = meanPUR, y = deltaOD_Lmu_corr), colour = "palegreen3", shape = 1, size = 4, show.legend = F, MultiCultiGrowthPC21) +
-    geom_point(aes(x = meanPUR, y = deltaOD_Lmu_corr), colour = "brown4", shape = 1, size = 4, show.legend = F, MultiCultiGrowthPE21) +
-    geom_point(aes(x = meanPUR, y = deltaOD_Lmu_corr), colour = "palegreen3", shape = 16, size = 4, show.legend = F, MultiCultiGrowthPC0) +
-    geom_point(aes(x = meanPUR, y = deltaOD_Lmu_corr), colour = "brown4", shape = 16, size = 4, show.legend = F, MultiCultiGrowthPE0) +
-  
-  geom_errorbar(aes(x = meanPUR, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se, colour = as.factor(Strain)), width=0, size=0.3, show.legend = F) +
-  geom_text(data=data_textD, aes(x=180, y=0.25, label=label), size=6, parse = TRUE) +
-
-  scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab1) +
-  scale_shape_manual(values = c(16, 1), name="", labels = lab2) +
-  scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
-  
-  
-  scale_x_continuous(breaks=seq(0, 180, by = 40)) +
-  scale_y_continuous(breaks=seq(0, 0.3, by = 0.1)) +
-  coord_cartesian(xlim = c (0, 180), ylim = c (0, 0.3)) +
-  # guides(colour = FALSE) +
-  #ggh4x::facet_nested(rows = vars(O2), cols = vars(Strain), labeller = label_parsed) +
-  #labs(y = "µ " ~ "("~d^-1~")", x = "waveband (nm)") +
-  labs(y = "µ " ~ "("~d^-1~")", x = "PUR ( µmol photons "~m^-2~""~s^-1~")") +
-  ggh4x::facet_nested(rows = vars(Strain), labeller = label_parsed) +
- #ggh4x::facet_nested(cols = vars(Strain), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
-  theme_bw() +
-  theme(panel.grid.minor = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.spacing.x = unit(0.4, 'cm'),
-        axis.text = element_text(size=12),
-        axis.text.x = element_text(size=12),
-        axis.title = element_text(size=16),
-        strip.background = element_rect(fill="white"),
-        strip.text = element_text(size=12),
-        axis.title.y = element_text(margin=margin(r=10)),
-        axis.title.x = element_text(margin=margin(t=10)),
-        legend.background = element_rect(fill="transparent"),
-        legend.key = element_blank(),
-        legend.title = element_blank(),
-        legend.position = c(0.10,0.99),
-        legend.text = element_text(size=10))
-GrowthPURPlot
+# data_textD <- data.frame(Strain  = c("PC-rich"), label = c('italic(b)'))
+# 
+# MultiCultiGrowthPC21<-MCGrowthRateTrim %>% 
+#   filter(Strain == "PC-rich") %>% 
+#   filter(O2 == 21)
+# MultiCultiGrowthPE21<-MCGrowthRateTrim %>% 
+#   filter(Strain == "PE-rich") %>% 
+#     filter(O2 == 21)
+#   
+# MultiCultiGrowthPC0<-MCGrowthRateTrim %>% 
+#   filter(Strain == "PC-rich") %>% 
+#   filter(O2 == 0)
+# MultiCultiGrowthPE0<-MCGrowthRateTrim %>% 
+#   filter(Strain == "PE-rich") %>% 
+#     filter(O2 == 0)
+# 
+# 
+# GrowthPURPlot<-MCGrowthRateTrim %>%
+#   filter(deltaOD_Lmu_se<0.2) %>% 
+#   filter(deltaOD_Lmu_corr>0) %>% 
+#   mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+#   filter(WL != "WW") %>%
+#   ggplot() +
+#   geom_point(aes(x = meanPUR, y = deltaOD_Lmu_corr, shape = as.factor(O2)), size = 4, show.legend = F) +
+#   geom_smooth(aes(x = meanPUR, y = deltaOD_Lmu_corr, linetype = as.factor(O2)), alpha = 0, size = 0.3, method = "lm", show.legend = F) +
+#   
+#     geom_point(aes(x = meanPUR, y = deltaOD_Lmu_corr), colour = "palegreen3", shape = 1, size = 4, show.legend = F, MultiCultiGrowthPC21) +
+#     geom_point(aes(x = meanPUR, y = deltaOD_Lmu_corr), colour = "brown4", shape = 1, size = 4, show.legend = F, MultiCultiGrowthPE21) +
+#     geom_point(aes(x = meanPUR, y = deltaOD_Lmu_corr), colour = "palegreen3", shape = 16, size = 4, show.legend = F, MultiCultiGrowthPC0) +
+#     geom_point(aes(x = meanPUR, y = deltaOD_Lmu_corr), colour = "brown4", shape = 16, size = 4, show.legend = F, MultiCultiGrowthPE0) +
+#   
+#   geom_errorbar(aes(x = meanPUR, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se, colour = as.factor(Strain)), width=0, size=0.3, show.legend = F) +
+#   geom_text(data=data_textD, aes(x=180, y=0.25, label=label), size=6, parse = TRUE) +
+# 
+#   scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab1) +
+#   scale_shape_manual(values = c(16, 1), name="", labels = lab2) +
+#   scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
+#   
+#   
+#   scale_x_continuous(breaks=seq(0, 180, by = 40)) +
+#   scale_y_continuous(breaks=seq(0, 0.3, by = 0.1)) +
+#   coord_cartesian(xlim = c (0, 180), ylim = c (0, 0.3)) +
+#   # guides(colour = FALSE) +
+#   #ggh4x::facet_nested(rows = vars(O2), cols = vars(Strain), labeller = label_parsed) +
+#   #labs(y = "µ " ~ "("~d^-1~")", x = "waveband (nm)") +
+#   labs(y = "µ " ~ "("~d^-1~")", x = "PUR ( µmol photons "~m^-2~""~s^-1~")") +
+#   ggh4x::facet_nested(rows = vars(Strain), labeller = label_parsed) +
+#  #ggh4x::facet_nested(cols = vars(Strain), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
+#   theme_bw() +
+#   theme(panel.grid.minor = element_blank(),
+#         panel.grid.major = element_blank(),
+#         panel.spacing.x = unit(0.4, 'cm'),
+#         axis.text = element_text(size=12),
+#         axis.text.x = element_text(size=12),
+#         axis.title = element_text(size=16),
+#         strip.background = element_rect(fill="white"),
+#         strip.text = element_text(size=12),
+#         axis.title.y = element_text(margin=margin(r=10)),
+#         axis.title.x = element_text(margin=margin(t=10)),
+#         legend.background = element_rect(fill="transparent"),
+#         legend.key = element_blank(),
+#         legend.title = element_blank(),
+#         legend.position = c(0.10,0.99),
+#         legend.text = element_text(size=10))
+# GrowthPURPlot
 
 
 
@@ -871,11 +794,11 @@ GrowthPURPlot
 --------------- Linear fit -------------------
 
 ```{r}
-MCGrowthRateTrimlinear <- MCGrowthRateTrim %>%   
+MCGrowthRateSelectlinear <- MCGrowthRateSelect %>%   
   #drop_na(Par_ue, Ex_WL, Phase, meanSig_nm2psii, AllmeanPhycoChlaRatio) %>% 
-  select(c(Strain, deltaOD_Lmu_corr, meanPUR, O2, WL)) %>%  
-  nest(data = -c("O2", "Strain")) %>%   
-  mutate(Linear_Model = map(data, ~lm(deltaOD_Lmu_corr ~ 0 + meanPUR, data = .x))) %>%     
+  select(c(Strain, deltaOD_Lmu_corr, PUR, Phase, Par_ue, WL)) %>%  
+  nest(data = -c("Phase", "Strain")) %>%   
+  mutate(Linear_Model = map(data, ~lm(deltaOD_Lmu_corr ~ 0 + PUR, data = .x))) %>%     
   mutate(Linear_Model_Param = map(Linear_Model, tidy),          
          Linear_Model_Predict = map(Linear_Model, possibly(augment)),          
          Linear_Model_Glance = map(Linear_Model, possibly(glance)))
@@ -883,127 +806,140 @@ MCGrowthRateTrimlinear <- MCGrowthRateTrim %>%
 
 -------------------------
 
+
+t-test from the linear model Phase
+```{r}
+# Strain across Phase
+Stats77_ExpSt<-MCGrowthRateSelect %>%
+  filter(Strain == "PC-rich") 
+  fit <- lm(deltaOD_Lmu_corr ~ PUR + Phase + PUR:Phase, data=Stats77_ExpSt)
+x <- cbind(t(as.numeric(coefficients(fit))), t(as.numeric(summary(fit)$coefficients[4, 4])), t(as.numeric(summary(fit)$coefficients[4, 3])), t(as.numeric(summary(fit)$coefficients[4, 2])))
+model_77021<-data.frame(unclass(x), check.names = FALSE, stringsAsFactors = FALSE) %>% 
+  rename("Estimate" = "4", "Std.Error" = "7", "t_value" = "6", "p_value" = "5") %>% 
+  select(c("Estimate", "Std.Error", "t_value", "p_value"))
+  model_77021$FitComparison <- 'PC-rich_Exp:ExpResupply'
+
+
+Stats127_ExpSt<-MCGrowthRateSelect %>%
+  filter(Strain == "PE-rich") 
+  fit <- lm(deltaOD_Lmu_corr ~ PUR + Phase + PUR:Phase, data=Stats127_ExpSt)
+x <- cbind(t(as.numeric(coefficients(fit))), t(as.numeric(summary(fit)$coefficients[4, 4])), t(as.numeric(summary(fit)$coefficients[4, 3])), t(as.numeric(summary(fit)$coefficients[4, 2])))
+model_127021<-data.frame(unclass(x), check.names = FALSE, stringsAsFactors = FALSE) %>% 
+  rename("Estimate" = "4", "Std.Error" = "7", "t_value" = "6", "p_value" = "5") %>% 
+  select(c("Estimate", "Std.Error", "t_value", "p_value"))
+  model_127021$FitComparison <- 'PE-rich_Exp:ExpResupply'
+
+modelPhase<-rbind(model_77021, model_127021)
+  rm(model_77021, model_127021)
+  
+  
+
+# Phase across Strain
+Stats77_ExpSt<-MCGrowthRateSelect %>%
+  filter(Phase == "Exp") 
+  fit <- lm(deltaOD_Lmu_corr ~ PUR + Strain + PUR:Strain, data=Stats77_ExpSt)
+x <- cbind(t(as.numeric(coefficients(fit))), t(as.numeric(summary(fit)$coefficients[4, 4])), t(as.numeric(summary(fit)$coefficients[4, 3])), t(as.numeric(summary(fit)$coefficients[4, 2])))
+model_077127<-data.frame(unclass(x), check.names = FALSE, stringsAsFactors = FALSE) %>% 
+  rename("Estimate" = "4", "Std.Error" = "7", "t_value" = "6", "p_value" = "5") %>% 
+  select(c("Estimate", "Std.Error", "t_value", "p_value"))
+  model_077127$FitComparison <- 'Exp_PC-rich:PE-rich'
+
+
+Stats127_ExpSt<-MCGrowthRateSelect %>%
+  filter(Phase == "ExpResupply") 
+  fit <- lm(deltaOD_Lmu_corr ~ PUR + Strain + PUR:Strain, data=Stats127_ExpSt)
+x <- cbind(t(as.numeric(coefficients(fit))), t(as.numeric(summary(fit)$coefficients[4, 4])), t(as.numeric(summary(fit)$coefficients[4, 3])), t(as.numeric(summary(fit)$coefficients[4, 2])))
+model_2177127<-data.frame(unclass(x), check.names = FALSE, stringsAsFactors = FALSE) %>% 
+  rename("Estimate" = "4", "Std.Error" = "7", "t_value" = "6", "p_value" = "5") %>% 
+  select(c("Estimate", "Std.Error", "t_value", "p_value"))
+  model_2177127$FitComparison <- 'ExpResupply_PC-rich:PE-rich'
+
+modelStrain<-rbind(model_077127, model_2177127)
+  rm(model_077127, model_2177127)
+  
+```
+
+
+# Merge statistic
+```{r}
+Anova_GrowthPUR<-rbind(modelPhase, modelStrain)
+rm(modelO2, modelStrain)
+```
+
+
+# Save RDS that create stats and tables
+
+```{r}
+saveRDS(Anova_GrowthPUR, file.path(TableRdsPath, paste(Project, "Anova_GrowthPUR_Model.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
+```
+
+
+
+
+
 # Checking if slope significantly different than 0
 ```{r}
-GrowthJVPSIIPE21<-MCGrowthRateTrim %>% 
+GrowthPURPEExp<-MCGrowthRateSelect %>% 
   filter(Strain == "PE-rich") %>% 
-  filter(O2 == 21)
-PE21lm<-lm(deltaOD_Lmu_corr~ 0 + meanPUR, data=GrowthJVPSIIPE21)
-GrowthJVPSIIPE21lm<-summary(PE21lm)
+  filter(Phase == "Exp")
+PEExplm<-lm(deltaOD_Lmu_corr~ 0 + PUR, data=GrowthPURPEExp)
+GrowthPURPEExplm<-summary(PEExplm)
 # Coefficients:
-#          Estimate Std. Error t value Pr(>|t|)   
-# meanPUR 0.0008797  0.0001900    4.63   0.0024 **
+#        Estimate   Std. Error  t value     Pr(>|t|)
+# PUR 0.007894869 0.0002693082 29.31537 8.717029e-05
 
 
-GrowthJVPSIIPE0<-MCGrowthRateTrim %>% 
+GrowthPURPEExpResupply<-MCGrowthRateSelect %>% 
   filter(Strain == "PE-rich") %>% 
-  filter(O2 == 0)
-PE0lm<-lm(deltaOD_Lmu_corr~ 0 + meanPUR, data=GrowthJVPSIIPE0)
-GrowthJVPSIIPE0lm<-summary(PE0lm)
+  filter(Phase == "ExpResupply")
+PEExpResupplylm<-lm(deltaOD_Lmu_corr~ 0 + PUR, data=GrowthPURPEExpResupply)
+GrowthPURPEExpResupplylm<-summary(PEExpResupplylm)
 # Coefficients:
-#          Estimate Std. Error t value Pr(>|t|)  
-# meanPUR 0.0009282  0.0004148   2.238   0.0666 .
+#        Estimate   Std. Error  t value    Pr(>|t|)
+# PUR 0.005986438 0.0006696453 8.939715 0.002953076
 
 
-GrowthJVPSIIPC21<-MCGrowthRateTrim %>% 
+GrowthPURPCExp<-MCGrowthRateSelect %>% 
   filter(Strain == "PC-rich") %>% 
-  filter(O2 == 21)
-PC21lm<-lm(deltaOD_Lmu_corr~ 0 + meanPUR, data=GrowthJVPSIIPC21)
-GrowthJVPSIIPC21lm<-summary(PC21lm)
+  filter(Phase == "Exp")
+PCExplm<-lm(deltaOD_Lmu_corr~ 0 + PUR, data=GrowthPURPCExp)
+GrowthPURPCExplm<-summary(PCExplm)
 # Coefficients:
-#          Estimate Std. Error t value Pr(>|t|)  
-# meanPUR 0.0008525  0.0003316   2.571     0.05 *
+#       Estimate  Std. Error  t value   Pr(>|t|)
+# PUR 0.01173578 0.002323907 5.050023 0.01497774
 
 
-GrowthJVPSIIPC0<-MCGrowthRateTrim %>% 
+GrowthPURPCExpResupply<-MCGrowthRateSelect %>% 
   filter(Strain == "PC-rich") %>% 
-  filter(O2 == 0)
-PC0lm<-lm(deltaOD_Lmu_corr~ 0 + meanPUR, data=GrowthJVPSIIPC0)
-GrowthJVPSIIPC0lm<-summary(PC0lm)
+  filter(Phase == "ExpResupply")
+PCExpResupplylm<-lm(deltaOD_Lmu_corr~ 0 + PUR, data=GrowthPURPCExpResupply)
+GrowthPURPCExpResupplylm<-summary(PCExpResupplylm)
 # Coefficients:
-#          Estimate Std. Error t value Pr(>|t|)    
-# meanPUR 0.0007436  0.0001654   4.496 0.000601 ***
+#        Estimate  Std. Error  t value  Pr(>|t|)
+# PUR 0.006886862 0.001931022 3.566433 0.0376474
 
 ```
 
-
-
-
-# Save plot 
-
-```{r save plot}
-#ggsave(file = file.path(FigPath, paste("SFig_GrowthRatevsPUR",".png",sep = "")), height=5.5, width= 6,  dpi = 300, limitsize = TRUE)
-```
 
 
 # Save Rds for further analysis
 
 ```{r save rds}
-saveRDS(MCGrowthRate, file.path(DataOut, paste(Project, "Processed_GrowthRatePUR.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
+saveRDS(MCGrowthRateSelect, file.path(DataOut, paste(Project, "Processed_GrowthRatePURSelect.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
 
 ```
 
 
 
-------------------------------# Support Vector regression---------------------------------------------------
-
-https://www.geeksforgeeks.org/support-vector-regression-svr-using-linear-and-non-linear-kernels-in-scikit-learn/
-
-https://minimatech.org/non-linear-regression-with-r/
-
-# Support Vector regression
-
-```{r libraries}
-
-# library(zoo)
-# library(e1071)
-# library(gcookbook)  # Load gcookbook for the uspopage data set
-
-```
-
-```{r}
-# MCDataHourSVR <- MultiCultiGrowth 
-# 
-# 
-# # Function to train an SVM model and make predictions
-# train_and_predict_svm <- function(data) {
-#   svr_model <- svm(deltaOD_Lmu_corr ~ WLNum, data = data, kernel = 'radial',
-#                    cost = 5, gamma = 1)
-#   data$svr_pred <- predict(svr_model, data)
-#   return(data)
-# }
-# 
-# # Group by Tube, train SVM model, and make predictions within each group
-# MCDataHourSVR <- MCDataHourSVR %>%
-#   group_by(Strain, O2, Oxygen) %>%
-#   nest() %>%
-#   mutate(data = map(data, train_and_predict_svm)) %>%
-#   unnest(data) %>%
-#   ungroup()
-# 
-# # Calculate the root mean squared error for each group
-# RMSE_by_Tube <- MCDataHourSVR %>%
-#   group_by(Strain, O2, Oxygen) %>%
-#   summarise(RMSE = sqrt(mean((deltaOD_Lmu_corr - svr_pred)^2)))
-
-```
 
 
-```{r}
-# MCDataHourSVR %>%
-# 
-#   ggplot() +
-#   geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr), alpha = 0.4) +
-#   geom_line(aes(x = WLNum, y = svr_pred, color = 'SVR_radial')) +
-#   geom_line(aes(x = WLNum, y = deltaOD_Lmu_corr)) +
-# 
-#   facet_grid(rows = vars(Strain), cols = vars (O2)) +
-#   theme_bw()
-```
+
+# Plot Delta with fancy looking legend
 
 ```{r Create plot}
 # lab1=c(expression("PC-rich"), expression("PE-rich"))
 # lab2=c(expression("2.5 µM"), expression("250 µM"))
+# 
 # 
 # MultiCultiGrowthPC21<-MultiCultiGrowth %>% 
 #   filter(Strain == "PC-rich") %>% 
@@ -1036,17 +972,17 @@ https://minimatech.org/non-linear-regression-with-r/
 #     geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr), colour = "palegreen3", shape = 16, size = 4, show.legend = F, MultiCultiGrowthPC0) +
 #     geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr), colour = "brown4", shape = 16, size = 4, show.legend = F, MultiCultiGrowthPE0) +
 #   
-#   #geom_line(aes(x = WLNum, y = deltaOD_Lmu_corr, linetype = as.factor(O2)), show.legend = T, MultiCultiGrowth) +
+#   geom_line(aes(x = WLNum, y = deltaOD_Lmu_corr, linetype = as.factor(O2)), show.legend = T, MultiCultiGrowth) +
 # 
 #   geom_errorbar(aes(x = WLNum, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se, colour = as.factor(Strain)), width=0, size=0.3, show.legend = F, MultiCultiGrowth) +
-#   
-#   geom_line(aes(x = WLNum, y = svr_pred, linetype = as.factor(O2)), size = 0.6, show.legend = T, MCDataHourSVR) +
+#     #geom_line(aes(x = WLNum, y = deltaOD_Lmu_corr, linetype = as.factor(O2)), size = 0.6, show.legend = T) +
+#   #geom_line(aes(x = WLNum, y = svr_pred, linetype = as.factor(O2)), size = 0.6, show.legend = T, MCDataHourSVR) +
 #   
 #   scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
 #   scale_shape_manual(values = c(16, 1), name="", labels = lab2) +
 #   scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
 #   
-#   stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -0.09, alpha = 0.5) +
+#   stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -0.035, alpha = 0.5) +
 #   scale_fill_identity() +
 #   labs(y = "µ " ~ "("~d^-1~") and normalized emission spectra", x = "Growth waveband (nm)") +
 #   ggh4x::facet_nested(rows = vars(Strain), labeller = label_parsed) +
@@ -1071,159 +1007,19 @@ https://minimatech.org/non-linear-regression-with-r/
 # Save plot 
 
 ```{r save plot}
-#ggsave(file = file.path(FigPath, paste("Fig_GrowthRate",".png",sep = "")), height=6, width= 6,  dpi = 300, limitsize = TRUE)
+# ggsave(file = file.path(FigPath, paste("Fig_GrowthRateDelta",".png",sep = "")), height=6, width= 6,  dpi = 300, limitsize = TRUE)
 ```
 
 
-# Plot Delta
 
-```{r Create plot}
-lab1=c(expression("PC-rich"), expression("PE-rich"))
-lab2=c(expression("2.5 µM"), expression("250 µM"))
-
-
-MultiCultiGrowthPC21<-MultiCultiGrowth %>% 
-  filter(Strain == "PC-rich") %>% 
-  filter(O2 == 21)
-MultiCultiGrowthPE21<-MultiCultiGrowth %>% 
-  filter(Strain == "PE-rich") %>% 
-    filter(O2 == 21)
-  
-MultiCultiGrowthPC0<-MultiCultiGrowth %>% 
-  filter(Strain == "PC-rich") %>% 
-  filter(O2 == 0)
-MultiCultiGrowthPE0<-MultiCultiGrowth %>% 
-  filter(Strain == "PE-rich") %>% 
-    filter(O2 == 0)
-
-JazDataRoundMeta2 %>%
-  ggplot() +
-  geom_area(aes(x = nm, y = EmNormJaz722/10, fill = "indianred4"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz647/10, fill = "brown1"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz612/10, fill = "coral"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz521/10, fill = "limegreen"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz469/10, fill = "lightseagreen"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz441/10, fill = "steelblue3"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz393/10, fill = "royalblue4"), alpha = 0.1, show.legend = F) +
-  
-  geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr, shape = as.factor(O2)), size = 4, show.legend = T, MultiCultiGrowth) +
-  
-    geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr), colour = "palegreen3", shape = 1, size = 4, show.legend = F, MultiCultiGrowthPC21) +
-    geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr), colour = "brown4", shape = 1, size = 4, show.legend = F, MultiCultiGrowthPE21) +
-    geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr), colour = "palegreen3", shape = 16, size = 4, show.legend = F, MultiCultiGrowthPC0) +
-    geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr), colour = "brown4", shape = 16, size = 4, show.legend = F, MultiCultiGrowthPE0) +
-  
-  geom_line(aes(x = WLNum, y = deltaOD_Lmu_corr, linetype = as.factor(O2)), show.legend = T, MultiCultiGrowth) +
-
-  geom_errorbar(aes(x = WLNum, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se, colour = as.factor(Strain)), width=0, size=0.3, show.legend = F, MultiCultiGrowth) +
-    #geom_line(aes(x = WLNum, y = deltaOD_Lmu_corr, linetype = as.factor(O2)), size = 0.6, show.legend = T) +
-  #geom_line(aes(x = WLNum, y = svr_pred, linetype = as.factor(O2)), size = 0.6, show.legend = T, MCDataHourSVR) +
-  
-  scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
-  scale_shape_manual(values = c(16, 1), name="", labels = lab2) +
-  scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
-  
-  stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -0.035, alpha = 0.5) +
-  scale_fill_identity() +
-  labs(y = "µ " ~ "("~d^-1~") and normalized emission spectra", x = "Growth waveband (nm)") +
-  ggh4x::facet_nested(rows = vars(Strain), labeller = label_parsed) +
-  theme_bw() +
-  theme(panel.grid.minor = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.spacing.x = unit(0.4, 'cm'),
-        axis.text = element_text(size=12),
-        axis.text.x = element_text(size=12),
-        axis.title = element_text(size=16),
-        strip.background = element_rect(fill="white"),
-        strip.text = element_text(size=12),
-        axis.title.y = element_text(margin=margin(r=10)),
-        axis.title.x = element_text(margin=margin(t=10)),
-        legend.background = element_rect(fill="transparent"),
-        legend.key = element_blank(),
-        legend.title = element_blank(),
-        legend.position = c(0.10,0.90),
-        legend.text = element_text(size=10))
-```
-
-# Save plot 
-
-```{r save plot}
-ggsave(file = file.path(FigPath, paste("Fig_GrowthRateDelta",".png",sep = "")), height=6, width= 6,  dpi = 300, limitsize = TRUE)
-```
-
-#Plot OD720
-
-```{r Create plot}
-lab1=c(expression("PC-rich"), expression("PE-rich"))
-lab2=c(expression("2.5 µM"), expression("250 µM"))
+CCA - finished here for now
+----------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
 
 
-MultiCultiGrowthPC21<-MultiCultiGrowth %>% 
-  filter(Strain == "PC-rich") %>% 
-  filter(O2 == 21)
-MultiCultiGrowthPE21<-MultiCultiGrowth %>% 
-  filter(Strain == "PE-rich") %>% 
-    filter(O2 == 21)
-  
-MultiCultiGrowthPC0<-MultiCultiGrowth %>% 
-  filter(Strain == "PC-rich") %>% 
-  filter(O2 == 0)
-MultiCultiGrowthPE0<-MultiCultiGrowth %>% 
-  filter(Strain == "PE-rich") %>% 
-    filter(O2 == 0)
 
-JazDataRoundMeta2 %>%
-  ggplot() +
-  geom_area(aes(x = nm, y = EmNormJaz722/10, fill = "indianred4"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz647/10, fill = "brown1"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz612/10, fill = "coral"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz521/10, fill = "limegreen"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz469/10, fill = "lightseagreen"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz441/10, fill = "steelblue3"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz393/10, fill = "royalblue4"), alpha = 0.1, show.legend = F) +
-  
-  geom_point(aes(x = WLNum, y = OD720_Lmu_corr, shape = as.factor(O2)), size = 4, show.legend = T, MultiCultiGrowth) +
-  
-    geom_point(aes(x = WLNum, y = OD720_Lmu_corr), colour = "palegreen3", shape = 1, size = 4, show.legend = F, MultiCultiGrowthPC21) +
-    geom_point(aes(x = WLNum, y = OD720_Lmu_corr), colour = "brown4", shape = 1, size = 4, show.legend = F, MultiCultiGrowthPE21) +
-    geom_point(aes(x = WLNum, y = OD720_Lmu_corr), colour = "palegreen3", shape = 16, size = 4, show.legend = F, MultiCultiGrowthPC0) +
-    geom_point(aes(x = WLNum, y = OD720_Lmu_corr), colour = "brown4", shape = 16, size = 4, show.legend = F, MultiCultiGrowthPE0) +
-  
-  geom_line(aes(x = WLNum, y = OD720_Lmu_corr, linetype = as.factor(O2)), show.legend = T, MultiCultiGrowth) +
 
-  geom_errorbar(aes(x = WLNum, ymin = OD720_Lmu_corr - OD720_Lmu_se, ymax = OD720_Lmu_corr + OD720_Lmu_se, colour = as.factor(Strain)), width=0, size=0.3, show.legend = F, MultiCultiGrowth) +
-    #geom_line(aes(x = WLNum, y = deltaOD_Lmu_corr, linetype = as.factor(O2)), size = 0.6, show.legend = T) +
-  #geom_line(aes(x = WLNum, y = svr_pred, linetype = as.factor(O2)), size = 0.6, show.legend = T, MCDataHourSVR) +
-  
-  scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
-  scale_shape_manual(values = c(16, 1), name="", labels = lab2) +
-  scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
-  
-  stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -0.055, alpha = 0.5) +
-  scale_fill_identity() +
-  labs(y = "µ " ~ "("~d^-1~") and normalized emission spectra", x = "Growth waveband (nm)") +
-  ggh4x::facet_nested(rows = vars(Strain), labeller = label_parsed) +
-  theme_bw() +
-  theme(panel.grid.minor = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.spacing.x = unit(0.4, 'cm'),
-        axis.text = element_text(size=12),
-        axis.text.x = element_text(size=12),
-        axis.title = element_text(size=16),
-        strip.background = element_rect(fill="white"),
-        strip.text = element_text(size=12),
-        axis.title.y = element_text(margin=margin(r=10)),
-        axis.title.x = element_text(margin=margin(t=10)),
-        legend.background = element_rect(fill="transparent"),
-        legend.key = element_blank(),
-        legend.title = element_blank(),
-        legend.position = c(0.10,0.90),
-        legend.text = element_text(size=10))
-```
 
-```{r save plot}
-ggsave(file = file.path(FigPath, paste("SFig_GrowthRateOD720",".png",sep = "")), height=6, width= 6,  dpi = 300, limitsize = TRUE)
-```
 
 
 --------------------------------------- Growth rate vs pigments -----------------------------
@@ -1352,6 +1148,7 @@ SolFitsAllPigmentfitPhycoChlalinear %>%
   ggh4x::facet_nested(rows = vars(Strain, O2), labeller = label_parsed) +
   theme_bw() 
 ```
+
 t-test from the linear model Phase
 ```{r}
 # Strain across O2
@@ -1490,6 +1287,133 @@ FigGrowthPig
 ```
 
 
+------------------------------# Support Vector regression---------------------------------------------------
 
+https://www.geeksforgeeks.org/support-vector-regression-svr-using-linear-and-non-linear-kernels-in-scikit-learn/
+
+https://minimatech.org/non-linear-regression-with-r/
+
+# Support Vector regression
+
+```{r libraries}
+
+# library(zoo)
+# library(e1071)
+# library(gcookbook)  # Load gcookbook for the uspopage data set
+
+```
+
+```{r}
+# MCDataHourSVR <- MultiCultiGrowth 
+# 
+# 
+# # Function to train an SVM model and make predictions
+# train_and_predict_svm <- function(data) {
+#   svr_model <- svm(deltaOD_Lmu_corr ~ WLNum, data = data, kernel = 'radial',
+#                    cost = 5, gamma = 1)
+#   data$svr_pred <- predict(svr_model, data)
+#   return(data)
+# }
+# 
+# # Group by Tube, train SVM model, and make predictions within each group
+# MCDataHourSVR <- MCDataHourSVR %>%
+#   group_by(Strain, O2, Oxygen) %>%
+#   nest() %>%
+#   mutate(data = map(data, train_and_predict_svm)) %>%
+#   unnest(data) %>%
+#   ungroup()
+# 
+# # Calculate the root mean squared error for each group
+# RMSE_by_Tube <- MCDataHourSVR %>%
+#   group_by(Strain, O2, Oxygen) %>%
+#   summarise(RMSE = sqrt(mean((deltaOD_Lmu_corr - svr_pred)^2)))
+
+```
+
+
+```{r}
+# MCDataHourSVR %>%
+# 
+#   ggplot() +
+#   geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr), alpha = 0.4) +
+#   geom_line(aes(x = WLNum, y = svr_pred, color = 'SVR_radial')) +
+#   geom_line(aes(x = WLNum, y = deltaOD_Lmu_corr)) +
+# 
+#   facet_grid(rows = vars(Strain), cols = vars (O2)) +
+#   theme_bw()
+```
+
+```{r Create plot}
+# lab1=c(expression("PC-rich"), expression("PE-rich"))
+# lab2=c(expression("2.5 µM"), expression("250 µM"))
+# 
+# MultiCultiGrowthPC21<-MultiCultiGrowth %>% 
+#   filter(Strain == "PC-rich") %>% 
+#   filter(O2 == 21)
+# MultiCultiGrowthPE21<-MultiCultiGrowth %>% 
+#   filter(Strain == "PE-rich") %>% 
+#     filter(O2 == 21)
+#   
+# MultiCultiGrowthPC0<-MultiCultiGrowth %>% 
+#   filter(Strain == "PC-rich") %>% 
+#   filter(O2 == 0)
+# MultiCultiGrowthPE0<-MultiCultiGrowth %>% 
+#   filter(Strain == "PE-rich") %>% 
+#     filter(O2 == 0)
+# 
+# JazDataRoundMeta2 %>%
+#   ggplot() +
+#   geom_area(aes(x = nm, y = EmNormJaz722/10, fill = "indianred4"), alpha = 0.1, show.legend = F) +
+#   geom_area(aes(x = nm, y = EmNormJaz647/10, fill = "brown1"), alpha = 0.1, show.legend = F) +
+#   geom_area(aes(x = nm, y = EmNormJaz612/10, fill = "coral"), alpha = 0.1, show.legend = F) +
+#   geom_area(aes(x = nm, y = EmNormJaz521/10, fill = "limegreen"), alpha = 0.1, show.legend = F) +
+#   geom_area(aes(x = nm, y = EmNormJaz469/10, fill = "lightseagreen"), alpha = 0.1, show.legend = F) +
+#   geom_area(aes(x = nm, y = EmNormJaz441/10, fill = "steelblue3"), alpha = 0.1, show.legend = F) +
+#   geom_area(aes(x = nm, y = EmNormJaz393/10, fill = "royalblue4"), alpha = 0.1, show.legend = F) +
+#   
+#   geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr, shape = as.factor(O2)), size = 4, show.legend = T, MultiCultiGrowth) +
+#   
+#     geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr), colour = "palegreen3", shape = 1, size = 4, show.legend = F, MultiCultiGrowthPC21) +
+#     geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr), colour = "brown4", shape = 1, size = 4, show.legend = F, MultiCultiGrowthPE21) +
+#     geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr), colour = "palegreen3", shape = 16, size = 4, show.legend = F, MultiCultiGrowthPC0) +
+#     geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr), colour = "brown4", shape = 16, size = 4, show.legend = F, MultiCultiGrowthPE0) +
+#   
+#   #geom_line(aes(x = WLNum, y = deltaOD_Lmu_corr, linetype = as.factor(O2)), show.legend = T, MultiCultiGrowth) +
+# 
+#   geom_errorbar(aes(x = WLNum, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se, colour = as.factor(Strain)), width=0, size=0.3, show.legend = F, MultiCultiGrowth) +
+#   
+#   geom_line(aes(x = WLNum, y = svr_pred, linetype = as.factor(O2)), size = 0.6, show.legend = T, MCDataHourSVR) +
+#   
+#   scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
+#   scale_shape_manual(values = c(16, 1), name="", labels = lab2) +
+#   scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
+#   
+#   stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -0.09, alpha = 0.5) +
+#   scale_fill_identity() +
+#   labs(y = "µ " ~ "("~d^-1~") and normalized emission spectra", x = "Growth waveband (nm)") +
+#   ggh4x::facet_nested(rows = vars(Strain), labeller = label_parsed) +
+#   theme_bw() +
+#   theme(panel.grid.minor = element_blank(),
+#         panel.grid.major = element_blank(),
+#         panel.spacing.x = unit(0.4, 'cm'),
+#         axis.text = element_text(size=12),
+#         axis.text.x = element_text(size=12),
+#         axis.title = element_text(size=16),
+#         strip.background = element_rect(fill="white"),
+#         strip.text = element_text(size=12),
+#         axis.title.y = element_text(margin=margin(r=10)),
+#         axis.title.x = element_text(margin=margin(t=10)),
+#         legend.background = element_rect(fill="transparent"),
+#         legend.key = element_blank(),
+#         legend.title = element_blank(),
+#         legend.position = c(0.10,0.90),
+#         legend.text = element_text(size=10))
+```
+
+# Save plot 
+
+```{r save plot}
+#ggsave(file = file.path(FigPath, paste("Fig_GrowthRate",".png",sep = "")), height=6, width= 6,  dpi = 300, limitsize = TRUE)
+```
 
 
