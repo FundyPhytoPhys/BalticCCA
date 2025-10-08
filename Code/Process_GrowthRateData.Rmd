@@ -608,25 +608,52 @@ PUR - Exp and ExpResupply - Run 70
 - co zrobic: wywalic run 0, zmienic na 70. Wyrzucic lub zmienic SampleID. Zrobic filtr i wyrzucuc na razie reszte run.
 
 
+
+
+
+
+
+
+
 # For prelim plot for now
 ```{r}
-MultiCultiGrowthSelect <-MultiCultiGrowth %>% 
-  filter(Run == 70 | Run == 0) 
-
-MultiCultiGrowthSelect <-MultiCultiGrowthSelect %>% 
-    mutate(Run=case_when(Run==70~70,
-         Run==0~70))
-
-MultiCultiGrowthSelect <-MultiCultiGrowthSelect %>% 
-    mutate(SampleID=case_when(SampleID=="SySl1242"~"SySl1242", SampleID=="SySl1243"~"SySl1243", SampleID=="SySl1244"~"SySl1244", SampleID=="SySl1245"~"SySl1245", SampleID=="SySl1246"~"SySl1246", SampleID=="SySl1247"~"SySl1247", SampleID=="SySl1248"~"SySl1248", SampleID=="SySl1249"~"SySl1249", 
-                              
-                                 SampleID=="SySl1348"~"SySl1242", SampleID=="SySl1349"~"SySl1243", SampleID=="SySl1350"~"SySl1244", SampleID=="SySl1351"~"SySl1245", SampleID=="SySl1352"~"SySl1246", SampleID=="SySl1353"~"SySl1247", SampleID=="SySl1354"~"SySl1248", SampleID=="SySl1355"~"SySl1249" 
-                         
-                              ))
+# MultiCultiGrowthSelect <-MultiCultiGrowth %>% 
+#   filter(Run == 70 | Run == 0) 
+# 
+# MultiCultiGrowthSelect <-MultiCultiGrowthSelect %>% 
+#     mutate(Run=case_when(Run==70~70,
+#          Run==0~70))
+# 
+# MultiCultiGrowthSelect <-MultiCultiGrowthSelect %>% 
+#     mutate(SampleID=case_when(SampleID=="SySl1242"~"SySl1242", SampleID=="SySl1243"~"SySl1243", SampleID=="SySl1244"~"SySl1244", SampleID=="SySl1245"~"SySl1245", SampleID=="SySl1246"~"SySl1246", SampleID=="SySl1247"~"SySl1247", SampleID=="SySl1248"~"SySl1248", SampleID=="SySl1249"~"SySl1249", 
+#                               
+#                                  SampleID=="SySl1348"~"SySl1242", SampleID=="SySl1349"~"SySl1243", SampleID=="SySl1350"~"SySl1244", SampleID=="SySl1351"~"SySl1245", SampleID=="SySl1352"~"SySl1246", SampleID=="SySl1353"~"SySl1247", SampleID=="SySl1354"~"SySl1248", SampleID=="SySl1355"~"SySl1249" 
+#                          
+#                               ))
 ```
 
 
+```{r}
+#colnames(MultiCultiGrowth)
+MultiCultiGrowthSelect <- MultiCultiGrowth %>%
+  filter(deltaOD_Lmu_corr > 0) %>% 
+  filter(Run == 70 | Run == 0) %>% 
+  select(c(Strain, Par_ue, Photoperiod, WL, O2, PARPhotonDose_day, OD720_Lmu_se, OD720_Lmu_corr, deltaOD_Lmu_se, deltaOD_Lmu_corr, Phase))
 
+#ExpDate
+  # select(c(Tube, ExpDate, MC, Strain, Par_ue, Photoperiod, WL, O2, LightShape, PARPhotonDose_day, OD720_Lmu_se, OD720_Lmu_corr, deltaOD_Lmu_se, deltaOD_Lmu_corr, Phase))
+
+
+MultiCultiGrowthSelect %>%
+  ggplot() +
+  geom_point(aes(x = WL, y = deltaOD_Lmu_corr,colour=as.factor(Phase)), size = 3.5, alpha = 0.9, show.legend = T) +
+  #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), size = 1, alpha = 0.9, show.legend = T) +
+  # geom_smooth(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), size = 1, alpha = 0.2, show.legend = T, method = "lm") +
+  geom_errorbar(aes(x = WL, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+    ggh4x::facet_nested(rows = vars(Strain),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+    ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw()
+```
 
 
 -------------------------------------------------------------------------------------------
@@ -651,10 +678,31 @@ Olis <- readRDS(OlisFile)  %>%
 
 ```
 
+
+```{r}
+
+OlisSelect <- Olis %>%
+  filter(Phase!= "St") %>% 
+  filter(WL!= "WW") %>% 
+  filter(Run == 70 | Run == 68 | Run == 63) %>% 
+  filter(E_days == 2 | E_days == 16) 
+
+
+OlisSelect %>%
+  ggplot() +
+  geom_point(aes(x = WL, y = PUR, colour = as.factor(Phase)), size = 4, show.legend = T) +
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+```
+
+
+
+
+
 # For prelim plot for now
 ```{r}
-OlisSelect <-Olis %>%
-  filter(Phase != "St")
+# OlisSelect <-Olis %>%
+#   filter(Phase != "St")
 ```
 
 
@@ -667,8 +715,8 @@ OlisSelect <-Olis %>%
 #     mutate(Strain=case_when(Strain=="PE-rich_127"~"PE-rich",
 #          Strain=="PC-rich_077"~"PC-rich"))
 
-MCGrowthRateSelect <- OlisSelect %>% 
-  left_join(., MultiCultiGrowthSelect, by = c("Run" = "Run", "SampleID" = "SampleID","Strain" = "Strain", "Par_ue" = "Par_ue", "Photoperiod" = "Photoperiod",  "O2" = "O2", "WL" = "WL", "ExpDate" = "ExpDate", "PARPhotonDose_day" = "PARPhotonDose_day", "Phase" = "Phase")) 
+MCGrowthRateSelect <- MultiCultiGrowthSelect %>% 
+  left_join(., OlisSelect, by = c("Strain" = "Strain", "Par_ue" = "Par_ue", "Photoperiod" = "Photoperiod",  "O2" = "O2", "WL" = "WL", "PARPhotonDose_day" = "PARPhotonDose_day", "Phase" = "Phase")) 
   
 
 ```
@@ -677,15 +725,25 @@ MCGrowthRateSelect <- OlisSelect %>%
 #Prelim plot u vs PUR
 ```{r}
 MCGrowthRateSelect %>%
-filter(Phase != "St") %>% 
   ggplot() +
   geom_point(aes(x = PUR, y = deltaOD_Lmu_corr,colour=as.factor(Phase)), size = 3.5, alpha = 0.9, show.legend = T) +
     # geom_smooth(aes(x = PUR, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), size = 1, alpha = 0.2, show.legend = T, method = "lm") +
   #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
-  # geom_errorbar(aes(x = PUR, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+  geom_errorbar(aes(x = PUR, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
 
-  
   ggh4x::facet_nested(rows = vars(Strain),  cols = vars(WL, Par_ue),  labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw()
+
+
+
+MCGrowthRateSelect %>%
+  ggplot() +
+  geom_point(aes(x = PUR, y = deltaOD_Lmu_corr,colour=as.factor(Phase)), size = 3.5, alpha = 0.9, show.legend = T) +
+  geom_smooth(aes(x = PUR, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), size = 1, alpha = 0.2, show.legend = T, method = "lm") +
+  #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
+  geom_errorbar(aes(x = PUR, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+
+  ggh4x::facet_nested(rows = vars(Strain),  labeller = labeller(Ex_WL = label_value, WL = label_value)) +
   theme_bw()
 ```
 
