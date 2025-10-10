@@ -211,13 +211,21 @@ OD680
 # Only run 70 - exp and resuply
 
 
+```{r}
+MultiCultiDataAll$facetsPar_ue = factor(MultiCultiDataAll$O2, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
+MultiCultiDataAll$facetsPhotoperiod = factor(MultiCultiDataAll$O2, labels = c("Photoperiod~(h)"))
+MultiCultiDataAll$facetsStrain = factor(MultiCultiDataAll$O2, labels = c("Strain"))
+```
+
+
+
 # Create GrowthCurve plot
 fig.height = 8, fig.width = 8, warning = FALSE
 ```{r create GrowthCurve plot}
 
-data_textExp <- data.frame(Strain  = c("PC-rich"), Par_ue  = c(60, 300), label = c('Primary growth curve'))
-data_textResup <- data.frame(Strain  = c("PC-rich"), Par_ue  = c(60, 300), label = c('Resupply'))
+data_textExp <- data.frame(facetsPar_ue = c("PAR~(µmol~photons~m^{-2}~s^{-1})"), facetsStrain = c("Strain"), Strain  = c("PC-rich"), Par_ue  = c(60, 300, 60, 300), label = c('Initial growth curve', 'Initial growth curve'))
 
+data_textResup <- data.frame(facetsPar_ue = c("PAR~(µmol~photons~m^{-2}~s^{-1})"), facetsStrain = c("Strain"), Strain  = c("PC-rich"), Par_ue  = c(60, 300, 60, 300), label = c('Resupply', 'Resupply'))
 
 
 data_texta <- data.frame(WL = c("730"), Strain  = c("PC-rich"), label = c('italic(a)'))
@@ -253,7 +261,9 @@ OD680<-MultiCultiDataAll %>%
 
   #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
   #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(Oxygen, levels=c("250~µM","2.5~µM"))), labeller = label_parsed) +
-    ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+    #ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(Par_ue), labeller = label_parsed) +
+    ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(facetsPar_ue, Par_ue), labeller = label_parsed) +
+  
   theme_bw() +
   theme(panel.grid.minor = element_blank(),
         panel.grid.major = element_blank(),
