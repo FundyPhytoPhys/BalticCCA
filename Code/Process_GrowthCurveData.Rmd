@@ -243,8 +243,8 @@ OD680<-MultiCultiDataAll %>%
   geom_line(aes(x = Time_h/24, y = meanOD680_h, colour = as.factor(WL)), size = 0.4, show.legend = T) +
   geom_vline(aes(xintercept = 13.5), linetype = "dashed") +
   
-  geom_text(data=data_textExp, aes(x=6, y=1.2, label=label), size=4) +
-  geom_text(data=data_textResup, aes(x=17, y=1.2, label=label), size=4) +
+  geom_text(data=data_textExp, aes(x=6, y=1.3, label=label), size=4) +
+  geom_text(data=data_textResup, aes(x=17, y=1.3, label=label), size=4) +
   
   
   # 
@@ -258,6 +258,9 @@ OD680<-MultiCultiDataAll %>%
   scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab1) +
   #scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab1) +
   labs(y = "Optical density ("~OD[680]~")", x = "Elapsed time (d)") +
+
+  scale_y_continuous(limits = c(0, 1.5), breaks = c(0, 0.25, 0.50, 0.75, 1, 1.25, 1.5)) +
+  coord_cartesian(ylim = c(0, 1.5)) +
 
   #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
   #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(Oxygen, levels=c("250~µM","2.5~µM"))), labeller = label_parsed) +

@@ -426,6 +426,15 @@ OLISSpectraMetaPUR_Resup2<-OLISSpectraMetaPUR_Resup2 %>%
 
 ```
 
+# Create facet labels
+
+```{r}
+OLISSpectraMetaPUR_Resup2$facetsPar_ue = factor(OLISSpectraMetaPUR_Resup2$O2, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
+OLISSpectraMetaPUR_Resup2$facetsPhotoperiod = factor(OLISSpectraMetaPUR_Resup2$O2, labels = c("Photoperiod~(h)"))
+OLISSpectraMetaPUR_Resup2$facetsStrain = factor(OLISSpectraMetaPUR_Resup2$O2, labels = c("Strain"))
+```
+
+
 
 # Create GrowthCurve plot
 fig.height = 8, fig.width = 8, warning = FALSE
@@ -495,7 +504,7 @@ OLISSpectraMetaPUR_Resup2 %>%
 
 # Create GrowthCurve plot
 fig.height = 8, fig.width = 8, warning = FALSE
-```{r create GrowthCurve plot}
+```{r reate plot, fig.height = 5, fig.width = 7, warning = FALSE}
 
 # data_textExp <- data.frame(Strain  = c("PC-rich"), Par_ue  = c(60, 300), label = c('Exp'))
 # data_textResup <- data.frame(Strain  = c("PC-rich"), Par_ue  = c(60, 300), label = c('Resupply'))
@@ -505,7 +514,7 @@ fig.height = 8, fig.width = 8, warning = FALSE
 # data_texta <- data.frame(WL = c("730"), Strain  = c("PC-rich"), label = c('italic(a)'))
 # 
 # lab1=c(expression("PC-rich"), expression("PE-rich"))
-# lab2=c(expression("Exp"), expression("ExpResupply"))
+lab2=c(expression("Exp"), expression("ExpResupply"))
 
 OLISSpectraMetaPUR_Resup2 %>%
   # filter(WL!= "WW") %>% 
@@ -524,21 +533,23 @@ OLISSpectraMetaPUR_Resup2 %>%
   # 
   #   scale_x_continuous(breaks=seq(0,360,24)) + 
   # coord_cartesian(ylim = c(-0.2, 1.0)) +
+    scale_y_continuous(limits = c(0, 1.5), breaks = c(0, 0.5, 1, 1.5)) +
+  coord_cartesian(ylim = c(0, 1.5)) +
   
   #geom_text(data=data_texta, aes(x=7, y=0.7, label=label), size=6, parse = TRUE) +
   #scale_colour_discrete(type=c("palegreen3", "brown4")) +
   #scale_colour_discrete(type=c("black", "deepskyblue2"), name="", labels = lab1) +
-  # scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
+  scale_colour_manual(values = c("slateblue4", "skyblue3")) +
   # scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab1) +
   #scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab1) +
-  #labs(y = "Optical density ("~OD[680]~")", x = "Elapsed time (d)") +
+  labs(y = "Normalized whole-cell absorbance", x = "Wavelength (nm)") +
 
   #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
   #ggh4x::facet_nested(cols = vars(WL), rows = vars(factor(Oxygen, levels=c("250~µM","2.5~µM"))), labeller = label_parsed) +
   stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = 0, alpha = 0.5) +
   scale_fill_identity() +
   
-  ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
 
   
   theme_bw() +
@@ -553,8 +564,11 @@ OLISSpectraMetaPUR_Resup2 %>%
         axis.title.y = element_text(margin=margin(r=10)),
         axis.title.x = element_text(margin=margin(t=10)),
         legend.background = element_rect(fill="transparent"),
+        legend.position = c(0.09,0.95),
+        legend.key.height= unit(0.003, 'cm'),
+        legend.spacing.y = unit(-0.1, "cm"),
+        legend.spacing.x = unit(-0.1, 'cm'),
         legend.title = element_blank(),
-        legend.position = c(0.07,0.93),
         legend.text = element_text(size=10))
 
 ```
@@ -565,7 +579,7 @@ OLISSpectraMetaPUR_Resup2 %>%
 
 
 
-# Filter 8 spectra that do not match to growth curve - day 7 because Run 56 after day 7 also sowed change in pigments (CCA) without resupply! I will deal with it later.
+# Filter 8 spectra that do not match to growth curve - day 7 because Run 56 after day 7 also sowed change in pigments (CCA) without resupply! I will deal with it later.I think this could be contamination?
 
 ```{r}
 OLISSpectraMetaPURTrim1<-OLISSpectraMetaPUR %>% 
@@ -761,7 +775,9 @@ OLISSpectraMetaPhase %>%
   theme_bw() 
 ```
 
-# Create a better plot - only exp i ExpResup - spectra taken at E_day = 2
+
+
+# Create a better plot - only exp i ExpResup - spectra taken at E_day = 2 and all PUR data
 
 ```{r}
 
@@ -787,6 +803,16 @@ OLISSpectraMetaPhase %>%
   ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
   theme_bw() 
 
+
+OLISSpectraMetaPhase %>%
+  filter(Phase!= "St") %>% 
+    filter(WL!= "WW") %>% 
+  ggplot() +
+  geom_point(aes(x = Par_ue, y = PUR, colour = as.factor(Phase)), size = 4, show.legend = T) +
+    geom_smooth(aes(x = Par_ue, y = PUR, linetype=as.factor(Phase)), colour = "black", size = 0.7, alpha = 0.2, show.legend = T, method = "lm") +
+  scale_colour_manual(values = c("slateblue4", "skyblue3")) +
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw()
 ```
 
 # For plot only - Create a numeric WL 
@@ -807,9 +833,15 @@ OLISSpectraMetaPhasePlot <- OLISSpectraMetaPhasePlot %>%
  filter(E_days == 2 | E_days == 16) 
 ```
 
+```{r}
+OLISSpectraMetaPhasePlot$facetsPar_ue = factor(OLISSpectraMetaPhasePlot$O2, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
+OLISSpectraMetaPhasePlot$facetsPhotoperiod = factor(OLISSpectraMetaPhasePlot$O2, labels = c("Photoperiod~(h)"))
+OLISSpectraMetaPhasePlot$facetsStrain = factor(OLISSpectraMetaPhasePlot$O2, labels = c("Strain"))
+```
+
 # Create plot
 
-```{r}
+```{r create plot, fig.height = 5, fig.width = 6, warning = FALSE}
 
 lab1=c(expression("PC-rich"), expression("PE-rich"))
 lab2=c(expression("Exp"), expression("ExpResupply"))
@@ -826,8 +858,8 @@ OLISSpectraMetaPhasePlot %>%
   #geom_area(aes(x = nm, y = EmNormJaz393, fill = "royalblue4"), alpha = 0.1, show.legend = F) +
   
   geom_point(aes(x = WLNum, y = PUR, colour = as.factor(Phase)), size = 4, show.legend = T) +
-  geom_line(aes(x = WLNum, y = PUR, linetype = as.factor(Phase)), show.legend = T) +
-
+  geom_line(aes(x = WLNum, y = PUR, linetype = as.factor(Phase)), show.legend = F) +
+  scale_colour_manual(values = c("slateblue4", "skyblue3")) +
   # geom_errorbar(aes(x = WLNum, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F, OLISSpectraMetaPhasePlot) +
   
   # scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
@@ -836,17 +868,28 @@ OLISSpectraMetaPhasePlot %>%
   
   stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -5, alpha = 0.5) +
   scale_fill_identity() +
-  labs(y = "PUR and normalized emission spectra", x = "Growth waveband (nm)") +
-  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue), labeller = label_parsed) +
-  theme_bw() 
-
+  labs(y = "PUR and normalized LED emission spectra", x = "Growth waveband (nm)") +
+  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(facetsPar_ue, Par_ue), labeller = label_parsed) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.position = c(0.11,0.90),
+        legend.key.height= unit(0.003, 'cm'),
+        legend.spacing.y = unit(-0.1, "cm"),
+        legend.spacing.x = unit(-0.1, 'cm'),
+        legend.title = element_blank(),
+        legend.text = element_text(size=10))
 
 ```
-
-# CCA - finished here for now
-
--------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------
 
 
 
@@ -940,6 +983,110 @@ OLISSpectraMetaPhasemean %>%
 
 
 
+
+```{r}
+OLISSpectraMetaPhasemeanPlot<-OLISSpectraMetaPhasemean %>% 
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+  filter(WL != "WW") 
+```
+
+# For plot only - choosen only run 70 where Exp and ExpResupl was measured
+
+
+
+```{r}
+OLISSpectraMetaPhasemeanPlot$facetsPar_ue = factor(OLISSpectraMetaPhasemeanPlot$O2, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
+OLISSpectraMetaPhasemeanPlot$facetsPhotoperiod = factor(OLISSpectraMetaPhasemeanPlot$O2, labels = c("Photoperiod~(h)"))
+OLISSpectraMetaPhasemeanPlot$facetsStrain = factor(OLISSpectraMetaPhasemeanPlot$O2, labels = c("Strain"))
+```
+
+
+# Create plot
+
+```{r create plot, fig.height = 5, fig.width = 6, warning = FALSE}
+
+lab1=c(expression("PC-rich"), expression("PE-rich"))
+lab2=c(expression("Exp"), expression("ExpResupply"))
+
+
+OLISSpectraMetaPhasemeanPlot %>%
+  filter(Phase!= "St") %>% 
+  ggplot() +
+  #geom_area(aes(x = nm, y = EmNormJaz722, fill = "indianred4"), alpha = 0.1, show.legend = F) +
+  geom_area(aes(x = nm, y = EmNormJaz647*100, fill = "brown1"), alpha = 0.1, show.legend = F) +
+  #geom_area(aes(x = nm, y = EmNormJaz612, fill = "coral"), alpha = 0.1, show.legend = F) +
+  geom_area(aes(x = nm, y = EmNormJaz521*100, fill = "limegreen"), alpha = 0.1, show.legend = F) +
+  #geom_area(aes(x = nm, y = EmNormJaz469, fill = "lightseagreen"), alpha = 0.1, show.legend = F) +
+  #geom_area(aes(x = nm, y = EmNormJaz441, fill = "steelblue3"), alpha = 0.1, show.legend = F) +
+  #geom_area(aes(x = nm, y = EmNormJaz393, fill = "royalblue4"), alpha = 0.1, show.legend = F) +
+  
+  geom_point(aes(x = WLNum, y = meanPUR, colour = as.factor(Phase)), size = 4, show.legend = T) +
+  geom_line(aes(x = WLNum, y = meanPUR, linetype = as.factor(Phase)), show.legend = F) +
+  scale_colour_manual(values = c("slateblue4", "skyblue3")) +
+  geom_errorbar(aes(x = WLNum, ymin = meanPUR - sdPUR, ymax = meanPUR + sdPUR), width=0, size=0.3, show.legend = F) +
+  
+  # scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
+  # scale_shape_manual(values = c(16, 18), name="", labels = lab2) +
+  # scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
+  
+  stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -5, alpha = 0.5) +
+  scale_fill_identity() +
+  labs(y = "PUR and normalized LED emission spectra", x = "Growth waveband (nm)") +
+  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(facetsPar_ue, Par_ue), labeller = label_parsed) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.position = c(0.11,0.90),
+        legend.key.height= unit(0.003, 'cm'),
+        legend.spacing.y = unit(-0.1, "cm"),
+        legend.spacing.x = unit(-0.1, 'cm'),
+        legend.title = element_blank(),
+        legend.text = element_text(size=10))
+
+```
+
+
+
+```{r}
+OLISSpectraMetaPhasemeanPlot %>%
+  filter(Phase!= "St") %>% 
+    filter(WL!= "WW") %>% 
+  ggplot() +
+  geom_point(aes(x = Par_ue, y = meanPUR, colour = as.factor(Phase)), size = 4, show.legend = T) +
+    geom_smooth(aes(x = Par_ue, y = meanPUR, linetype=as.factor(Phase)), colour = "black", size = 0.7, alpha = 0.2, show.legend = T, method = "lm") +
+    geom_errorbar(aes(x = Par_ue, ymin = meanPUR - sdPUR, ymax = meanPUR + sdPUR), width=0, size=0.3, show.legend = F) +
+  scale_colour_manual(values = c("slateblue4", "skyblue3")) +
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() +
+    theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.position = c(0.11,0.90),
+        legend.key.height= unit(0.003, 'cm'),
+        legend.spacing.y = unit(-0.1, "cm"),
+        legend.spacing.x = unit(-0.1, 'cm'),
+        legend.title = element_blank(),
+        legend.text = element_text(size=10))
+```
+
+
 ---------------------------------------------------------------------------------------------------------
 
 
@@ -978,7 +1125,7 @@ lab1=c(expression("PC-rich_077"), expression("PE-rich_127"))
 
 OLISAllPURTidy %>%
   ggplot() +
-  geom_point(aes(x = WL, y = meanPURPARRatio, colour = as.factor(Strain)), alpha = 0.9, size = 3, show.legend = F) +
+  geom_point(aes(x = WL, y = meanPURPARRatio, colour = as.factor(Strain)), alpha = 0.9, size = 3, show.legend = T) +
     geom_errorbar(aes(x = WL, ymin = meanPURPARRatio - sdPURPARRatio, ymax = meanPURPARRatio + sdPURPARRatio, colour = as.factor(Strain)), width=0, size=0.3, show.legend = F) +
   scale_colour_discrete(type=c("palegreen3", "brown4")) +
   #labs(y = "PUR/PAR ratio", x = "Elapsed time (d)") +

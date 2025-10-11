@@ -138,7 +138,8 @@ MultiCultiGrowth<-MultiCultiGrowth %>%
   
 ```
 
-# Separate to phases
+# Separate to phases - Growth rate doesn't have stationary phase!!!
+
 ```{r}
 MultiCultiGrowth<-MultiCultiGrowth %>% 
   mutate(Phase=case_when(Run==0~"ExpResupply",
@@ -538,8 +539,13 @@ MultiCultiGrowthPlot <- MultiCultiGrowthPlot %>%
   filter(Run == 70 | Run == 0) 
 ```
 
+```{r}
+MultiCultiGrowthPlot$facetsPar_ue = factor(MultiCultiGrowthPlot$O2, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
+MultiCultiGrowthPlot$facetsPhotoperiod = factor(MultiCultiGrowthPlot$O2, labels = c("Photoperiod~(h)"))
+MultiCultiGrowthPlot$facetsStrain = factor(MultiCultiGrowthPlot$O2, labels = c("Strain"))
+```
 
-```{r Create plot, warning=FALSE}
+```{r create plot, fig.height = 5, fig.width = 6, warning = FALSE}
 lab1=c(expression("PC-rich"), expression("PE-rich"))
 lab2=c(expression("Exp"), expression("ExpResupply"))
 
@@ -558,16 +564,33 @@ JazDataRoundMeta %>%
   geom_line(aes(x = WLNum, y = deltaOD_Lmu_corr, linetype = as.factor(Phase)), show.legend = T, MultiCultiGrowthPlot) +
 
   geom_errorbar(aes(x = WLNum, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F, MultiCultiGrowthPlot) +
-  
+    scale_colour_manual(values = c("slateblue4", "skyblue3")) +
   # scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
   # scale_shape_manual(values = c(16, 18), name="", labels = lab2) +
   # scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
   
   stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -0.030, alpha = 0.5) +
   scale_fill_identity() +
-  labs(y = "µ " ~ "("~d^-1~") and normalized emission spectra", x = "Growth waveband (nm)") +
-  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue), labeller = label_parsed) +
-  theme_bw() 
+  labs(y = "µ " ~ "("~d^-1~") and normalized LED emission spectra", x = "Growth waveband (nm)") +
+  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(facetsPar_ue, Par_ue), labeller = label_parsed) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.position = c(0.12,0.93),
+        legend.key.height= unit(0.003, 'cm'),
+        legend.spacing.y = unit(-0.1, "cm"),
+        legend.spacing.x = unit(-0.1, 'cm'),
+        legend.title = element_blank(),
+        legend.text = element_text(size=10))
 
 
 
@@ -654,14 +677,22 @@ Olis <- readRDS(OlisFile)  %>%
 
 ```
 
-# Create a dataset to match growth rate
+# Create a dataset to match growth rate - only run 68 and 70, day 2
 ```{r}
-OlisSelect <- Olis %>%
-  filter(Phase!= "St") %>% 
-  filter(WL!= "WW") %>% 
-  filter(Run == 70 | Run == 68 | Run == 63) %>% 
-  filter(E_days == 2 | E_days == 16) 
+# OlisSelect <- Olis %>%
+#   filter(Phase!= "St") %>% 
+#   filter(WL!= "WW") %>% 
+#   filter(Run == 70 | Run == 68 | Run == 63) %>% 
+#   filter(E_days == 2 | E_days == 16) 
 ```
+
+# Create a dataset to match all runs and all PUR data in each phase. 
+
+```{r}
+OlisSelect <- Olis 
+
+```
+
 
 # Create a prelim plot
 ```{r}
@@ -686,6 +717,12 @@ MCGrowthRateSelect <- MultiCultiGrowthSelect %>%
   left_join(., OlisSelect, by = c("Strain" = "Strain", "Par_ue" = "Par_ue", "Photoperiod" = "Photoperiod",  "O2" = "O2", "WL" = "WL", "PARPhotonDose_day" = "PARPhotonDose_day", "Phase" = "Phase")) 
   
 
+```
+
+```{r}
+MCGrowthRateSelect$facetsPar_ue = factor(MCGrowthRateSelect$O2, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
+MCGrowthRateSelect$facetsPhotoperiod = factor(MCGrowthRateSelect$O2, labels = c("Photoperiod~(h)"))
+MCGrowthRateSelect$facetsStrain = factor(MCGrowthRateSelect$O2, labels = c("Strain"))
 ```
 
 
@@ -725,6 +762,73 @@ MCGrowthRateSelect %>%
   ggh4x::facet_nested(rows = vars(Strain),  cols = vars(WL), labeller = labeller(Ex_WL = label_value, WL = label_value)) +
   theme_bw()
 
+
+
+
+```
+
+```{r create plot, fig.height = 5, fig.width = 6, warning = FALSE}
+
+MCGrowthRateSelect %>%
+  #filter(Phase!= "St") %>% 
+  ggplot() +
+  geom_point(aes(x = PUR, y = deltaOD_Lmu_corr,colour=as.factor(Phase)), size = 3.5, alpha = 0.9, show.legend = T) +
+  geom_smooth(aes(x = PUR, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), colour = "black", size = 0.4, alpha = 0.2, show.legend = T, method = "lm") +
+  #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
+  geom_errorbar(aes(x = PUR, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+    scale_colour_manual(values = c("slateblue4", "skyblue3")) +
+    labs(y = "µ " ~ "("~d^-1~")", x = "PUR ( µmol photons "~m^-2~""~s^-1~")") +
+  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() +
+    theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.position = c(0.11,0.93),
+        legend.key.height= unit(0.003, 'cm'),
+        legend.spacing.y = unit(-0.1, "cm"),
+        legend.spacing.x = unit(-0.1, 'cm'),
+        legend.title = element_blank(),
+        legend.text = element_text(size=10))
+
+
+
+
+MCGrowthRateSelect %>%
+  #filter(Phase!= "St") %>% 
+  ggplot() +
+  geom_point(aes(x = PUR, y = deltaOD_Lmu_corr,colour=as.factor(Phase)), size = 3.5, alpha = 0.9, show.legend = T) +
+  geom_smooth(aes(x = PUR, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), colour = "black", size = 0.4, alpha = 0.2, show.legend = T, method = "lm") +
+  #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
+  geom_errorbar(aes(x = PUR, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+    scale_colour_manual(values = c("slateblue4", "skyblue3")) +
+    labs(y = "µ " ~ "("~d^-1~")", x = "PUR ( µmol photons "~m^-2~""~s^-1~")") +
+  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(WL), labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() +
+    theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.position = c(0.12,0.93),
+        legend.key.height= unit(0.003, 'cm'),
+        legend.spacing.y = unit(-0.1, "cm"),
+        legend.spacing.x = unit(-0.1, 'cm'),
+        legend.title = element_blank(),
+        legend.text = element_text(size=10))
 ```
 
 
@@ -941,6 +1045,32 @@ GrowthPURPCExpResupplylm<-summary(PCExpResupplylm)
 saveRDS(MCGrowthRateSelect, file.path(DataOut, paste(Project, "Processed_GrowthRatePURSelect.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
