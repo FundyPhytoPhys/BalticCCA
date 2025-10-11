@@ -90,6 +90,14 @@ CultureCatalog<-CultureCatalog %>%
   select(-c(PrimaryOperator, Temp_c, ExpCul, ExpStartTime, O2_Category, Optode, OptodeCh, OptodeMeasure))
 ```
 
+# Removing run 0 - it was needed to have a second growth rate after resupply
+
+```{r}
+CultureCatalog<-CultureCatalog %>% 
+  filter(Run!=0)
+```
+
+
 ----------------------------------------- Old Software -----------------------------------------------
 
 
@@ -285,6 +293,7 @@ SolFitsMeta<- SolFitsMeta %>%
   filter(Sig<1000)
 ```
 
+
 # Remove outliers
 
 ```{r}
@@ -345,7 +354,7 @@ SolFitsMeta %>%
 # Save plot 
 
 ```{r save plot}
-ggsave(file = file.path(FigPath, paste("Fig_Sig",".png",sep = "")), height=5, width= 8,  dpi = 300, limitsize = TRUE)
+# ggsave(file = file.path(FigPath, paste("Fig_Sig",".png",sep = "")), height=5, width= 8,  dpi = 300, limitsize = TRUE)
 ```
 
 
