@@ -497,6 +497,22 @@ SolFitsMetaLRC %>%
 
 ```
 
+# Create a df that WL correspond with Ex_WL
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
 # Create plot
 
 ```{r Create plot}

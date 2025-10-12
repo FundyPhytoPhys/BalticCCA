@@ -112,7 +112,8 @@ FigRdsPath <- file.path("..", "Output", "FiguresRds")
 TableRdsPath <- file.path("..", "Output", "TablesRDS")
 
 
-zip_file <- file.path("..", "Data", "RawData", "SolisenseOSData.zip")
+
+zip_file <- file.path("..", "Data", "RawData", "SolisenseSySlCCACaloxyBiolSteps.zip")
 
 
 SolisenseFilesOS <- unzip(zip_file, list = TRUE)
@@ -144,7 +145,7 @@ SolFitsTrimOS <- SolFitsOS %>%
   filter(!grepl("----", DATE)) %>%
   select(-c("RFID_User_Data", "Barcode_Data", "PIF",  "Lon", "Lat", "GPS_stat", "LEDSel", "S/N_raw", "PAR_3", "PAR_4", "PAR_5", "PAR_6", "TPQ_PSI", "QBP_Size", "Alp4QA", "Tau4QA", "Alp1PQ", "Tau1PQ", "Alp2PQ", "Tau2PQ", "Alp3PQ", "Tau3PQ", "ETR", "V58")) %>% # remove superfluous columns for unfit data
 
-  mutate(Filename = str_remove(string = Filename, pattern = "/RawData/SolisenseOS.zip/"),
+  mutate(Filename = str_remove(string = Filename, pattern = "/RawData/SolisenseSySlCCACaloxyBiolSteps.zip/"),
          Filename = str_remove(string = Filename, pattern = "_fit.csv")
          ) %>%
   separate(Filename, into = c("fp1", "fp2", "fp3", "fp4", "fp5", "fp6", "fp7", "Project", "RunDateTime", "SampleID", "Ex_WL"), sep = "([\\/\\_])", remove = FALSE) %>%
@@ -440,8 +441,8 @@ SolFitsMeta %>%
 # Save rds for further analysis
 
 ```{r save rds}
-saveRDS(SolFitsMeta, file.path(DataOut, paste(Project, "Imported_SolisenseLight_LRC.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
 
+saveRDS(SolFitsMeta, file.path(DataOut, paste(Project, "Imported_SolisenseLight_LRC_CaloxyBiolSteps.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
 ```
 
 
