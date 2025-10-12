@@ -78,6 +78,8 @@ list.files(path = DataIn, pattern = Project, full.names = TRUE)
 # This RDS contained only data from corresponding growth light 
 # Also, conteined mean sig - mean for replica measured on the same day
 
+- This comment above is not true!
+
 ```{r read ProcessFile Sol}
 SolisenseFile <- "../Data/ImportedData/ImportedSolisenseData/BalticCCA_Imported_SolisenseLight_LRC.Rds"  
 
@@ -96,6 +98,56 @@ SolFitsMeta <- SolFits %>%
 
 #colnames(SolFitsMeta)
 ```
+
+```{r read ProcessFile Sol}
+SolisenseFile <- "../Data/ImportedData/ImportedSolisenseData/BalticCCA_Imported_SolisenseLight_LRC_Caloxy.Rds"  
+
+SolisenseFileName <- str_split(string = SolisenseFile, "/")[[1]][3] %>%
+  str_remove(pattern = ".Rds")
+
+SolFits <- readRDS(SolisenseFile)  %>%
+  ungroup()
+
+SolFitsMetaCaloxy <- SolFits %>% 
+  select(-c(nm445,nm470,nm505,nm535,nm590,IR, nm445Corr,nm470Corr, nm505Corr,nm535Corr,nm590Corr,IRCorr,JVPSII_aLHIIOxbomax, JVPSII_ETRtauav_FoSig, JVPSII_ETRtauav_aLHII_Sig, JVPSII_ETRqpOxbo_aLHII_Sig)) |>
+  rename(JVPSII_ETRqpOxbo_FoSigmax_m2psii = JVPSII_ETRqpOxbo_FoSig) |>
+  rename(FilenameSolisense=Filename) %>% 
+  mutate(Strain=case_when(Strain=="BA127R"~"PE-rich",
+         Strain=="BA77G"~"PC-rich")) 
+
+#colnames(SolFitsMetaCaloxy)
+```
+
+
+```{r read ProcessFile Sol}
+SolisenseFile <- "../Data/ImportedData/ImportedSolisenseData/BalticCCA_Imported_SolisenseLight_LRC_CaloxyBiolSteps.Rds"  
+
+SolisenseFileName <- str_split(string = SolisenseFile, "/")[[1]][3] %>%
+  str_remove(pattern = ".Rds")
+
+SolFits <- readRDS(SolisenseFile)  %>%
+  ungroup()
+
+SolFitsMetaBiolSteps <- SolFits %>% 
+  select(-c(nm445,nm470,nm505,nm535,nm590,IR, nm445Corr,nm470Corr, nm505Corr,nm535Corr,nm590Corr,IRCorr,JVPSII_aLHIIOxbomax, JVPSII_ETRtauav_FoSig, JVPSII_ETRtauav_aLHII_Sig, JVPSII_ETRqpOxbo_aLHII_Sig)) |>
+  rename(JVPSII_ETRqpOxbo_FoSigmax_m2psii = JVPSII_ETRqpOxbo_FoSig) |>
+  rename(FilenameSolisense=Filename) %>% 
+  mutate(Strain=case_when(Strain=="BA127R"~"PE-rich",
+         Strain=="BA77G"~"PC-rich")) 
+
+#colnames(SolFitsMetaBiolSteps)
+```
+
+# Merge Solisense data from doubletap, Caloxy, and CaloxyBiolSteps
+
+```{r}
+
+SolFitsMetaAll <-rbind(SolFitsMeta, SolFitsMetaCaloxy, SolFitsMetaBiolSteps)
+
+#To keep the df name
+SolFitsMeta <-SolFitsMetaAll
+```
+
 
 
 
@@ -123,6 +175,9 @@ SolFitsMeta <- left_join(SolFitsMeta, JVPSII_eLs_ModelTerms, by = join_by(Ex_WL)
 
 
 -------------------------------# Create df with phases of growth---------------------------------
+
+# CHECK THIS SYLWIA!!! THERE COULD BE MISTAKE WITH EXPRESUPPLY!!!
+
 
 ```{r}
 MultiCultiDataAll70ExpResup<-SolFitsMeta %>% 
@@ -243,36 +298,28 @@ rm(MultiCultiDataAll70ExpResup, All70PCExp1, All70PCExp2, All70PCExp3, All70PCEx
 
 ```{r}
 
-SolFitsMeta %>%
+
+
+SolFitsMetaPhase %>%
   ggplot() +
-  geom_point(aes(x = ActPARCorr, y = JVPSII_umol_eLs, shape = as.factor(O2)), size = 3, show.legend = T) +
-  geom_line(aes(x = ActPARCorr, y = JVPSII_umol_eLs, linetype = as.factor(O2)), size = 0.3, show.legend = T) +
+  geom_point(aes(x = ActPARCorr, y = JVPSII_umol_eLs, shape = as.factor(Phase)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = JVPSII_umol_eLs, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
   geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
   scale_fill_identity() +
   #ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
   ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue),labeller = label_parsed) +
   theme_bw() 
 
-SolFitsMetaPhase %>%
-  ggplot() +
-  geom_point(aes(x = ActPARCorr, y = JVPSII_umol_eLs, shape = as.factor(O2)), size = 3, show.legend = T) +
-  geom_line(aes(x = ActPARCorr, y = JVPSII_umol_eLs, linetype = as.factor(O2)), size = 0.3, show.legend = T) +
-  geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
-  scale_fill_identity() +
-  #ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
-  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue, Phase),labeller = label_parsed) +
-  theme_bw() 
-
 
 SolFitsMetaPhase %>%
   filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
   ggplot() +
-  geom_point(aes(x = ActPARCorr, y = JVPSII_umol_eLs, shape = as.factor(O2)), size = 3, show.legend = T) +
-  geom_line(aes(x = ActPARCorr, y = JVPSII_umol_eLs, linetype = as.factor(O2)), size = 0.3, show.legend = T) +
+  geom_point(aes(x = ActPARCorr, y = JVPSII_umol_eLs, shape = as.factor(Phase)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = JVPSII_umol_eLs, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
   geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
   scale_fill_identity() +
   #ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
-  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue, Phase, Run, E_days),labeller = label_parsed) +
+  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue),labeller = label_parsed) +
   theme_bw() 
 ```
 
@@ -300,7 +347,7 @@ SolFitsMetaLRC %>%
   ggplot() +
   geom_point(aes(x = Ex_WL, y = Sig), size = 3.5, show.legend = T) +
   #scale_colour_discrete(type=c("palegreen3", "brown4"), name="", labels = lab1) +
-    ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL, Par_ue, Phase, Run, E_days),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+    ggh4x::facet_nested(rows = vars(Strain), cols = vars(WL, Par_ue, Phase, Run),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
   theme_bw() 
 
 
@@ -320,7 +367,7 @@ SolFitsMetaLRC %>%
   #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
   scale_fill_identity() +
   #ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
-  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue, Phase, Run, E_days),labeller = label_parsed) +
+  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue, Phase),labeller = label_parsed) +
   theme_bw() 
 
 
@@ -332,7 +379,7 @@ SolFitsMetaLRC %>%
   #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
   scale_fill_identity() +
   #ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
-  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue, Phase, Run, E_days),labeller = label_parsed) +
+  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue, Phase),labeller = label_parsed) +
   theme_bw() 
 
 
@@ -344,7 +391,7 @@ SolFitsMetaLRC %>%
   #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
   scale_fill_identity() +
   #ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
-  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue, Phase, Run, E_days),labeller = label_parsed) +
+  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue, Phase),labeller = label_parsed) +
   theme_bw() 
 
 
