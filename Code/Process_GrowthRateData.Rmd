@@ -923,6 +923,8 @@ MCGrowthRateSelectlinear <- MCGrowthRateSelect %>%
 
 -------------------------
 
+# Statistic has been made for comparison all data combined (without separation to WL)!!!!!
+
 
 t-test from the linear model Phase
 ```{r}
@@ -1038,41 +1040,12 @@ GrowthPURPCExpResupplylm<-summary(PCExpResupplylm)
 ```
 
 
-
 # Save Rds for further analysis
 
 ```{r save rds}
 saveRDS(MCGrowthRateSelect, file.path(DataOut, paste(Project, "Processed_GrowthRatePURSelect.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1428,6 +1401,19 @@ FigGrowthPig
 # saveRDS(MCGrowthPig, file.path(DataOut, paste(Project, "Processed_GrowthRatePigmentsCombine.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ------------------------------# Support Vector regression---------------------------------------------------

@@ -452,6 +452,51 @@ SolFitsMetaLRC %>%
 
 ```
 
+
+# Create preliminary plots sig vs ActPAR
+
+```{r preliminary plot}
+lab1=c(expression("PC-rich"), expression("PE-rich"))
+
+
+SolFitsMetaLRC %>%
+  filter(Ex_WL == 535 | Ex_WL == 590) %>%
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = AllmeanSig_nm2psii, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = AllmeanSig_nm2psii, linetype=as.factor(Phase)), size = 0.3, show.legend = T) +
+  #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
+  scale_fill_identity() +
+  #ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
+  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue),labeller = label_parsed) +
+  theme_bw() 
+
+
+SolFitsMetaLRC %>%
+  filter(Ex_WL == 535 | Ex_WL == 590) %>%
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = AllmeanTauAv, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = AllmeanTauAv, linetype=as.factor(Phase)), size = 0.3, show.legend = T) +
+  #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
+  scale_fill_identity() +
+  #ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
+  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue),labeller = label_parsed) +
+  theme_bw() 
+
+
+SolFitsMetaLRC %>%
+  filter(Ex_WL == 535 | Ex_WL == 590) %>%
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = AllmeanqpOxbo, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = AllmeanqpOxbo, linetype=as.factor(Phase)), size = 0.3, show.legend = T) +
+  #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
+  scale_fill_identity() +
+  #ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
+  ggh4x::facet_nested(rows = vars(Strain, Ex_WL), cols = vars(WL, Par_ue),labeller = label_parsed) +
+  theme_bw() 
+
+
+```
+
 # Create plot
 
 ```{r Create plot}
@@ -1090,7 +1135,7 @@ MDPicoAll <- MDPicoAll %>%
 MDPicoAll %>%
   ggplot() +
   geom_point(aes(x = WL, y = meanCellmL_MDPico)) +
-  ggh4x::facet_nested(cols = vars(Par_ue, O2), rows = vars(Strain), labeller = labeller(Ex_WL = label_both, strain = label_value, Par_ue = label_both, WL = label_both, Photoperiod = label_value)) +
+  ggh4x::facet_nested(cols = vars(Par_ue), rows = vars(Strain), labeller = labeller(Ex_WL = label_both, strain = label_value, Par_ue = label_both, WL = label_both, Photoperiod = label_value)) +
   theme_bw()
 
 ```
@@ -1155,7 +1200,7 @@ SolFitsExpStTurnerMD<-SolFitsExpStTurnerMD %>%
 # Save Rds for further analysis
 
 ```{r save rds}
-# saveRDS(SolFitsExpStTurnerMD, file.path(DataOut, paste(Project, "Processed_SolisenseDataCorrHalfPAR.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
+saveRDS(SolFitsExpStTurnerMD, file.path(DataOut, paste(Project, "Processed_SolisenseDataCorrHalfPAR.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
 ```
 
 # Variable names used in Data Dictionary
@@ -1169,7 +1214,7 @@ SolFitsExpStTurnerMD<-SolFitsExpStTurnerMD %>%
 ```{r}
 SolFitsExpStTurnerMD %>%
   ggplot() +
-  geom_point(aes(x = ActPARCorr, y = AllmeanJVPSII_umol_eLs, shape = as.factor(O2)), size = 2, show.legend = T) +
+  geom_point(aes(x = ActPARCorr, y = AllmeanJVPSII_umol_eLs), size = 2, show.legend = T) +
     geom_errorbar(aes(x = ActPARCorr, ymin = AllmeanJVPSII_umol_eLs - AllsdJVPSII_umol_eLs, ymax = AllmeanJVPSII_umol_eLs + AllsdJVPSII_umol_eLs, colour = as.factor(Strain)), width=0, size=0.3, show.legend = F) +
   ggh4x::facet_nested(cols = vars(WL, Par_ue), rows = vars(Strain), labeller = label_parsed) +
   theme_bw()
@@ -1323,7 +1368,7 @@ GrowthRateSoliExpDay %>%
 GrowthRateSol %>%
     filter(Phase == "Exp") %>% 
   ggplot() +
-  geom_point(aes(x = ActPARCorr, y = JVPSII_umol_eumolChls, shape = as.factor(O2)), size = 3, show.legend = T) +
+  geom_point(aes(x = ActPARCorr, y = JVPSII_umol_eumolChls, shape = as.factor(Phase)), size = 3, show.legend = T) +
   #geom_line(aes(x = ActPARCorr, y = JVPSII_umol_eumolChls, linetype = as.factor(O2)), size = 0.3, show.legend = T) +
   # geom_errorbar(aes(x = ActPARCorr, ymin = AllmeanJVPSII_ETRqpOxbo_FoSigmax_m2psii - AllsdJVPSII_ETRqpOxbo_FoSigmax_m2psii, ymax = AllmeanJVPSII_ETRqpOxbo_FoSigmax_m2psii + AllsdJVPSII_ETRqpOxbo_FoSigmax_m2psii, colour = as.factor(Strain)), width=0, size=0.3, show.legend = F) +
   # geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
@@ -1368,9 +1413,9 @@ GRCplatt_PredictGrowthAll21 <- MCGrowthSPAllFit21 %>%
 ```{r}
 
 GrowthRateSol %>%
-      filter(Phase == "Exp") %>% 
+  filter(Phase == "Exp" | Phase == "ExpResupply") %>% 
   ggplot() +
-  geom_point(aes(x = ActPARCorr, y = JVPSII_umol_eumolChls, shape = as.factor(O2)), size = 3, show.legend = T) +
+  geom_point(aes(x = ActPARCorr, y = JVPSII_umol_eumolChls, shape = as.factor(Phase)), size = 3, show.legend = T) +
   #geom_line(aes(x = ActPARCorr, y = JVPSII_umol_eumolChls, linetype = as.factor(O2)), size = 0.3, show.legend = T) +
   
   geom_line(aes(ActPARCorr, .fitted), colour = "blue", linetype = "solid", size = 0.3, show.legend = F, GRCplatt_PredictGrowthAll21) +
@@ -1390,7 +1435,7 @@ GrowthRateSol %>%
   theme_bw() 
 ```
 
-
+# Fancy plot
 
 ```{r}
 
