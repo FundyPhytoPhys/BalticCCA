@@ -138,11 +138,32 @@ SolFitsMetaBiolSteps <- SolFits %>%
 #colnames(SolFitsMetaBiolSteps)
 ```
 
+
+```{r read ProcessFile Sol}
+SolisenseFile <- "../Data/ImportedData/ImportedSolisenseData/BalticCCA_Imported_SolisenseLight_LRC_CaloxyAll.Rds"  
+
+SolisenseFileName <- str_split(string = SolisenseFile, "/")[[1]][3] %>%
+  str_remove(pattern = ".Rds")
+
+SolFits <- readRDS(SolisenseFile)  %>%
+  ungroup()
+
+SolFitsMetaCaloxyAll <- SolFits %>% 
+  select(-c(nm445,nm470,nm505,nm535,nm590,IR, nm445Corr,nm470Corr, nm505Corr,nm535Corr,nm590Corr,IRCorr,JVPSII_aLHIIOxbomax, JVPSII_ETRtauav_FoSig, JVPSII_ETRtauav_aLHII_Sig, JVPSII_ETRqpOxbo_aLHII_Sig)) |>
+  rename(JVPSII_ETRqpOxbo_FoSigmax_m2psii = JVPSII_ETRqpOxbo_FoSig) |>
+  rename(FilenameSolisense=Filename) %>% 
+  mutate(Strain=case_when(Strain=="BA127R"~"PE-rich",
+         Strain=="BA77G"~"PC-rich")) 
+
+#colnames(SolFitsMetaBiolSteps)
+```
+
+
 # Merge Solisense data from doubletap, Caloxy, and CaloxyBiolSteps
 
 ```{r}
 
-SolFitsMetaAll <-rbind(SolFitsMeta, SolFitsMetaCaloxy, SolFitsMetaBiolSteps)
+SolFitsMetaAll <-rbind(SolFitsMeta, SolFitsMetaCaloxy, SolFitsMetaBiolSteps, SolFitsMetaCaloxyAll)
 
 #To keep the df name
 SolFitsMeta <-SolFitsMetaAll
