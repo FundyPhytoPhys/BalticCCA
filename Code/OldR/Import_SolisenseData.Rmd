@@ -96,7 +96,7 @@ CultureCatalog<-CultureCatalog %>%
 # Set Project Variables from old software (OS)
 
 ```{r set project variables, read zipped files, list available files, warning = FALSE, echo=FALSE}
-Project <- "BalticO2"
+Project <- "BalticCCA"
 DataOut <- file.path("..", "Data", "ImportedData", "ImportedSolisenseData")
 
 FigPath <- file.path("..", "Output", "Figures")
@@ -175,7 +175,7 @@ SolFitsTrimOS <- SolFitsTrimOS %>%
 # Set Project Variables from new software (NS)
 
 ```{r set project variables, read zipped files, list available files, warning = FALSE, echo=FALSE}
-Project <- "BalticO2"
+Project <- "BalticCCA"
 DataOut <- file.path("..", "Data", "ImportedData", "ImportedSolisenseData")
 
 zip_file <- file.path("..", "Data", "RawData", "SolisenseNSData.zip")
