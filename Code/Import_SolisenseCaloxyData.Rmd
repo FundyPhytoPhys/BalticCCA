@@ -113,7 +113,7 @@ TableRdsPath <- file.path("..", "Output", "TablesRDS")
 
 
 
-zip_file <- file.path("..", "Data", "RawData", "SolisenseSySlCCACaloxy.zip")
+zip_file <- file.path("..", "Data", "RawData", "SolisenseCaloxy.zip")
 
 
 SolisenseFilesOS <- unzip(zip_file, list = TRUE)
@@ -145,7 +145,7 @@ SolFitsTrimOS <- SolFitsOS %>%
   filter(!grepl("----", DATE)) %>%
   select(-c("RFID_User_Data", "Barcode_Data", "PIF",  "Lon", "Lat", "GPS_stat", "LEDSel", "S/N_raw", "PAR_3", "PAR_4", "PAR_5", "PAR_6", "TPQ_PSI", "QBP_Size", "Alp4QA", "Tau4QA", "Alp1PQ", "Tau1PQ", "Alp2PQ", "Tau2PQ", "Alp3PQ", "Tau3PQ", "ETR", "V58")) %>% # remove superfluous columns for unfit data
 
-  mutate(Filename = str_remove(string = Filename, pattern = "/RawData/SolisenseSySlCCACaloxy.zip/"),
+  mutate(Filename = str_remove(string = Filename, pattern = "/RawData/SolisenseCaloxy.zip/"),
          Filename = str_remove(string = Filename, pattern = "_fit.csv")
          ) %>%
   separate(Filename, into = c("fp1", "fp2", "fp3", "fp4", "fp5", "fp6", "fp7", "Project", "RunDateTime", "Method", "SampleID", "Ex_WL"), sep = "([\\/\\_])", remove = FALSE) %>%
@@ -431,6 +431,50 @@ SolFitsMeta %>%
         legend.text = element_text(size=10))
 
 ```
+
+
+```{r preliminary plot}
+#lab1=c(expression("PC-rich_077"), expression("PE-rich_127"))
+
+
+SolFitsMeta %>%
+  
+  # filter(Run!=118 & Run!= 119) %>% 
+  # filter(Par_ue!=30) %>% 
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+  filter(WL != "WW") %>%
+  filter(ActPAR== 80) %>% #corresponding light
+  #filter(E_days>=4) %>% 
+  
+  ggplot() +
+  geom_point(aes(x = WLNum, y = JVPSII_ETRqpOxbo_FoSig, colour = as.factor(Strain)), size = 3.5, show.legend = T) +
+  #scale_colour_discrete(type=c("palegreen3", "brown4"), name="", labels = lab1) +
+
+  stat_wl_strip(aes(x = WLNum), ymin = -Inf, ymax = -0.025, alpha = 0.5) +
+  scale_fill_identity() +
+  ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(factor(O2, levels=c("21","0"))), labeller = label_parsed) +
+  
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.title = element_blank(),
+        legend.position = c(0.08,0.97),
+        legend.text = element_text(size=10))
+
+```
+
+
+
+
 # Save plot 
 
 ```{r save plot}
@@ -443,7 +487,7 @@ SolFitsMeta %>%
 ```{r save rds}
 
 
-saveRDS(SolFitsMeta, file.path(DataOut, paste(Project, "Imported_SolisenseLight_LRC_Caloxy.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
+saveRDS(SolFitsMeta, file.path(DataOut, paste(Project, "Imported_SolisenseLight_LRC_CaloxyAll.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
 
 
 ```
