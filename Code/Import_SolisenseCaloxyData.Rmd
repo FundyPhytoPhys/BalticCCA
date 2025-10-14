@@ -113,7 +113,7 @@ TableRdsPath <- file.path("..", "Output", "TablesRDS")
 
 
 
-zip_file <- file.path("..", "Data", "RawData", "SolisenseCaloxy.zip")
+zip_file <- file.path("..", "Data", "RawData", "caloxy5.zip")
 
 
 SolisenseFilesOS <- unzip(zip_file, list = TRUE)
@@ -145,7 +145,7 @@ SolFitsTrimOS <- SolFitsOS %>%
   filter(!grepl("----", DATE)) %>%
   select(-c("RFID_User_Data", "Barcode_Data", "PIF",  "Lon", "Lat", "GPS_stat", "LEDSel", "S/N_raw", "PAR_3", "PAR_4", "PAR_5", "PAR_6", "TPQ_PSI", "QBP_Size", "Alp4QA", "Tau4QA", "Alp1PQ", "Tau1PQ", "Alp2PQ", "Tau2PQ", "Alp3PQ", "Tau3PQ", "ETR", "V58")) %>% # remove superfluous columns for unfit data
 
-  mutate(Filename = str_remove(string = Filename, pattern = "/RawData/SolisenseCaloxy.zip/"),
+  mutate(Filename = str_remove(string = Filename, pattern = "/RawData/caloxy5.zip/"),
          Filename = str_remove(string = Filename, pattern = "_fit.csv")
          ) %>%
   separate(Filename, into = c("fp1", "fp2", "fp3", "fp4", "fp5", "fp6", "fp7", "Project", "RunDateTime", "Method", "SampleID", "Ex_WL"), sep = "([\\/\\_])", remove = FALSE) %>%
