@@ -371,6 +371,115 @@ SolFitsMeta %>%
   theme_bw() 
 ```
 
+
+```{r}
+
+SolFitsMeta %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+  filter(Phase!= "St") %>% 
+    filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = Alp1QA, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = Alp1QA, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
+  #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
+  scale_fill_identity() +
+  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw() 
+
+
+SolFitsMeta %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+    filter(Phase!= "St") %>% 
+  filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = Alp2QA, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = Alp2QA, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
+  #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
+  scale_fill_identity() +
+  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw() 
+
+
+```
+
+
+```{r}
+colnames(SolFitsMeta)
+
+SolFitsMetaFilter <- SolFitsMeta %>%
+  #filter(Ex_WL == 445) %>% 
+  dplyr::group_by(SampleID, Run, Par_ue, WL, Ex_WL, E_days, ObsDate, FilenameSolisense) %>% 
+  #filter(Dark1s==1) %>% 
+  #filter(Tau1QA == min(Tau1QA, na.rm = TRUE)) %>% 
+  filter(ActPAR == 20) %>% 
+  dplyr::ungroup() 
+  
+  
+```
+
+
+
+
+
+```{r}
+
+SolFitsMetaFilter %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+  #filter(Phase!= "St") %>% 
+    #filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+  ggplot() +
+  geom_point(aes(x = E_days, y = Tau1QA, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  #geom_line(aes(x = E_days, y = TauAv, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
+  #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
+  scale_fill_identity() +
+  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw() 
+
+
+SolFitsMetaFilter %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+  #filter(Phase!= "St") %>% 
+    #filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+  ggplot() +
+  geom_point(aes(x = E_days, y = TauAv, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  #geom_line(aes(x = E_days, y = Alp1QA, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
+  #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
+  scale_fill_identity() +
+  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw() 
+
+
+SolFitsMetaFilter %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+    #filter(Phase!= "St") %>% 
+  filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+  ggplot() +
+  geom_point(aes(x = E_days, y = Alp2QA, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  #geom_line(aes(x = E_days, y = Alp2QA, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
+  #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
+  scale_fill_identity() +
+  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw() 
+
+```
+```{r reate plot, fig.height = 10, fig.width = 6, warning = FALSE}
+SolFitsMeta %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+    filter(Phase!= "St") %>% 
+  filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = Sigdark, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = Sigdark, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
+  #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
+  scale_fill_identity() +
+  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL, Run), labeller = label_parsed) +
+  theme_bw() 
+```
+
+
+
+
+
 ```{r}
 SolFitsMetaLRC<-SolFitsMeta %>%
   # filter(Par_ue == 180) %>% 
@@ -745,6 +854,14 @@ SolFitsMetaLRC %>%
 ```{r save plot}
 #ggsave(file = file.path(FigPath, paste("Fig_SigLRC",".png",sep = "")), height=5.5, width= 6,  dpi = 300, limitsize = TRUE)
 ```
+
+
+
+
+
+
+
+
 
 
 ------------------------------ Trim no growth ----------------------------

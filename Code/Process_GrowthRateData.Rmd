@@ -571,7 +571,7 @@ JazDataRoundMeta %>%
   
   stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -0.030, alpha = 0.5) +
   scale_fill_identity() +
-  labs(y = "µ " ~ "("~d^-1~") and normalized LED emission spectra", x = "Growth waveband (nm)") +
+  labs(y = "µ " ~ "("~d^-1~") and LED emission spectra", x = "Growth waveband (nm)") +
   ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(facetsPar_ue, Par_ue), labeller = label_parsed) +
   theme_bw() +
   theme(panel.grid.minor = element_blank(),
@@ -631,7 +631,7 @@ JazDataRoundMeta %>%
 ```
 
 
-# Create a dataset to match PUR
+# Create growth rate dataset to match PUR
 ```{r}
 MultiCultiGrowthSelect <- MultiCultiGrowth %>%
   filter(deltaOD_Lmu_corr > 0) %>% 
@@ -707,6 +707,7 @@ OlisSelect %>%
 
 
 # Combine growth rate and PUR
+# Only exp and resupply phase because growth rate doeasn't have stationary phase!
 
 ```{r}
 # Olis<-Olis %>% 
@@ -751,6 +752,19 @@ MCGrowthRateSelect %>%
   theme_bw()
 
 
+MCGrowthRateSelect %>%
+  filter(E_days!=0) %>% 
+  filter(E_days!=7) %>% 
+  ggplot() +
+  geom_point(aes(x = PUR, y = deltaOD_Lmu_corr,colour=as.factor(Phase)), size = 3.5, alpha = 0.9, show.legend = T) +
+  geom_smooth(aes(x = PUR, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), size = 1, alpha = 0.2, show.legend = T, method = "lm") +
+  #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
+  geom_errorbar(aes(x = PUR, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+
+  ggh4x::facet_nested(rows = vars(Strain),  cols = vars(WL), labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw()
+
+
 
 MCGrowthRateSelect %>%
   ggplot() +
@@ -767,18 +781,28 @@ MCGrowthRateSelect %>%
 
 ```
 
+```{r}
+MCGrowthRateSelect<-MCGrowthRateSelect %>%     
+mutate(WLnm=case_when(WL==530~"530~nm",
+    WL==660~"660~nm"))  
+```
+
+
+
 ```{r create plot, fig.height = 5, fig.width = 6, warning = FALSE}
 
 MCGrowthRateSelect %>%
   #filter(Phase!= "St") %>% 
+    filter(E_days!=0) %>% 
+    filter(E_days!=7) %>%
   ggplot() +
   geom_point(aes(x = PUR, y = deltaOD_Lmu_corr,colour=as.factor(Phase)), size = 3.5, alpha = 0.9, show.legend = T) +
-  geom_smooth(aes(x = PUR, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), colour = "black", size = 0.4, alpha = 0.2, show.legend = T, method = "lm") +
+  geom_smooth(aes(x = PUR, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), colour = "black", size = 0.4, alpha = 0.2, show.legend = F, method = "lm") +
   #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
   geom_errorbar(aes(x = PUR, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
     scale_colour_manual(values = c("slateblue4", "skyblue3")) +
     labs(y = "µ " ~ "("~d^-1~")", x = "PUR ( µmol photons "~m^-2~""~s^-1~")") +
-  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), labeller = label_parsed) +
   theme_bw() +
     theme(panel.grid.minor = element_blank(),
         panel.grid.major = element_blank(),
@@ -803,14 +827,16 @@ MCGrowthRateSelect %>%
 
 MCGrowthRateSelect %>%
   #filter(Phase!= "St") %>% 
+    filter(E_days!=0) %>% 
+    filter(E_days!=7) %>%
   ggplot() +
   geom_point(aes(x = PUR, y = deltaOD_Lmu_corr,colour=as.factor(Phase)), size = 3.5, alpha = 0.9, show.legend = T) +
-  geom_smooth(aes(x = PUR, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), colour = "black", size = 0.4, alpha = 0.2, show.legend = T, method = "lm") +
+  geom_smooth(aes(x = PUR, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), colour = "black", size = 0.4, alpha = 0.2, show.legend = F, method = "lm") +
   #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
   geom_errorbar(aes(x = PUR, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
     scale_colour_manual(values = c("slateblue4", "skyblue3")) +
     labs(y = "µ " ~ "("~d^-1~")", x = "PUR ( µmol photons "~m^-2~""~s^-1~")") +
-  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(WL), labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(WLnm), labeller = label_parsed) +
   theme_bw() +
     theme(panel.grid.minor = element_blank(),
         panel.grid.major = element_blank(),
@@ -829,6 +855,40 @@ MCGrowthRateSelect %>%
         legend.spacing.x = unit(-0.1, 'cm'),
         legend.title = element_blank(),
         legend.text = element_text(size=10))
+
+
+
+MCGrowthRateSelect %>%
+  #filter(Phase!= "St") %>% 
+    filter(E_days!=0) %>% 
+    filter(E_days!=7) %>%
+  ggplot() +
+  geom_point(aes(x = PUR, y = deltaOD_Lmu_corr,colour=as.factor(Phase)), size = 3.5, alpha = 0.9, show.legend = T) +
+  #geom_smooth(aes(x = PUR, y = deltaOD_Lmu_corr, linetype=as.factor(Phase)), colour = "black", size = 0.4, alpha = 0.2, show.legend = F, method = "lm") +
+  #geom_line(aes(x = WL, y = deltaOD_Lmu_corr, linetype=as.factor(Strain)), size = 1, alpha = 0.9, show.legend = T) +
+  geom_errorbar(aes(x = PUR, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F) +
+    scale_colour_manual(values = c("slateblue4", "skyblue3")) +
+    labs(y = "µ " ~ "("~d^-1~")", x = "PUR ( µmol photons "~m^-2~""~s^-1~")") +
+  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(Par_ue, WLnm), labeller = label_parsed) +
+  theme_bw() +
+    theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.position = c(0.12,0.93),
+        legend.key.height= unit(0.003, 'cm'),
+        legend.spacing.y = unit(-0.1, "cm"),
+        legend.spacing.x = unit(-0.1, 'cm'),
+        legend.title = element_blank(),
+        legend.text = element_text(size=10))
+
 ```
 
 
