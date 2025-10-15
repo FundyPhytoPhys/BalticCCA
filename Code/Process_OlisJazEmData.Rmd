@@ -502,6 +502,13 @@ OLISSpectraMetaPUR_Resup2 %>%
 
 ```
 
+```{r}
+OLISSpectraMetaPUR_Resup2<-OLISSpectraMetaPUR_Resup2 %>%     
+mutate(WLnm=case_when(WL==530~"530~nm",
+    WL==660~"660~nm"))  
+```
+
+
 # Create GrowthCurve plot
 fig.height = 8, fig.width = 8, warning = FALSE
 ```{r reate plot, fig.height = 5, fig.width = 7, warning = FALSE}
@@ -549,7 +556,7 @@ OLISSpectraMetaPUR_Resup2 %>%
   stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = 0, alpha = 0.5) +
   scale_fill_identity() +
   
-  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(WL, Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(facetsPar_ue, Par_ue, WLnm),labeller = label_parsed) +
 
   
   theme_bw() +
@@ -564,7 +571,7 @@ OLISSpectraMetaPUR_Resup2 %>%
         axis.title.y = element_text(margin=margin(r=10)),
         axis.title.x = element_text(margin=margin(t=10)),
         legend.background = element_rect(fill="transparent"),
-        legend.position = c(0.09,0.95),
+        legend.position = c(0.09,0.94),
         legend.key.height= unit(0.003, 'cm'),
         legend.spacing.y = unit(-0.1, "cm"),
         legend.spacing.x = unit(-0.1, 'cm'),
@@ -868,7 +875,7 @@ OLISSpectraMetaPhasePlot %>%
   
   stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -5, alpha = 0.5) +
   scale_fill_identity() +
-  labs(y = "PUR and normalized LED emission spectra", x = "Growth waveband (nm)") +
+  labs(y = "PUR and LED emission spectra", x = "Growth waveband (nm)") +
   ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(facetsPar_ue, Par_ue), labeller = label_parsed) +
   theme_bw() +
   theme(panel.grid.minor = element_blank(),
@@ -1001,6 +1008,22 @@ OLISSpectraMetaPhasemeanPlot$facetsStrain = factor(OLISSpectraMetaPhasemeanPlot$
 ```
 
 
+```{r}
+OLISSpectraMetaPhasemeanPlot60<-OLISSpectraMetaPhasemeanPlot %>% 
+  filter(Par_ue == 60) %>% 
+  mutate(EmNormJaz647_60 = EmNormJaz647*60) %>% 
+  mutate(EmNormJaz521_60 = EmNormJaz521*60) 
+
+
+OLISSpectraMetaPhasemeanPlot300<-OLISSpectraMetaPhasemeanPlot %>% 
+  filter(Par_ue == 300) %>% 
+  #filter(WL == 530 | WL == 660) %>% 
+  mutate(EmNormJaz647_300 = EmNormJaz647*300) %>% 
+  mutate(EmNormJaz521_300 = EmNormJaz521*300) 
+
+```
+
+
 # Create plot
 
 ```{r create plot, fig.height = 5, fig.width = 6, warning = FALSE}
@@ -1013,9 +1036,15 @@ OLISSpectraMetaPhasemeanPlot %>%
   filter(Phase!= "St") %>% 
   ggplot() +
   #geom_area(aes(x = nm, y = EmNormJaz722, fill = "indianred4"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz647*100, fill = "brown1"), alpha = 0.1, show.legend = F) +
+  geom_area(aes(x = nm, y = EmNormJaz647*60, fill = "brown1"), alpha = 0.1, show.legend = F, OLISSpectraMetaPhasemeanPlot60) +
   #geom_area(aes(x = nm, y = EmNormJaz612, fill = "coral"), alpha = 0.1, show.legend = F) +
-  geom_area(aes(x = nm, y = EmNormJaz521*100, fill = "limegreen"), alpha = 0.1, show.legend = F) +
+  geom_area(aes(x = nm, y = EmNormJaz521*60, fill = "limegreen"), alpha = 0.1, show.legend = F, OLISSpectraMetaPhasemeanPlot60) +
+  
+    geom_area(aes(x = nm, y = EmNormJaz647*300, fill = "brown1"), alpha = 0.1, show.legend = F, OLISSpectraMetaPhasemeanPlot300) +
+  #geom_area(aes(x = nm, y = EmNormJaz612, fill = "coral"), alpha = 0.1, show.legend = F) +
+  geom_area(aes(x = nm, y = EmNormJaz521*300, fill = "limegreen"), alpha = 0.1, show.legend = F, OLISSpectraMetaPhasemeanPlot300) +
+  
+  
   #geom_area(aes(x = nm, y = EmNormJaz469, fill = "lightseagreen"), alpha = 0.1, show.legend = F) +
   #geom_area(aes(x = nm, y = EmNormJaz441, fill = "steelblue3"), alpha = 0.1, show.legend = F) +
   #geom_area(aes(x = nm, y = EmNormJaz393, fill = "royalblue4"), alpha = 0.1, show.legend = F) +
@@ -1031,7 +1060,7 @@ OLISSpectraMetaPhasemeanPlot %>%
   
   stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -5, alpha = 0.5) +
   scale_fill_identity() +
-  labs(y = "PUR and normalized LED emission spectra", x = "Growth waveband (nm)") +
+  labs(y = "PUR and LED emission spectra", x = "Growth waveband (nm)") +
   ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(facetsPar_ue, Par_ue), labeller = label_parsed) +
   theme_bw() +
   theme(panel.grid.minor = element_blank(),
