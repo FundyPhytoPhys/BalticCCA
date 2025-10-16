@@ -545,6 +545,7 @@ MultiCultiGrowthPlot$facetsPhotoperiod = factor(MultiCultiGrowthPlot$O2, labels 
 MultiCultiGrowthPlot$facetsStrain = factor(MultiCultiGrowthPlot$O2, labels = c("Strain"))
 ```
 
+
 ```{r create plot, fig.height = 5, fig.width = 6, warning = FALSE}
 lab1=c(expression("PC-rich"), expression("PE-rich"))
 lab2=c(expression("Exp"), expression("ExpResupply"))
@@ -605,6 +606,8 @@ JazDataRoundMeta %>%
 # }
 # grid.draw(g)
 ```
+
+
 
 # Save plot 
 
@@ -967,6 +970,9 @@ MCGrowthRateSelect %>%
 
 
 ```
+
+
+
 
 --------------- Linear fit -------------------
 
