@@ -903,11 +903,15 @@ OLISSpectraMetaPhasePlot %>%
 
 # Mean from the absorbance and PUR and calculate PUR/PAR ratio
 
+# I filter day = 0 and day = 7 to avoid data from very early and very late exp phase
+
 ```{r}
 #colnames(OLISSpectraMetaPUR)
 
 OLISSpectraMetaPhasemean<-OLISSpectraMetaPhase %>% 
   # filter(Run!=59) %>% 
+    filter(E_days!=0) %>% 
+    filter(E_days!=7) %>%
   group_by(Strain, Par_ue, WL, O2, nm, Phase) %>%
   
   summarize(SampleID, Run, Strain, ExpDate, Par_ue, Photoperiod, O2, WL,  PARPhotonDose_day, PURPhotonDose_day, ObsDate, Absorbance, nm, E_days, AbsNorm440, EmNormJaz722, EmNormJaz600, EmNormJaz647, EmNormJaz612, EmNormJaz521, EmNormJaz469, EmNormJaz441, EmNormJaz393, PUR, PURNorm, Phase,
@@ -1025,6 +1029,8 @@ OLISSpectraMetaPhasemeanPlot300<-OLISSpectraMetaPhasemeanPlot %>%
 
 
 # Create plot
+
+# I filter day = 0 and day = 7 to avoid data from very early and very late exp phase
 
 ```{r create plot, fig.height = 5, fig.width = 6, warning = FALSE}
 

@@ -543,8 +543,124 @@ MultiCultiGrowthPlot <- MultiCultiGrowthPlot %>%
 MultiCultiGrowthPlot$facetsPar_ue = factor(MultiCultiGrowthPlot$O2, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
 MultiCultiGrowthPlot$facetsPhotoperiod = factor(MultiCultiGrowthPlot$O2, labels = c("Photoperiod~(h)"))
 MultiCultiGrowthPlot$facetsStrain = factor(MultiCultiGrowthPlot$O2, labels = c("Strain"))
+
+
 ```
 
+```{r}
+JazDataRoundMeta60<-JazDataRoundMeta %>% 
+    mutate(Par_ue=case_when(ObsDateJaz=="2022-11-30"~60,
+         ObsDateJaz=="2022-11-30"~60))
+JazDataRoundMeta60_647<-JazDataRoundMeta60 %>% 
+  filter(Par_ue == 60) %>% 
+  filter(WL == 660) %>% 
+select(c(WL, nm, ObsDateJaz, EmNormJaz647, Par_ue))
+
+JazDataRoundMeta60_521<-JazDataRoundMeta60 %>% 
+  filter(Par_ue == 60) %>% 
+  filter(WL == 530) %>% 
+select(c(WL, nm, ObsDateJaz, EmNormJaz521, Par_ue))
+
+
+
+JazDataRoundMeta300<-JazDataRoundMeta %>% 
+    mutate(Par_ue=case_when(ObsDateJaz=="2022-11-30"~300,
+         ObsDateJaz=="2022-11-30"~300))
+JazDataRoundMeta300_647<-JazDataRoundMeta300 %>% 
+  filter(Par_ue == 300) %>% 
+  filter(WL == 660) %>% 
+  select(c(WL, nm, ObsDateJaz, EmNormJaz647, Par_ue))
+
+JazDataRoundMeta300_521<-JazDataRoundMeta300 %>% 
+  filter(Par_ue == 300) %>% 
+  filter(WL == 530) %>% 
+  select(c(WL, nm, ObsDateJaz, EmNormJaz521, Par_ue))
+
+
+JazDataRoundMeta60300<- rbind(JazDataRoundMeta60, JazDataRoundMeta300)
+
+
+```
+
+```{r}
+JazDataRoundMeta60300$facetsPar_ue = factor(JazDataRoundMeta60300$ObsDateJaz, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
+
+JazDataRoundMeta60_647$facetsPar_ue = factor(JazDataRoundMeta60_647$ObsDateJaz, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
+
+JazDataRoundMeta60_521$facetsPar_ue = factor(JazDataRoundMeta60_521$ObsDateJaz, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
+
+JazDataRoundMeta300_647$facetsPar_ue = factor(JazDataRoundMeta300_647$ObsDateJaz, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
+
+JazDataRoundMeta300_521$facetsPar_ue = factor(JazDataRoundMeta300_521$ObsDateJaz, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
+
+
+
+```
+
+
+
+```{r create plot, fig.height = 5, fig.width = 6, warning = FALSE}
+lab1=c(expression("PC-rich"), expression("PE-rich"))
+lab2=c(expression("Exp"), expression("ExpResupply"))
+
+
+JazDataRoundMeta60300 %>%
+   ggplot() +
+  #geom_area(aes(x = nm, y = EmNormJaz722, fill = "indianred4"), alpha = 0.1, show.legend = F) +
+  geom_area(aes(x = nm, y = EmNormJaz647*0.6, fill = "brown1"), alpha = 0.1, show.legend = F, JazDataRoundMeta60_647) +
+  #geom_area(aes(x = nm, y = EmNormJaz612, fill = "coral"), alpha = 0.1, show.legend = F) +
+  geom_area(aes(x = nm, y = EmNormJaz521*0.6, fill = "limegreen"), alpha = 0.1, show.legend = F, JazDataRoundMeta60_521) +
+  
+    geom_area(aes(x = nm, y = EmNormJaz647*3, fill = "brown1"), alpha = 0.1, show.legend = F, JazDataRoundMeta300_647) +
+  #geom_area(aes(x = nm, y = EmNormJaz612, fill = "coral"), alpha = 0.1, show.legend = F) +
+  geom_area(aes(x = nm, y = EmNormJaz521*3, fill = "limegreen"), alpha = 0.1, show.legend = F, JazDataRoundMeta300_521) +
+  
+  
+  geom_point(aes(x = WLNum, y = deltaOD_Lmu_corr, colour = as.factor(Phase)), size = 4, show.legend = T, MultiCultiGrowthPlot) +
+  geom_line(aes(x = WLNum, y = deltaOD_Lmu_corr, linetype = as.factor(Phase)), show.legend = T, MultiCultiGrowthPlot) +
+
+  geom_errorbar(aes(x = WLNum, ymin = deltaOD_Lmu_corr - deltaOD_Lmu_se, ymax = deltaOD_Lmu_corr + deltaOD_Lmu_se), width=0, size=0.3, show.legend = F, MultiCultiGrowthPlot) +
+    scale_colour_manual(values = c("slateblue4", "skyblue3")) +
+  # scale_colour_manual(values = c("palegreen3", "brown4"), name="", labels = lab2) +
+  # scale_shape_manual(values = c(16, 18), name="", labels = lab2) +
+  # scale_linetype_manual(values = c("solid", "dashed"), name="", labels = lab2) +
+  
+  stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -0.030, alpha = 0.5) +
+  scale_fill_identity() +
+  labs(y = "µ " ~ "("~d^-1~") and LED emission spectra", x = "Growth waveband (nm)") +
+  ggh4x::facet_nested(rows = vars(facetsStrain, Strain), cols = vars(facetsPar_ue, Par_ue), labeller = label_parsed) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.position = c(0.12,0.93),
+        legend.key.height= unit(0.003, 'cm'),
+        legend.spacing.y = unit(-0.1, "cm"),
+        legend.spacing.x = unit(-0.1, 'cm'),
+        legend.title = element_blank(),
+        legend.text = element_text(size=10))
+
+
+
+# g <- ggplot_gtable(ggplot_build(Plot))
+# stripr <- which(grepl('strip-r', g$layout$name))
+# fills <- c("palegreen3", "brown4")
+# k <- 1
+# for (i in stripr) {
+# j <- which(grepl('rect', g$grobs[[i]]$grobs[[1]]$childrenOrder))
+# g$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fills[k]
+# k <- k+1
+# }
+# grid.draw(g)
+```
 
 ```{r create plot, fig.height = 5, fig.width = 6, warning = FALSE}
 lab1=c(expression("PC-rich"), expression("PE-rich"))
