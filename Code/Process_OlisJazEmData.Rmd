@@ -986,6 +986,183 @@ OLISSpectraMetaPhasemean %>%
   theme_bw() 
 ```
 
+```{r}
+OLISSpectraMetaPhaseSpectraPlot70<-OLISSpectraMetaPhase %>% 
+  filter(Run == 70) %>% 
+  filter(Phase !="Exp")
+
+
+OLISSpectraMetaPhaseSpectraPlot60<-OLISSpectraMetaPhase %>% 
+    filter(Run == 63) %>% 
+  filter(Phase =="Exp") %>% 
+  filter(Par_ue == 60) %>% 
+  filter(E_days !=13)
+
+OLISSpectraMetaPhaseSpectraPlot300<-OLISSpectraMetaPhase %>% 
+    filter(Run == 63) %>% 
+  filter(Phase =="Exp") %>% 
+  filter(Par_ue == 300) 
+
+OLISSpectraMetaPhaseSpectraPlotst<-OLISSpectraMetaPhase %>% 
+  filter(Phase =="St")  
+
+OLISSpectraMetaPhaseSpectraPlot <-rbind(OLISSpectraMetaPhaseSpectraPlot70, OLISSpectraMetaPhaseSpectraPlot60, OLISSpectraMetaPhaseSpectraPlot300, OLISSpectraMetaPhaseSpectraPlotst)
+
+```
+
+
+```{r}
+OLISSpectraMetaPhaseSpectraPlot %>%
+  #filter(Run == 63 | Run == 70 | Run == 56) %>% 
+    filter(E_days != 11) %>%
+  ggplot() +
+  geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(E_days)), show.legend = T) +
+  ggh4x::facet_nested(rows = vars(Strain, Phase), cols = vars(Par_ue, WL),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
+
+OLISSpectraMetaPhaseSpectraPlot %>%
+  filter(Run == 63) %>% 
+  ggplot() +
+  geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(E_days)), show.legend = T) +
+  ggh4x::facet_nested(rows = vars(Strain, Phase), cols = vars(Par_ue, WL),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
+OLISSpectraMetaPhaseSpectraPlot %>%
+  filter(Run == 70) %>% 
+  ggplot() +
+  geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(E_days)), show.legend = T) +
+  ggh4x::facet_nested(rows = vars(Strain, Phase), cols = vars(Par_ue, WL),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+```
+
+
+```{r create plot, fig.height = 8, fig.width = 6, warning = FALSE}
+OLISSpectraMetaPhaseSpectraPlot %>%
+  filter(E_days != 11 & E_days != 10) %>%
+  ggplot() +
+  geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(Phase)), show.legend = F) +
+  scale_colour_manual(values = c("slateblue4",  "skyblue3", "lightblue3"), name="", labels = lab2) +
+  ggh4x::facet_nested(rows = vars(Strain, Phase), cols = vars(Par_ue, WL),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.position = c(0.11,0.90),
+        legend.key.height= unit(0.003, 'cm'),
+        legend.spacing.y = unit(-0.1, "cm"),
+        legend.spacing.x = unit(-0.1, 'cm'),
+        legend.title = element_blank(),
+        legend.text = element_text(size=10))
+
+```
+```{r}
+OLISSpectraMetaPhaseSpectraPlot$facetsPar_ue = factor(OLISSpectraMetaPhaseSpectraPlot$O2, labels = c("PAR~(µmol~photons~m^{-2}~s^{-1})"))
+OLISSpectraMetaPhaseSpectraPlot$facetsPhotoperiod = factor(OLISSpectraMetaPhaseSpectraPlot$O2, labels = c("Photoperiod~(h)"))
+OLISSpectraMetaPhaseSpectraPlot$facetsStrain = factor(OLISSpectraMetaPhaseSpectraPlot$O2, labels = c("Strain"))
+```
+
+
+```{r create plot, fig.height = 8, fig.width = 6, warning = FALSE}
+lab1=c(expression("PC-rich"), expression("PE-rich"))
+lab2=c(expression("530 nm"), expression("660 nm"))
+
+data_textpigmentPC <- data.frame(Par_ue = c(60, 300, 60, 300, 60, 300), facetsPar_ue = c("PAR~(µmol~photons~m^{-2}~s^{-1})"), facetsStrain = c("Strain"), Strain  = c("PC-rich", "PC-rich", "PC-rich"), Phase  = c("Exp", "ExpResupply", "St"), label = c('PC'))
+
+data_textpigmentPC2 <- data.frame(Par_ue = c(60, 300), facetsPar_ue = c("PAR~(µmol~photons~m^{-2}~s^{-1})"), facetsStrain = c("Strain"), Strain  = c("PE-rich"), Phase  = c("ExpResupply"), label = c('PC'))
+
+data_textpigmentPE <- data.frame(Par_ue = c(60, 300, 60, 300, 60, 300), facetsPar_ue = c("PAR~(µmol~photons~m^{-2}~s^{-1})"), facetsStrain = c("Strain"), Strain  = c("PE-rich", "PE-rich", "PE-rich"), Phase  = c("Exp", "ExpResupply", "St"), label = c('PE'))
+
+data_textpigmentPE2 <- data.frame(Par_ue = c(60, 300), facetsPar_ue = c("PAR~(µmol~photons~m^{-2}~s^{-1})"), facetsStrain = c("Strain"), Strain  = c("PC-rich"), Phase  = c("ExpResupply"), label = c('PE'))
+
+arrowdf1 <- tibble(facetsPar_ue = "PAR~(µmol~photons~m^{-2}~s^{-1})", Par_ue = c(60, 300), facetsStrain = "Strain", Strain = "PC-rich", Phase = "Exp")
+arrowdf2 <- tibble(facetsPar_ue = "PAR~(µmol~photons~m^{-2}~s^{-1})", Par_ue = c(60, 300), facetsStrain = "Strain", Strain = "PC-rich", Phase = "ExpResupply")
+arrowdf3 <- tibble(facetsPar_ue = "PAR~(µmol~photons~m^{-2}~s^{-1})", Par_ue = c(60, 300), facetsStrain = "Strain", Strain = "PC-rich", Phase = "St")
+arrowdf4 <- tibble(facetsPar_ue = "PAR~(µmol~photons~m^{-2}~s^{-1})", Par_ue = c(60, 300), facetsStrain = "Strain", Strain = "PE-rich", Phase = "ExpResupply")
+
+arrowdf5 <- tibble(facetsPar_ue = "PAR~(µmol~photons~m^{-2}~s^{-1})", Par_ue = c(60, 300), facetsStrain = "Strain", Strain = "PE-rich", Phase = "Exp")
+arrowdf6 <- tibble(facetsPar_ue = "PAR~(µmol~photons~m^{-2}~s^{-1})", Par_ue = c(60, 300), facetsStrain = "Strain", Strain = "PE-rich", Phase = "ExpResupply")
+arrowdf7 <- tibble(facetsPar_ue = "PAR~(µmol~photons~m^{-2}~s^{-1})", Par_ue = c(60, 300), facetsStrain = "Strain", Strain = "PE-rich", Phase = "St")
+arrowdf8 <- tibble(facetsPar_ue = "PAR~(µmol~photons~m^{-2}~s^{-1})", Par_ue = c(60, 300), facetsStrain = "Strain", Strain = "PC-rich", Phase = "ExpResupply")
+
+
+OLISSpectraMetaPhaseSpectraPlot %>%
+  filter(E_days != 11 & E_days != 10) %>%
+  ggplot() +
+  geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(WL)), show.legend = T) +
+  scale_colour_manual(values = c("palegreen3",  "brown4"), name="", labels = lab2) +
+  
+  geom_text(data=data_textpigmentPC, aes(x=660, y=1.4, label=label), size=3, colour = "deepskyblue4") + #PC
+  geom_text(data=data_textpigmentPC2, aes(x=660, y=1.4, label=label), size=3, colour = "deepskyblue4") + #PC
+  
+  geom_text(data=data_textpigmentPE, aes(x=510, y=1.4, label=label), size=3, colour = "hotpink4") + #PE
+  geom_text(data=data_textpigmentPE2, aes(x=510, y=1.4, label=label), size=3, colour = "hotpink4") + #PE
+  
+  geom_segment(data = arrowdf1,
+               aes(x = 665, xend = 645, y = 1.25, yend = 1.0),
+               colour = "deepskyblue4", size = 0.5, alpha=0.9, arrow = arrow(length=unit(0.2, 'cm'))) + #PC
+  geom_segment(data = arrowdf2,
+               aes(x = 665, xend = 645, y = 1.25, yend = 1.0),
+               colour = "deepskyblue4", size = 0.5, alpha=0.9, arrow = arrow(length=unit(0.2, 'cm'))) + #PC
+  geom_segment(data = arrowdf3,
+               aes(x = 665, xend = 645, y = 1.25, yend = 0.6),
+               colour = "deepskyblue4", size = 0.5, alpha=0.9, arrow = arrow(length=unit(0.2, 'cm'))) + #PC
+  geom_segment(data = arrowdf4,
+               aes(x = 665, xend = 645, y = 1.25, yend = 0.9),
+               colour = "deepskyblue4", size = 0.5, alpha=0.9, arrow = arrow(length=unit(0.2, 'cm'))) + #PC
+  
+  
+  geom_segment(data = arrowdf5,
+               aes(x = 510, xend = 530, y = 1.25, yend = 1.0),
+               colour = "hotpink4", size = 0.5, alpha=0.9, arrow = arrow(length=unit(0.2, 'cm'))) + #PE
+  geom_segment(data = arrowdf6,
+               aes(x = 510, xend = 530, y = 1.25, yend = 0.9),
+               colour = "hotpink4", size = 0.5, alpha=0.9, arrow = arrow(length=unit(0.2, 'cm'))) + #PE
+  geom_segment(data = arrowdf7,
+               aes(x = 510, xend = 535, y = 1.25, yend = 0.6),
+               colour = "hotpink4", size = 0.5, alpha=0.9, arrow = arrow(length=unit(0.2, 'cm'))) + #PE
+  geom_segment(data = arrowdf8,
+               aes(x = 510, xend = 530, y = 1.25, yend = 1.0),
+               colour = "hotpink4", size = 0.5, alpha=0.9, arrow = arrow(length=unit(0.2, 'cm'))) + #PE
+  
+  
+  stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -0.3, alpha = 0.5) +
+  scale_fill_identity() +
+    labs(y = "Normalized whole-cell absorbance", x = "Wavelength (nm)") +
+  ggh4x::facet_nested(rows = vars(facetsStrain, Strain, factor(Phase, levels=c("Exp", "St", "ExpResupply"))), cols = vars(facetsPar_ue, Par_ue),labeller = label_parsed) +
+  
+
+  
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        #panel.spacing.x = unit(0.4, 'cm'),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.title = element_text(size=16),
+        strip.background = element_rect(fill="white"),
+        strip.text = element_text(size=12),
+        axis.title.y = element_text(margin=margin(r=10)),
+        axis.title.x = element_text(margin=margin(t=10)),
+        legend.background = element_rect(fill="transparent"),
+        legend.position = c(0.08,0.872),
+        legend.key.height= unit(0.003, 'cm'),
+        legend.spacing.y = unit(-0.1, "cm"),
+        legend.spacing.x = unit(-0.1, 'cm'),
+        legend.title = element_blank(),
+        legend.text = element_text(size=10))
+
+```
+
+
 # Save plot 
 
 ```{r save plot}
