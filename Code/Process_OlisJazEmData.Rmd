@@ -1078,10 +1078,11 @@ arrowdf8 <- tibble(facetsPar_ue = "PAR~(µmol~photons~m^{-2}~s^{-1})", Par_ue = 
 
 
 OLISSpectraMetaPhaseSpectraPlot %>%
-  filter(E_days != 11 & E_days != 10) %>%
+  #filter(E_days != 11 & E_days != 10) %>%
+    filter(E_days == 2 | E_days == 13 | E_days == 16) %>%
   ggplot() +
   geom_line(aes(x = nm, y = AbsNorm440, colour = as.factor(WL)), show.legend = T) +
-  scale_colour_manual(values = c("palegreen3",  "brown4"), name="", labels = lab2) +
+  scale_colour_manual(values = c("palegreen4",  "brown4"), name="", labels = lab2) +
   
   geom_text(data=data_textpigmentPC, aes(x=660, y=1.4, label=label), size=3, colour = "deepskyblue4") + #PC
   geom_text(data=data_textpigmentPC2, aes(x=660, y=1.4, label=label), size=3, colour = "deepskyblue4") + #PC
@@ -1117,12 +1118,14 @@ OLISSpectraMetaPhaseSpectraPlot %>%
                colour = "hotpink4", size = 0.5, alpha=0.9, arrow = arrow(length=unit(0.2, 'cm'))) + #PE
   
   
-  stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = -0.3, alpha = 0.5) +
+  stat_wl_strip(aes(x = nm), ymin = -Inf, ymax = 0, alpha = 0.5) +
   scale_fill_identity() +
+  
+  scale_y_continuous(breaks=seq(0,1.5,0.5)) +
+  coord_cartesian(ylim = c(0, 1.5)) +
+  
     labs(y = "Normalized whole-cell absorbance", x = "Wavelength (nm)") +
   ggh4x::facet_nested(rows = vars(facetsStrain, Strain, factor(Phase, levels=c("Exp", "St", "ExpResupply"))), cols = vars(facetsPar_ue, Par_ue),labeller = label_parsed) +
-  
-
   
   theme_bw() +
   theme(panel.grid.minor = element_blank(),

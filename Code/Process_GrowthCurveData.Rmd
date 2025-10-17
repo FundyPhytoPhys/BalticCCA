@@ -235,6 +235,15 @@ data_textResup <- data.frame(facetsPar_ue = c("PAR~(µmol~photons~m^{-2}~s^{-1})
 
 data_texta <- data.frame(WL = c("730"), Strain  = c("PC-rich"), label = c('italic(a)'))
 
+
+data_textPhase_Exp <- data.frame(Par_ue = c(300), facetsPar_ue = c("PAR~(µmol~photons~m^{-2}~s^{-1})"), facetsStrain = c("Strain"), Strain  = c("PE-rich"), label = c('Exp'))
+data_textPhase_St <- data.frame(Par_ue = c(300), facetsPar_ue = c("PAR~(µmol~photons~m^{-2}~s^{-1})"), facetsStrain = c("Strain"), Strain  = c("PE-rich"), label = c('St'))
+data_textPhase_ExpResupply <- data.frame(Par_ue = c(300), facetsPar_ue = c("PAR~(µmol~photons~m^{-2}~s^{-1})"), facetsStrain = c("Strain"), Strain  = c("PE-rich"), label = c('ExpResupply'))
+
+arrowdf1 <- tibble(facetsPar_ue = "PAR~(µmol~photons~m^{-2}~s^{-1})", Par_ue = c(300), facetsStrain = "Strain", Strain = "PE-rich")
+arrowdf2 <- tibble(facetsPar_ue = "PAR~(µmol~photons~m^{-2}~s^{-1})", Par_ue = c(300), facetsStrain = "Strain", Strain = "PE-rich")
+arrowdf3 <- tibble(facetsPar_ue = "PAR~(µmol~photons~m^{-2}~s^{-1})", Par_ue = c(300), facetsStrain = "Strain", Strain = "PE-rich")
+
 lab1=c(expression("PC-rich"), expression("PE-rich"))
 lab2=c(expression("530 nm"), expression("660 nm"))
 
@@ -253,6 +262,21 @@ OD680<-MultiCultiDataAll %>%
   
   geom_text(data=data_textExp, aes(x=6, y=1.3, label=label), size=4) +
   geom_text(data=data_textResup, aes(x=17, y=1.3, label=label), size=4) +
+  
+    geom_text(data=data_textPhase_Exp, aes(x=4, y=0.7, label=label), size=3) +
+    geom_text(data=data_textPhase_St, aes(x=11, y=0.10, label=label), size=3) +
+    geom_text(data=data_textPhase_ExpResupply, aes(x=17.5, y=0.10, label=label), size=3) +
+    
+  geom_segment(data = arrowdf1,
+               aes(x = 4, xend = 5, y = 0.6, yend = 0.4),
+               colour = "black", size = 0.5, alpha=0.9, arrow = arrow(length=unit(0.2, 'cm'))) + 
+  geom_segment(data = arrowdf2,
+               aes(x = 11, xend = 12, y = 0.2, yend = 0.65),
+               colour = "black", size = 0.5, alpha=0.9, arrow = arrow(length=unit(0.2, 'cm'))) + 
+  geom_segment(data = arrowdf3,
+               aes(x = 18, xend = 17, y = 0.2, yend = 0.40),
+               colour = "black", size = 0.5, alpha=0.9, arrow = arrow(length=unit(0.2, 'cm'))) + 
+  
   # geom_rect(xmin=-Inf, xmax=Inf, aes(ymin = estimate - SE, ymax = estimate + SE), show.legend = F, data = MCParamAll_LightAll, fill = "blue", alpha = 0.1) +
   # 
   #   geom_hline(aes(yintercept = 1.15), linetype = "dashed", fill = "blue", alpha = 0.5) +
