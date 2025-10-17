@@ -354,6 +354,48 @@ SolFitsMeta<-SolFitsMetaPhase
   
 ```
 
+#Removind weird outliers
+```{r}
+SolFitsMeta1<-SolFitsMeta %>% 
+  filter(Run == 59) %>% 
+  filter(Ex_WL != 535)
+  
+SolFitsMeta2<-SolFitsMeta %>% 
+  filter(Run != 59) 
+
+SolFitsMeta<-rbind(SolFitsMeta1, SolFitsMeta2)
+```
+
+
+
+
+# Prelim plots
+```{r}
+colnames(SolFitsMeta)
+
+SolFitsMeta %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = Sigmax, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = Sigmax, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
+  geom_vline(xintercept = 30, linetype = "dotted", size = 0.7) +
+  scale_fill_identity() +
+  ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
+  theme_bw() 
+
+SolFitsMeta %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = Sigdark, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  geom_line(aes(x = ActPARCorr, y = Sigdark, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
+  geom_vline(xintercept = 30, linetype = "dotted", size = 0.7) +
+  scale_fill_identity() +
+  ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
+  theme_bw() 
+
+
+```
+
 
 
 # calibrated JVPSII 
@@ -365,7 +407,7 @@ SolFitsMeta %>%
   ggplot() +
   geom_point(aes(x = ActPARCorr, y = JVPSII_umol_eLs, shape = as.factor(Phase)), size = 3, show.legend = T) +
   geom_line(aes(x = ActPARCorr, y = JVPSII_umol_eLs, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
-  geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
+  geom_vline(xintercept = 30, linetype = "dotted", size = 0.7) +
   scale_fill_identity() +
   ggh4x::facet_nested(cols = vars(Ex_WL), rows = vars(Strain), labeller = label_parsed) +
   theme_bw() 
@@ -402,6 +444,7 @@ SolFitsMeta %>%
 
 ```
 
+# Group to get single LRC
 
 ```{r}
 colnames(SolFitsMeta)
@@ -411,7 +454,7 @@ SolFitsMetaFilter <- SolFitsMeta %>%
   dplyr::group_by(SampleID, Run, Par_ue, WL, Ex_WL, E_days, ObsDate, FilenameSolisense) %>% 
   #filter(Dark1s==1) %>% 
   #filter(Tau1QA == min(Tau1QA, na.rm = TRUE)) %>% 
-  filter(ActPAR == 20) %>% 
+  #filter(ActPAR == 20) %>% 
   dplyr::ungroup() 
   
   
@@ -423,72 +466,93 @@ SolFitsMetaFilter <- SolFitsMeta %>%
 
 ```{r}
 
+
+
 SolFitsMetaFilter %>%
   mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
-  #filter(Phase!= "St") %>% 
-    #filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+    filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
   ggplot() +
-  geom_point(aes(x = E_days, y = Tau1QA, colour = as.factor(Phase)), size = 3, show.legend = T) +
-  #geom_line(aes(x = E_days, y = TauAv, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
-  #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
-  scale_fill_identity() +
+  geom_point(aes(x = E_days, y = Tau1QAdark, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw() 
+
+SolFitsMetaFilter %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+    filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+  ggplot() +
+  geom_point(aes(x = E_days, y = Tau1QAmin, colour = as.factor(Phase)), size = 3, show.legend = T) +
   ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
   theme_bw() 
 
 
 SolFitsMetaFilter %>%
   mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
-  #filter(Phase!= "St") %>% 
-    #filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+    filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
   ggplot() +
-  geom_point(aes(x = E_days, y = TauAv, colour = as.factor(Phase)), size = 3, show.legend = T) +
-  #geom_line(aes(x = E_days, y = Alp1QA, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
-  #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
-  scale_fill_identity() +
+  geom_point(aes(x = E_days, y = TauAvdark, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw() 
+
+SolFitsMetaFilter %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+    filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+  ggplot() +
+  geom_point(aes(x = E_days, y = TauAvmin, colour = as.factor(Phase)), size = 3, show.legend = T) +
   ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
   theme_bw() 
 
 
+
 SolFitsMetaFilter %>%
   mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
-    #filter(Phase!= "St") %>% 
+    filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+  ggplot() +
+  geom_point(aes(x = E_days, y = Tau3QAdark, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw() 
+
+SolFitsMetaFilter %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+    filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+  ggplot() +
+  geom_point(aes(x = E_days, y = Tau3QAmin, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw() 
+
+
+
+```
+
+
+
+```{r }
+SolFitsMetaFilter %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
   filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
   ggplot() +
-  geom_point(aes(x = E_days, y = Alp2QA, colour = as.factor(Phase)), size = 3, show.legend = T) +
-  #geom_line(aes(x = E_days, y = Alp2QA, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
-  #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
-  scale_fill_identity() +
+  geom_point(aes(x = E_days, y = Sigdark, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw() 
+
+
+
+SolFitsMetaFilter %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+  filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+  ggplot() +
+  geom_point(aes(x = E_days, y = Sigmax, colour = as.factor(Phase)), size = 3, show.legend = T) +
   ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
   theme_bw() 
 
 ```
-```{r reate plot, fig.height = 10, fig.width = 6, warning = FALSE}
-SolFitsMeta %>%
-  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
-    filter(Phase!= "St") %>% 
-  filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
-  ggplot() +
-  geom_point(aes(x = ActPARCorr, y = Sigdark, colour = as.factor(Phase)), size = 3, show.legend = T) +
-  geom_line(aes(x = ActPARCorr, y = Sigdark, linetype = as.factor(Phase)), size = 0.3, show.legend = T) +
-  #geom_vline(xintercept = 90, linetype = "dotted", size = 0.7) +
-  scale_fill_identity() +
-  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL, Run), labeller = label_parsed) +
-  theme_bw() 
-```
-
-
 
 
 
 ```{r}
-SolFitsMetaLRC<-SolFitsMeta %>%
-  # filter(Par_ue == 180) %>% 
-  # filter(Run!= 118) %>%
-  # filter(Run!= 119) %>%
-  # filter(Run!= 122) %>%
-
-    
-  filter(Sig>0)
+SolFitsMetaLRC<-SolFitsMetaFilter %>%
+  filter(Sig>0) %>% 
+  filter(Sigdark>0) %>% 
+  filter(Sigmax>0)
 ```
 
 # Convert Sig_m2psii to Sig_nm2psii and Sigdark_m2psii to Sigdark_nm2psii and calculated number of days when measurements were made
@@ -496,15 +560,15 @@ SolFitsMetaLRC<-SolFitsMeta %>%
 ```{r convert Sigma}
 SolFitsMetaLRC <- SolFitsMetaLRC %>%
 mutate(Sig_nm2psii=Sig_m2psii*1000000000000000000) %>%
-mutate(Sigdark_nm2psii=Sigdark_m2psii*1000000000000000000)
+mutate(Sigdark_nm2psii=Sigdark_m2psii*1000000000000000000) %>% 
+mutate(Sigmax_nm2psii=Sigmax_m2psii*1000000000000000000)  
 ```
 
 ```{r}
 SolFitsMetaLRC<-SolFitsMetaLRC %>% 
   mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
   filter(WL != "WW") 
-  # mutate(Oxygen=case_when(O2==21~"250~µM",
-  #        O2==0~"2.5~µM"))
+
 ```
 
 # Create preliminary plots 
@@ -533,35 +597,52 @@ lab1=c(expression("PC-rich_077"), expression("PE-rich_127"))
 
 
 SolFitsMetaLRC %>%
-  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
   #filter(Strain == "PC-rich") %>% 
   #filter(O2 == 0) %>% 
   filter(WL == 530 |  WL == 660) %>%
   filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
   filter(Phase != "St") %>% 
   ggplot() +
-  geom_point(aes(x = ActPARCorr, y = Sig, colour = as.factor(Phase)), size = 2, show.legend = T) +
-  scale_fill_identity() +
+  geom_point(aes(x = ActPARCorr, y = Sigdark, colour = as.factor(Phase)), size = 2, show.legend = T) +
   ggh4x::facet_nested(cols = vars(WL, Par_ue), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
   theme_bw()
 
-
 SolFitsMetaLRC %>%
-  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
   #filter(Strain == "PC-rich") %>% 
   #filter(O2 == 0) %>% 
   filter(WL == 530 |  WL == 660) %>%
   filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
   filter(Phase != "St") %>% 
   ggplot() +
-  geom_point(aes(x = ActPARCorr, y = TauAv, colour = as.factor(Phase)), size = 2, show.legend = T) +
-  scale_fill_identity() +
+  geom_point(aes(x = ActPARCorr, y = Sigmax, colour = as.factor(Phase)), size = 2, show.legend = T) +
   ggh4x::facet_nested(cols = vars(WL, Par_ue), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
   theme_bw()
 
 
 SolFitsMetaLRC %>%
-  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+  #filter(Strain == "PC-rich") %>% 
+  #filter(O2 == 0) %>% 
+  filter(WL == 530 |  WL == 660) %>%
+  filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
+  filter(Phase != "St") %>% 
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = TauAvdark, colour = as.factor(Phase)), size = 2, show.legend = T) +
+  ggh4x::facet_nested(cols = vars(WL, Par_ue), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw()
+
+
+SolFitsMetaLRC %>%
+  #filter(Strain == "PC-rich") %>% 
+  #filter(O2 == 0) %>% 
+  filter(WL == 530 |  WL == 660) %>%
+  filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
+  filter(Phase != "St") %>% 
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = TauAvmin, colour = as.factor(Phase)), size = 2, show.legend = T) +
+  ggh4x::facet_nested(cols = vars(WL, Par_ue), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw()
+
+SolFitsMetaLRC %>%
   #filter(Strain == "PC-rich") %>% 
   #filter(O2 == 0) %>% 
   filter(WL == 530 |  WL == 660) %>%
@@ -569,7 +650,6 @@ SolFitsMetaLRC %>%
   filter(Phase != "St") %>% 
   ggplot() +
   geom_point(aes(x = ActPARCorr, y = qpOxbo, colour = as.factor(Phase)), size = 2, show.legend = T) +
-  scale_fill_identity() +
   ggh4x::facet_nested(cols = vars(WL, Par_ue), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
   theme_bw()
 ```
@@ -581,6 +661,9 @@ SolFitsMetaLRC<-SolFitsMetaLRC %>%
 ```
 
 
+# Check if it is not a error here!! check if filename is needed here!
+
+
 # Calculate Sigma mean from 3 replica measured on the same day 
 # 6 replica b/c 3 replica * 2 values ("up" and "down")
 
@@ -589,14 +672,40 @@ SolFitsMetaLRC <- SolFitsMetaLRC %>%
   #filter(E_days>=4) %>% 
   # filter(E_days <=10) %>% 
   #group_by(Strain, Ex_WL, Par_ue, Photoperiod, WLNum, WL, O2, E_days, Oxygen, ObsDate, ActPARCorr) %>%
-  group_by(Strain, Run, Ex_WL, Par_ue, Photoperiod, WLNum, WL, O2, E_days, ObsDate, ActPARCorr, Phase) %>%
+  group_by(Strain, Ex_WL, Par_ue, Photoperiod, WLNum, WL, O2, E_days, ObsDate, ActPARCorr, Phase) %>%
   
-  summarize(SampleID, Ex_WL, FilenameSolisense, Run, Strain, ExpDate, Par_ue, Photoperiod, O2, WL, WLNum,  PARPhotonDose_day, ObsDate, ObsTime, ObsDateTime, Sig, Sig_nm2psii, ActPARCorr, ActPARCorr_photonsm2s, Sigdark_nm2psii, FoOxbo, qpOxbo, JVPSII_umol_eLs, E_days, TauAv, qpOxbo, ETRqpOxbo, Phase,
+  summarize(SampleID, Ex_WL, FilenameSolisense, Run, Strain, ExpDate, Par_ue, Photoperiod, O2, WL, WLNum,  PARPhotonDose_day, ObsDate, ObsTime, ObsDateTime, Sig, Sig_nm2psii, ActPARCorr, ActPARCorr_photonsm2s, Sigdark_nm2psii, Sigmax_nm2psii, FoOxbo, qpOxbo, JVPSII_umol_eLs, E_days, TauAv, TauAvmin, TauAvdark, Tau1QAmin, Tau1QAdark, Tau3QAmin, Tau3QAdark, qpOxbo, ETRqpOxbo, Phase,
+            
             meanSig_nm2psii = mean(Sig_nm2psii),
             sdSig_nm2psii = sd(Sig_nm2psii),
             
+            meanSigdark_nm2psii = mean(Sigdark_nm2psii),
+            sdSigdark_nm2psii = sd(Sigdark_nm2psii),
+            
+            meanSigmax_nm2psii = mean(Sigmax_nm2psii),
+            sdSigmax_nm2psii = sd(Sigmax_nm2psii),
+            
+  
             meanTauAv = mean(TauAv),
             sdTauAv = sd(TauAv),
+            
+            meanTauAvmin = mean(TauAvmin),
+            sdTauAvmin = sd(TauAvmin),
+            
+            meanTauAvdark = mean(TauAvdark),
+            sdTauAvdark = sd(TauAvdark),
+            
+            meanTau1QAmin = mean(Tau1QAmin),
+            sdTau1QAmin = sd(Tau1QAmin),
+            
+            meanTau1QAdark = mean(Tau1QAdark),
+            sdTau1QAdark = sd(Tau1QAdark),
+            
+            meanTau3QAmin = mean(Tau3QAmin),
+            sdTau3QAmin = sd(Tau3QAmin),
+            
+            meanTau3QAdark = mean(Tau3QAdark),
+            sdTau3QAdark = sd(Tau3QAdark),
             
             meanqpOxbo = mean(qpOxbo),
             sdqpOxbo = sd(qpOxbo),
@@ -605,10 +714,7 @@ SolFitsMetaLRC <- SolFitsMetaLRC %>%
             sdJVPSII_umol_eLs = sd(JVPSII_umol_eLs),
             
             meanETRqpOxbo = mean(ETRqpOxbo),
-            sdETRqpOxbo = sd(ETRqpOxbo),
-            
-            meanSigdark_nm2psii = mean(Sigdark_nm2psii),
-            sdSigdark_nm2psii = sd(Sigdark_nm2psii)) %>%
+            sdETRqpOxbo = sd(ETRqpOxbo)) %>%
   ungroup() 
 ```
 
@@ -621,12 +727,41 @@ SolFitsMetaLRC <- SolFitsMetaLRC %>%
   #filter(E_days <=10) %>% 
   group_by(Strain, Ex_WL, Par_ue, Photoperiod, WLNum, WL, O2, ActPARCorr, Phase) %>%
   
-  summarize(SampleID, Ex_WL, FilenameSolisense, Run, Strain, ExpDate, Par_ue, Photoperiod, O2, WL, WLNum,  PARPhotonDose_day, ObsDate, ObsTime, ObsDateTime, Sig, Sig_nm2psii, meanSig_nm2psii, sdSig_nm2psii, meanSigdark_nm2psii, sdSigdark_nm2psii, ActPARCorr, ActPARCorr_photonsm2s, Sigdark_nm2psii, FoOxbo, qpOxbo, JVPSII_umol_eLs, E_days, TauAv, qpOxbo, meanTauAv, sdTauAv, meanqpOxbo, sdqpOxbo, meanJVPSII_umol_eLs, sdJVPSII_umol_eLs, ETRqpOxbo, meanETRqpOxbo, sdETRqpOxbo, Phase,
+  summarize(SampleID, Ex_WL, FilenameSolisense, Run, Strain, ExpDate, Par_ue, Photoperiod, O2, WL, WLNum,  PARPhotonDose_day, ObsDate, ObsTime, ObsDateTime, Sig, Sig_nm2psii, meanSig_nm2psii, sdSig_nm2psii, meanSigdark_nm2psii, sdSigdark_nm2psii, meanSigmax_nm2psii, sdSigmax_nm2psii, ActPARCorr, ActPARCorr_photonsm2s, Sigdark_nm2psii, FoOxbo, qpOxbo, JVPSII_umol_eLs, E_days, TauAv, qpOxbo, meanTauAv, sdTauAv, meanTauAvmin, sdTauAvmin, meanTauAvdark, sdTauAvdark, 
+            meanTau1QAmin, sdTau1QAmin, meanTau1QAdark, sdTau1QAdark, 
+            meanTau3QAmin, sdTau3QAmin, meanTau3QAdark, sdTau3QAdark, 
+            
+            meanqpOxbo, sdqpOxbo, meanJVPSII_umol_eLs, sdJVPSII_umol_eLs, ETRqpOxbo, meanETRqpOxbo, sdETRqpOxbo, Phase,
             AllmeanSig_nm2psii = mean(meanSig_nm2psii),
             AllsdSig_nm2psii = sd(sdSig_nm2psii),
             
+            AllmeanSigdark_nm2psii = mean(meanSigdark_nm2psii),
+            AllsdSigdark_nm2psii = sd(sdSigdark_nm2psii),
+            
+            AllmeanSigmax_nm2psii = mean(meanSigmax_nm2psii),
+            AllsdSigmax_nm2psii = sd(sdSigmax_nm2psii),
+            
             AllmeanTauAv = mean(meanTauAv),
             AllsdTauAv = sd(sdTauAv),
+            
+            AllmeanTauAvmin = mean(meanTauAvmin),
+            AllsdTauAvmin = sd(sdTauAvmin),
+            
+            AllmeanTauAvdark = mean(meanTauAvdark),
+            AllsdTauAvdark = sd(sdTauAvdark),
+            
+            AllmeanTau1QAmin = mean(meanTau1QAmin),
+            AllsdTau1QAmin = sd(sdTau1QAmin),
+            
+            AllmeanTau1QAdark = mean(meanTau1QAdark),
+            AllsdTau1QAdark = sd(sdTau1QAdark),
+            
+            AllmeanTau3QAmin = mean(meanTau3QAmin),
+            AllsdTau3QAmin = sd(sdTau3QAmin),
+            
+            AllmeanTau3QAdark = mean(meanTau3QAdark),
+            AllsdTau3QAdark = sd(sdTau3QAdark),
+            
             
             AllmeanqpOxbo = mean(meanqpOxbo),
             AllsdqpOxbo = sd(sdqpOxbo),
@@ -635,12 +770,30 @@ SolFitsMetaLRC <- SolFitsMetaLRC %>%
             AllsdJVPSII_umol_eLs = sd(sdJVPSII_umol_eLs),
             
             AllmeanETRqpOxbo = mean(meanETRqpOxbo),
-            AllsdETRqpOxbo = sd(sdETRqpOxbo),
-            
-            AllmeanSigdark_nm2psii = mean(meanSigdark_nm2psii),
-            AllsdSigdark_nm2psii = sd(sdSigdark_nm2psii)) %>%
+            AllsdETRqpOxbo = sd(sdETRqpOxbo)) %>%
   ungroup() 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Create preliminary plots sig vs ActPAR
@@ -650,14 +803,28 @@ lab1=c(expression("PC-rich_077"), expression("PE-rich_127"))
 
 
 SolFitsMetaLRC %>%
-  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
   #filter(Strain == "PC-rich") %>% 
   #filter(Strain == "PC-rich") %>% 
   #filter(O2 == 0) %>% 
   filter(WL == 450 | WL == 530 |  WL == 660) %>%
   filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
   ggplot() +
-  geom_point(aes(x = ActPARCorr, y = Sig_nm2psii, colour = as.factor(Phase)), size = 2, show.legend = T) +
+  geom_point(aes(x = ActPARCorr, y = AllmeanSig_nm2psii, colour = as.factor(Phase)), size = 2, show.legend = T) +
+  # geom_point(aes(x = ActPARCorr, y = meanSig_nm2psii), colour = "darkgreen",size = 2, show.legend = T) +
+  # geom_point(aes(x = ActPARCorr, y = AllmeanSig_nm2psii), colour = "red",size = 2, show.legend = T) +
+  scale_fill_identity() +
+  ggh4x::facet_nested(cols = vars(WL, Par_ue), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw()
+
+
+SolFitsMetaLRC %>%
+  #filter(Strain == "PC-rich") %>% 
+  #filter(Strain == "PC-rich") %>% 
+  #filter(O2 == 0) %>% 
+  filter(WL == 450 | WL == 530 |  WL == 660) %>%
+  filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
+  ggplot() +
+  geom_point(aes(x = ActPARCorr, y = meanSigmax_nm2psii, colour = as.factor(Phase)), size = 2, show.legend = T) +
   # geom_point(aes(x = ActPARCorr, y = meanSig_nm2psii), colour = "darkgreen",size = 2, show.legend = T) +
   # geom_point(aes(x = ActPARCorr, y = AllmeanSig_nm2psii), colour = "red",size = 2, show.legend = T) +
   scale_fill_identity() +

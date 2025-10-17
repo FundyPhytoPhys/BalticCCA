@@ -586,7 +586,7 @@ OLISSpectraMetaPUR_Resup2 %>%
 
 
 
-# Filter 8 spectra that do not match to growth curve - day 7 because Run 56 after day 7 also sowed change in pigments (CCA) without resupply! I will deal with it later.I think this could be contamination?
+# Filter 8 spectra that are weird - day 7. I will deal with it later. I think this could be contamination?
 
 ```{r}
 OLISSpectraMetaPURTrim1<-OLISSpectraMetaPUR %>% 
@@ -779,6 +779,15 @@ OLISSpectraMetaPhase %>%
   ggplot() +
   geom_point(aes(x = WL, y = PUR, colour = as.factor(Phase)), show.legend = T) +
   ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
+  theme_bw() 
+
+
+
+OLISSpectraMetaPhase %>%
+  #filter(Phase!= "St") %>% 
+  ggplot() +
+  geom_point(aes(x = E_days, y = PUR/Par_ue, colour = as.factor(Phase)), show.legend = T) +
+  ggh4x::facet_nested(rows = vars(Strain), cols = vars(Par_ue, WL),labeller = labeller(Ex_WL = label_value, WL = label_value)) +
   theme_bw() 
 ```
 

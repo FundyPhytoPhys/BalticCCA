@@ -113,7 +113,7 @@ TableRdsPath <- file.path("..", "Output", "TablesRDS")
 
 
 
-zip_file <- file.path("..", "Data", "RawData", "caloxy5.zip")
+zip_file <- file.path("..", "Data", "RawData", "SolisenseSySlCCACaloxyBiolSteps.zip")
 
 
 SolisenseFilesOS <- unzip(zip_file, list = TRUE)
@@ -145,7 +145,7 @@ SolFitsTrimOS <- SolFitsOS %>%
   filter(!grepl("----", DATE)) %>%
   select(-c("RFID_User_Data", "Barcode_Data", "PIF",  "Lon", "Lat", "GPS_stat", "LEDSel", "S/N_raw", "PAR_3", "PAR_4", "PAR_5", "PAR_6", "TPQ_PSI", "QBP_Size", "Alp4QA", "Tau4QA", "Alp1PQ", "Tau1PQ", "Alp2PQ", "Tau2PQ", "Alp3PQ", "Tau3PQ", "ETR", "V58")) %>% # remove superfluous columns for unfit data
 
-  mutate(Filename = str_remove(string = Filename, pattern = "/RawData/caloxy5.zip/"),
+  mutate(Filename = str_remove(string = Filename, pattern = "/RawData/SolisenseSySlCCACaloxyBiolSteps.zip/"),
          Filename = str_remove(string = Filename, pattern = "_fit.csv")
          ) %>%
   separate(Filename, into = c("fp1", "fp2", "fp3", "fp4", "fp5", "fp6", "fp7", "Project", "RunDateTime", "Method", "SampleID", "Ex_WL"), sep = "([\\/\\_])", remove = FALSE) %>%
@@ -248,10 +248,21 @@ SolFitsMeta <- SolFitsMeta %>%
          Fodark = Fo[1],
          Fmdark = Fm[1],
          Sigdark = Sig[1],
+         
+         Tau1QAdark = Tau1QA[1], #SySl CCA
+         Tau1QAmin = min(Tau1QA, na.rm = TRUE), #SySl CCA
+         
+         Tau3QAdark = Tau3QA[1], #SySl CCA
+         Tau3QAmin = min(Tau3QA, na.rm = TRUE), #SySl CCA
+         
          Sigdark_m2psii = Sigdark/A2_m2,
          ActPARCorr_photonsm2s = ActPARCorr *  photons_umol,
          TauAv = ((Tau1QA * Alp1QA) + (Tau2QA * Alp2QA))/(Alp1QA + Alp2QA),
          Ctauav = 1/(1 + (Sig_m2psii * ActPARCorr_photonsm2s * (TauAv/us_s))),
+        
+         TauAvdark = TauAv[1], #SySl CCA
+         TauAvmin = min(TauAv, na.rm = TRUE), #SySl CCA 
+         
          aLHIIdark = (Fmdark * Fodark)/(Fmdark - Fodark),
          Fomin = min(Fo, na.rm = TRUE),
          Fmmax = max(Fm, na.rm = TRUE),
@@ -487,7 +498,7 @@ SolFitsMeta %>%
 ```{r save rds}
 
 
-saveRDS(SolFitsMeta, file.path(DataOut, paste(Project, "Imported_SolisenseLight_LRC_CaloxyAll.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
+saveRDS(SolFitsMeta, file.path(DataOut, paste(Project, "Imported_SolisenseLight_LRC_CaloxyBiolSteps.Rds", sep = "_"), fsep = .Platform$file.sep), ascii = FALSE, version = NULL, compress = "xz", refhook = NULL)
 
 
 ```
