@@ -1,5 +1,5 @@
 ---
-title: "Complementary Chromatic Acclimation in Picocyanobacteria; Quantitation of Benefits"
+title: "Complementary Chromatic Acclimation in Picocyanobacteria; Interactions with Growth Phase and Quantitation of Benefits"
 
 author:
 - Sylwia Śliwińska-Wilczewska:
@@ -120,6 +120,10 @@ Culture inoculated from WL fluorescent exponential phase to Green or Red chromat
 Culture then 'reinoculated' through 'resupply from stationary phase to chromatic light do show CCA with increase in PC under red and increase in PE under green, for both PC rich and PE rich strains.
 
 Cultures which have depleted phycobilisome content will relaunch into CCA?
+
+Big issue: No functional data for PC rich resuspension.
+Functional data for PE rich resuspension
+Functional data for exponential & stationary for both PC rich & PE rich.
 
 <br>
 # Abstract {.unnumbered}
@@ -319,6 +323,18 @@ XXXXX
 Both strains show CCA, but the PE-rich strain, based upon light absorption, oxygen evolution and growth responses, appears closer to a CCA generalist able to acclimate to wider changes in spectral regime.
 
 <br>
+
+
+## CCA interacts with Growth Phase
+We find that these picocyanobacteria only show a qualitative shift in phycobiliprotein content when growth is inoculated from stationary phase.  Simple growth under green or red spectral wavebands does not, in itself, provoke complementary chromatic acclimation.
+
+Furthermore, the changes in phycobilisome composition following inoculation from stationary phase is, indeed, CCA, because cells growing under broad spectrum white light do not show similar changes in pigmentation upon inoculation.
+Issue: growth light levels under white light are not the same.  Possibly express on PUR basis for better comparability?
+
+## CCA increases PUR and growth rates
+These picocyanobacteria show an increase in PUR under the conditions where CCA occurs, after inoculation from stationary phase, under green light (for PC-rich strains), or under red light (for PE-rich strains).  This increase in PUR furthermore corresponds to an increase in growth rate for the strains performing CCA.
+
+## CCA & Electron Transport???
 
 # Acknowledgements {.unnumbered}
 
