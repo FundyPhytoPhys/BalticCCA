@@ -335,6 +335,10 @@ Issue: growth light levels under white light are not the same.  Possibly express
 These picocyanobacteria show an increase in PUR under the conditions where CCA occurs, after inoculation from stationary phase, under green light (for PC-rich strains), or under red light (for PE-rich strains).  This increase in PUR furthermore corresponds to an increase in growth rate for the strains performing CCA.
 
 ## CCA & Electron Transport???
+JVPSII/chl and PSIIETR and O2 LRC, vs. time & vs. growth rates
+
+## PSIIinactive
+Check plots of Alp3QA to see if we can infer changes in [PSIIinactive]
 
 # Acknowledgements {.unnumbered}
 
