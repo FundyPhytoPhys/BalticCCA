@@ -503,23 +503,6 @@ SolFitsMetaFilter %>%
 
 
 
-SolFitsMetaFilter %>%
-  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
-    filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
-  ggplot() +
-  geom_point(aes(x = E_days, y = Tau3QAdark, colour = as.factor(Phase)), size = 3, show.legend = T) +
-  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
-  theme_bw() 
-
-SolFitsMetaFilter %>%
-  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
-    filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
-  ggplot() +
-  geom_point(aes(x = E_days, y = Tau3QAmin, colour = as.factor(Phase)), size = 3, show.legend = T) +
-  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
-  theme_bw() 
-
-
 
 ```
 
@@ -649,9 +632,26 @@ SolFitsMetaLRC %>%
   filter(Ex_WL == 445 | Ex_WL == 535 | Ex_WL == 590) %>%
   filter(Phase != "St") %>% 
   ggplot() +
-  geom_point(aes(x = ActPARCorr, y = qpOxbo, colour = as.factor(Phase)), size = 2, show.legend = T) +
+  geom_point(aes(x = E_days, y = qpOxbo, colour = as.factor(Phase)), size = 2, show.legend = T) +
   ggh4x::facet_nested(cols = vars(WL, Par_ue), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
   theme_bw()
+
+
+SolFitsMetaLRC %>%
+  #filter(Strain == "PC-rich") %>% 
+  #filter(O2 == 0) %>% 
+  filter(WL == 530 |  WL == 660) %>%
+  filter( Ex_WL == 535 | Ex_WL == 590) %>%
+  filter(ActPAR == 20) %>% 
+  #filter(Phase != "St") %>% 
+  ggplot() +
+  geom_point(aes(x = E_days, y = ETRqpOxbo, colour = as.factor(Phase)), size = 2, show.legend = T) +
+  ggh4x::facet_nested(cols = vars(WL, Par_ue), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw()
+
+
+
+
 ```
 
 ```{r}
