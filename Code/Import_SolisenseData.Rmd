@@ -251,7 +251,7 @@ SolFitsMeta <- SolFitsMeta %>%
          Tau1QAdark = Tau1QA[1], #SySl CCA
          Tau1QAmin = min(Tau1QA, na.rm = TRUE), #SySl CCA
          
-         Alp3QA = Alp3QA[1], #SySl CCA
+         Alp3QAdark = Alp3QA[1], #SySl CCA
          Alp3QAmin = min(Alp3QA, na.rm = TRUE), #SySl CCA
          
          Sigdark_m2psii = Sigdark/A2_m2,
