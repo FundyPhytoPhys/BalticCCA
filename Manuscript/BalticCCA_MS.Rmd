@@ -326,9 +326,18 @@ Both strains show CCA, but the PE-rich strain, based upon light absorption, oxyg
 
 
 ## CCA interacts with Growth Phase
-We find that these picocyanobacteria only show a qualitative shift in phycobiliprotein content when growth is inoculated from stationary phase.  Simple growth under green or red spectral wavebands does not, in itself, provoke complementary chromatic acclimation.
 
-Furthermore, the changes in phycobilisome composition following inoculation from stationary phase is, indeed, CCA, because cells growing under broad spectrum white light do not show similar changes in pigmentation upon inoculation.
+In previous work we noted the study strains undergoing Complementary Chromatic Acclimation (CCA), changing phycobiliprotein content depending upon the growth light (Sliwinska, unpub. XXXOR DO YOU HAVE PUBLICATIONS?).  The PC-rich strain showed accumulation of PE when grown under green light, while the PE-rich strain showed accumulation of PC when grown under red light.
+
+XXXX CHeck 'categorization' of CCA; there were papers defining different categoriesXXXX..
+
+To our surprise, in the current work, when we used precultures growing exponentially under broad spectrum white light (Supplemental Spectra) to inoculate cultures growing under green or red light, we did not see the expected CCA.  The PC-rich strain did not accumulate PE even when grown under green light; while the PE-rich strain did not accumulate PC when grown under red light.  Instead the cultures showed only a gradual quantitative decrease in phycobilin content, whether PC or PE, as then progressed from exponential to stationary phase, growing under red or green light.
+
+However, when we took these cultures from stationary phase, and re-inoculated into green or red light, we finally saw the expected CCA, with the PC-rich strain accumulating PE under green light, and the PE-rich strain accumulating PC under red light.
+We therefore find that these picocyanobacteria only show a qualitative shift in phycobiliprotein content when growth is inoculated from a pre-culture in stationary phase.  Semi-continuous growth under green or red spectral wavebands does not, in itself, provoke complementary chromatic acclimation.
+
+Furthermore, the changes in phycobilisome composition following inoculation from stationary phase is, indeed, CCA, because cells growing under broad spectrum white light do not show similar changes in pigmentation upon inoculation from stationary phase (Supplemental).
+
 Issue: growth light levels under white light are not the same.  Possibly express on PUR basis for better comparability?
 
 ## CCA increases PUR and growth rates
