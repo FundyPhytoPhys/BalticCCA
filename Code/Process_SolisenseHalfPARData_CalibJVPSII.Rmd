@@ -498,11 +498,27 @@ SolFitsMetaFilter %>%
     filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
   ggplot() +
   geom_point(aes(x = E_days, y = TauAvmin, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  geom_line(aes(x = E_days, y = TauAvmin), size = 1, show.legend = F) +
   ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
   theme_bw() 
 
 
+SolFitsMetaFilter %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+    filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+  ggplot() +
+  geom_point(aes(x = E_days, y = Alp3QAdark, colour = as.factor(Phase)), size = 3, show.legend = T) +
+  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw() 
 
+SolFitsMetaFilter %>%
+  mutate(WLNum = if_else(WL == "WW", 750, as.numeric(WL))) %>%
+    filter(Ex_WL!= 470 & Ex_WL != 505) %>% 
+  ggplot() +
+  geom_point(aes(x = E_days, y = Alp3QAmin, colour = as.factor(Phase)), size = 3, show.legend = T) +
+    geom_line(aes(x = E_days, y = Alp3QAmin), size = 1, show.legend = F) +
+  ggh4x::facet_nested(cols = vars(Par_ue, WL), rows = vars(Strain, Ex_WL), labeller = label_parsed) +
+  theme_bw() 
 
 ```
 
